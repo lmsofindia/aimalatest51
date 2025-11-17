@@ -1,0 +1,22 @@
+<div class="lc-grid row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3" id="lc-coursegrid">
+    {{> local_coursefilter/coursegrid_items}}
+</div>
+
+{{#noresults}}
+<div class="alert alert-info mt-3">
+  {{#str}}noresults, local_coursefilter{{/str}}
+</div>
+{{/noresults}}
+
+<div class="d-flex justify-content-center mt-3">
+  {{#hasmore}}
+    <button id="lc-loadmore" class="btn btn-outline-primary">
+      {{#str}}loadmore, local_coursefilter{{/str}}
+    </button>
+  {{/hasmore}}
+  {{^hasmore}}
+    <button id="lc-loadmore" class="btn btn-outline-primary d-none">
+      {{#str}}loadmore, local_coursefilter{{/str}}
+    </button>
+  {{/hasmore}}
+</div>
