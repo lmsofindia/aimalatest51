@@ -1,0 +1,550 @@
+{{! Hero section full width }}
+<section class="lce-hero text-dark container">
+      <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{{{wwwroot}}}" class="text-dark">
+                <i class="fa fa-home me-1"></i>{{#str}}home{{/str}}
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{{{coursecategoryurl}}}" class="text-dark">
+                <i class="fa fa-folder-open me-1"></i>{{coursecategory}}
+              </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+              <i class="fa fa-book-open me-1"></i>{{fullname}}
+            </li>
+          </ol>
+        </nav>
+  <div class="lce-hero-overlay py-5">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Left content -->
+        <div class="col-lg-8 mb-4 mb-lg-0">
+          <h1 class="lce-title display-5 fw-bold">{{{fullname}}}</h1>
+          <div class="lce-summary lead mb-3">{{{summary_html}}}</div>
+
+          {{#rating.has}}
+            <div class="lce-rating mb-3 d-flex align-items-center">
+              <span class="lce-rating-avg fs-5 fw-bold me-2">
+                <i class="fa fa-star text-warning"></i> {{avg}}
+              </span>
+              <span class="lce-stars me-2">
+                {{#stars}}<span class="text-warning">★</span>{{/stars}}
+              </span>
+              <span class="lce-rating-count text-muted">({{count}})</span>
+            </div>
+          {{/rating.has}}
+
+          <div class="lce-tags mb-4">
+            {{#tags}}
+              <a class="badge bg-light text-dark border me-1 mb-2" href="{{url}}">
+                <i class="fa fa-tag"></i> {{name}}
+              </a>
+            {{/tags}}
+          </div>
+
+          <div class="course-summary mb-4">
+            <div class="course-summary__item">
+              <div class="course-summary__text">{{customfields.learning_level}}</div>
+              <div class="course-summary__caption-text">
+                {{#str}}learning_level, local_customenrol{{/str}}
+              </div>
+            </div>
+
+            <div class="course-summary__divider"></div>
+
+            <div class="course-summary__item">
+              <div class="course-summary__text">{{customfields.duration}} Hrs</div>
+              <div class="course-summary__caption-text">
+                {{#str}}lhours, local_customenrol{{/str}}
+              </div>
+            </div>
+
+            <div class="course-summary__divider"></div>
+
+            <div class="course-summary__item">
+              <div class="course-summary__text">{{studentscount}}</div>
+              <div class="course-summary__caption-text">
+                {{#str}}learnersenrolled, local_customenrol{{/str}}
+              </div>
+            </div>
+          </div>
+
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <a href="#enrol" class="btn btn-custom btn-lg">
+              {{#str}}getstarted, local_customenrol{{/str}}
+            </a>
+
+            <!-- Learner count -->
+            <div class="d-flex align-items-center">
+              <span>
+                {{#rating.has}}
+                  <div class="lce-rating d-flex align-items-center justify-content-center">
+                    <span class="lce-rating-avg fw-bold me-2">
+                      <i class="fa fa-star text-warning"></i> {{avg}}
+                    </span>
+                    <span class="lce-stars me-2">
+                      {{#stars}}<span class="text-warning">★</span>{{/stars}}
+                    </span>
+                    <span class="lce-rating-count text-muted">({{count}})</span>
+                  </div>
+                {{/rating.has}}
+
+                {{^rating.has}}
+                  <div class="lce-rating d-flex align-items-center justify-content-center">
+                    <span class="lce-rating-avg fw-bold me-2">
+                      <i class="fa fa-star text-warning"></i> 4.5
+                    </span>
+                    <span class="lce-rating-count text-muted">(1200)</span>
+                  </div>
+                {{/rating.has}}
+
+                <span class="text-center">
+                  {{#str}}rating, local_customenrol{{/str}}
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <!-- /Left content -->
+
+        <!-- Right card -->
+        <div class="col-lg-4">
+          <div class="card shadow-sm border-0 rounded-4">
+            <img src="{{courseimage}}" alt="Certificate Preview" class="card-img-top rounded-top-4">
+            <div class="card-body">
+              <h5 class="fw-bold mb-3">{{#str}}coursedetails, local_customenrol{{/str}}</h5>
+              <ul class="list-unstyled mb-0">
+                <li class="mb-2">
+                  <i class="fa fa-check text-primary me-2"></i> {{#str}}freecoursecontent, local_customenrol{{/str}}
+                </li>
+                <li class="mb-2">
+                  <i class="fa fa-check text-primary me-2"></i> {{#str}}learnatyourownpace, local_customenrol{{/str}}
+                </li>
+                <li class="mb-2">
+                  <i class="fa fa-check text-primary me-2"></i> {{#str}}masterindemand, local_customenrol{{/str}}
+                </li>
+                <li class="mb-2">
+                  <i class="fa fa-check text-primary me-2"></i> {{#str}}testskills, local_customenrol{{/str}}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- /Right card -->
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container my-4">
+  {{! Left column }}
+  <div class="row">
+    <div class="col-lg-9">
+      {{! Preview Video }}
+      {{#customfields.previewvideo}}
+        <div class="preview-video mb-4">
+          <h2 class="htitle">
+            <i class="fa fa-video me-2"></i>{{#str}}previewvideo, local_customenrol{{/str}}
+          </h2>
+          {{{customfields.previewvideo}}}
+        </div>
+      {{/customfields.previewvideo}}
+
+      {{! Enrolment Options }}
+      <div class="card-footer">
+        {{{ enroloptions }}}
+      </div>
+
+      <div class="course-details">
+        {{! Tabs }}
+        <ul class="nav nav-tabs mb-3" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link active" data-bs-toggle="tab" href="#overview">
+              <i class="fa fa-info-circle"></i> {{#str}}overview, local_customenrol{{/str}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#curriculum">
+              <i class="fa fa-list-ul"></i> {{#str}}curriculum, local_customenrol{{/str}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#instructors">
+              <i class="fa fa-chalkboard-teacher"></i> {{#str}}instructors, local_customenrol{{/str}}
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="tab" href="#rating">
+              <i class="fa fa-star"></i> {{#str}}rating, local_customenrol{{/str}}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="tab-content">
+        <div id="overview" class="tab-pane fade show active">
+          {{! What You Will Learn }}
+          {{#customfields.whatyouwilllearn}}
+            <div class="what-you-will-learn mb-4">
+              <h2 class="htitle">
+                <i class="fa fa-lightbulb me-2"></i>{{#str}}whatyouwilllearn, local_customenrol{{/str}}
+              </h2>
+              <p>{{{customfields.whatyouwilllearn}}}</p>
+            </div>
+          {{/customfields.whatyouwilllearn}}
+
+          <div>{{{summary_html}}}</div>
+        </div>
+
+        <div id="curriculum" class="tab-pane fade">
+          <div class="d-flex justify-content-end mb-2">
+            <button id="expand-all" class="btn btn-sm btn-outline-primary me-2">
+              <i class="fa fa-plus-square"></i> {{#str}}expandall, local_customenrol{{/str}}
+            </button>
+            <button id="collapse-all" class="btn btn-sm btn-outline-secondary">
+              <i class="fa fa-minus-square"></i> {{#str}}collapseall, local_customenrol{{/str}}
+            </button>
+          </div>
+
+          {{#curriculum}}
+            <div class="mb-3 border rounded">
+              <div class="p-3 bg-light d-flex justify-content-between align-items-center lce-section-head">
+                <span class="fw-bold">
+                  <i class="fa fa-chevron-right lce-toggle-arrow me-3"></i>{{name}}
+                </span>
+                <small class="text-muted"><i class="fa fa-file-alt"></i> {{count}} items</small>
+              </div>
+
+              <ul class="list-group list-group-flush lce-items">
+                {{#items}}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                      {{#iconurl}}
+                        <img src="{{iconurl}}" alt="{{modname}}" class="me-2" style="height:20px;">
+                      {{/iconurl}}
+                      <a href="{{{url}}}">{{name}}</a>
+                    </div>
+                    <span class="text-muted small ms-3">
+                      <i class="fa fa-cube"></i> {{modname}}
+                    </span>
+                  </li>
+                {{/items}}
+              </ul>
+            </div>
+          {{/curriculum}}
+        </div>
+
+        <div id="instructors" class="tab-pane fade">
+          <div class="row">
+            {{#teachers}}
+              <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                  <div class="card-body d-flex">
+                    <div class="me-3">{{{teacheruserpicture}}}</div>
+                    <div>
+                      <a href="{{{teacherprofileurl}}}" class="fw-bold">{{teacherfullname}}</a>
+                      <div class="small">{{{teacherdescription}}}</div>
+                      <div class="text-muted small">{{teachercoursecount}} courses</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {{/teachers}}
+          </div>
+        </div>
+
+        <div id="rating" class="tab-pane fade">
+          {{#rating.has}}
+            <div class="text-center">
+              <div class="display-4">
+                <i class="fa fa-star text-warning"></i> {{avg}}
+              </div>
+              <div>{{#stars}}<span class="text-warning">★</span>{{/stars}}</div>
+              <div class="text-muted">{{count}} total ratings</div>
+            </div>
+          {{/rating.has}}
+
+          {{^rating.has}}
+            <p><i class="fa fa-info-circle"></i> No ratings yet.</p>
+          {{/rating.has}}
+        </div>
+      </div>
+    </div>
+
+    <aside class="col-lg-3 rightcard" style="height:500px;">
+      {{#previewurl}}
+        <div class="mb-3">
+          <video class="w-100" src="{{previewurl}}" controls preload="metadata"></video>
+        </div>
+      {{/previewurl}}
+      <div class="card-header"></div>
+      <div class="card-body">
+        <h5 class="htitle mb-4">
+          <i class="fa fa-info-circle me-2"></i>
+          {{#str}} coursedetails, local_customenrol {{/str}}
+        </h5>
+        {{! Compliance }}
+        <ul class="details-list list-unstyled">
+          {{#customfields.compliance}}
+            <li>
+              <i class="fa fa-shield-alt"></i>
+              <span>
+                <strong>{{#str}}compliance, local_customenrol{{/str}}:</strong> {{customfields.compliance}}
+              </span>
+            </li>
+          {{/customfields.compliance}}
+
+          {{#customfields.learning_level}}
+            <li>
+              <i class="fa fa-signal"></i>
+              <span>
+                <strong>{{#str}}learning_level, local_customenrol{{/str}}:</strong> {{customfields.learning_level}}
+              </span>
+            </li>
+          {{/customfields.learning_level}}
+
+          {{#customfields.skills}}
+            <li>
+              <i class="fa fa-lightbulb"></i>
+              <span>
+                <strong>{{#str}}skills, local_customenrol{{/str}}:</strong> {{customfields.skills}}
+              </span>
+            </li>
+          {{/customfields.skills}}
+
+          {{#customfields.duration}}
+            <li>
+              <i class="fa fa-hourglass-half"></i>
+              <span>
+                <strong>{{#str}}duration, local_customenrol{{/str}}:</strong> {{customfields.duration}}
+              </span>
+            </li>
+          {{/customfields.duration}}
+
+          {{#startdate}}
+            <li>
+              <i class="fa fa-calendar-alt"></i>
+              <span>
+                <strong>{{#str}}startdate, local_customenrol{{/str}}:</strong> {{startdate}}
+              </span>
+            </li>
+          {{/startdate}}
+
+          {{#enddate}}
+            <li>
+              <i class="fa fa-calendar-check"></i>
+              <span>
+                <strong>{{#str}}enddate, local_customenrol{{/str}}:</strong> {{enddate}}
+              </span>
+            </li>
+          {{/enddate}}
+
+          <li>
+            <i class="fa fa-user-graduate"></i>
+            <span>
+              <strong>{{#str}}studentsenrolled, local_customenrol{{/str}}:</strong> {{studentscount}}
+            </span>
+          </li>
+
+          <li>
+            <i class="fa fa-layer-group"></i>
+            <span>
+              <strong>{{#str}}modulescount, local_customenrol{{/str}}:</strong> {{modulescount}}
+            </span>
+          </li>
+
+          <li>
+            <i class="fa fa-list-ol"></i>
+            <span>
+              <strong>{{#str}}sectionscount, local_customenrol{{/str}}:</strong> {{sectionscount}}
+            </span>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+  </div>
+</div>
+<style>
+
+.nav-tabs {
+    border: none !important;
+    background-color: #ffffff !important;
+    border-radius: 15px !important;
+    padding: 10px !important;
+    margin-bottom: 40px !important;
+    box-shadow: 0 5px 20px color-mix(in srgb, #394450, transparent 90%) !important;
+    gap:10px;
+}
+
+.nav-tabs .nav-link.active {
+    background-color: #136ad5 !important;
+    color: #ffffff !important;
+    box-shadow: 0 5px 15px color-mix(in srgb,#136ad5, transparent 60%) !important;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    text-align: center;
+    color:color-mix(in srgb, #394450, transparent 30%);
+    background: none;
+    font-weight: 500;
+    transition: all 0.3s;
+    display: flex
+;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    background-color: color-mix(in srgb, #136ad5, transparent 90%);
+    color: #136ad5;
+}
+
+.rightcard {
+    background-color: #ffffff;
+    border: 1px solid color-mix(in srgb, #394450, transparent 90%);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px color-mix(in srgb, #394450, transparent 90%);
+    position: sticky;
+    top: 100px;
+}
+.rightcard .card-body {
+    padding: 20px;
+}
+
+/* Hero overlay background (soft gradient like Great Learning) */
+.lce-hero-overlay {
+  background: linear-gradient(135deg, #f9fbff 0%, #e6f2ff 100%);
+  border-radius: 0 0 50% 50% / 5%;
+}
+
+/* Title */
+.lce-title {
+  font-size: 2.5rem;
+  line-height: 1.3;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767.98px) {
+  .lce-title {
+    font-size: 1.75rem;
+  }
+  .lce-hero-overlay {
+    border-radius: 0;
+    padding: 2rem 1rem;
+  }
+}
+
+
+.rightcard {
+    background-color: #ffffff;
+    border: 1px solid color-mix(in srgb, #394450, transparent 90%);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 40px color-mix(in srgb, #394450, transparent 90%);
+    position: sticky;
+    top: 100px;
+}
+.rightcard .card-body {
+    padding: 20px;
+}
+
+.btn-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Gradient */
+    color: #fff;
+    font-weight: 500;
+    border: none;
+    border-radius: 12px;
+    padding: 0.4rem 2rem;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    text-decoration: none;
+    color: #fff;
+}
+
+
+#page-local-customenrol-index .course-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 12px;
+  gap: 8px;
+}
+
+.course-summary__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 100px;
+  min-width: 80px;
+}
+
+.course-summary__text {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.course-summary__caption-text {
+  font-size: 0.875rem;
+  color: #666;
+  text-align: center;
+}
+
+.course-summary__divider {
+  width: 1px;
+  background-color: #ccc;
+  height: 40px;
+}
+
+@media (max-width: 768px) {
+  .course-summary {
+    flex-wrap: nowrap;
+  }
+  .course-summary__divider {
+    height: 30px;
+  }
+  .course-summary__item {
+    flex: 1 1 auto;
+  }
+  .course-summary__text {
+    font-size: 0.9rem;
+  }
+  #page-local-customenrol-index .course-summary {
+   padding-left: 0px;
+   flex-wrap: nowrap;
+   gap:0px;
+  }
+
+.course-summary__item {
+  min-width: 77px;
+}
+}
+.mediaplugin{
+background: #e4e1e138;
+    padding-top: 20px;
+    padding-bottom:20px;
+    border-radius: 14px;
+    box-shadow: red;
+}
+</style>

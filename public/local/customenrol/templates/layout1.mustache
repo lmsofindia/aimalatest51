@@ -1,0 +1,428 @@
+<!-- Make sure Font Awesome is loaded -->
+<div class="container-fluid px-0">
+        <nav aria-label="breadcrumb" class="mb-3">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a href="{{{wwwroot}}}" class="text-dark">
+                <i class="fa fa-home me-1"></i>{{#str}}home{{/str}}
+              </a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{{{coursecategoryurl}}}" class="text-dark">
+                <i class="fa fa-folder-open me-1"></i>{{coursecategory}}
+              </a>
+            </li>
+            <li class="breadcrumb-item active text-dark" aria-current="page">
+              <i class="fa fa-book-open me-1"></i>{{fullname}}
+            </li>
+          </ol>
+        </nav>
+  <!-- Hero Section -->
+  <section class="hero-banner position-relative">
+    <div class="custwhitebg">
+      <div class="container cusconpad">
+        <div class="row align-items-center">
+          
+          <!-- Left Content -->
+          <div class="col-lg-7 col-md-7 cust7">
+            <h1 class="fw-bolds text-dark">{{{fullname}}}</h1>
+            <div class="lce-summary lead mb-3"><p>{{{summary_html}}}</p></div>
+
+            <!-- Rating -->
+            <div class="custrte">
+              <div class="d-flex align-items-center mb-3">
+                 
+                
+             
+              </div>
+
+              <!-- Tags -->
+              <div class="lce-tags mb-3" >
+                  {{#tags}}
+                    <a href="{{url}}" class="badge  me-1 bagecust">
+                      <i class="fa fa-tag me-1"></i>{{name}}
+                    </a>
+                  {{/tags}}
+
+                  {{^tags}}
+                    <a href="#" class="badge bg-light text-dark me-1">
+                      <i class="fa fa-tag me-1"></i> Beginner
+                    </a>
+                    <a href="#" class="badge bg-light text-dark me-1">
+                      <i class="fa fa-tag me-1"></i> Professional
+                    </a>
+                  {{/tags}}
+              </div>
+              <div class="d-flex flex-wrap align-items-center gap-3">
+            <a href="#enrol" class="btn btn-custom btn-lg">
+              Get started
+            </a>
+
+            <!-- Learner count -->
+            <div class="d-flex align-items-center">
+             {{#rating.has}}
+                  <div class="lce-rating d-flex align-items-center justify-content-center">
+                    <span class="lce-rating-avg fw-bold me-2">
+                      <i class="fa fa-star text-warning"></i> {{avg}}
+                    </span>
+                    <span class="lce-stars me-2">
+                      {{#stars}}<span class="text-warning">★</span>{{/stars}}
+                    </span>
+                    <span class="lce-rating-count text-dark">({{count}})</span>
+                  </div>
+                {{/rating.has}}
+
+                {{^rating.has}}
+                  <div class="lce-rating d-flex align-items-center justify-content-center">
+                    <span class="lce-rating-avg fw-bold me-2">
+                      <i class="fa fa-star text-warning"></i> <span class="text-dark">4.5</span>
+                    </span>
+                    <span class="lce-rating-count text-muted">(1200)</span>
+                  </div>
+                {{/rating.has}}
+
+                <span class="text-center">
+                  {{#str}}rating, local_customenrol{{/str}}
+                </span>
+            </div>
+          </div>
+            </div>
+          </div>
+
+          <!-- Right Image -->
+          <div class="col-lg-5 col-md-5 d-none d-md-block">
+            <div class="hero-image-wrapper">
+              <img src="{{courseimage}}" alt="{{fullname}}">
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+
+
+  <div class="container my-5">
+    <div class="row g-4">
+      
+      {{! Left column }}
+      <div class="col-lg-9">
+
+      {{! Preview Video }}
+    {{#customfields.previewvideo}}
+    <div class="preview-video mb-4">
+        <h2 class="htitle">
+            <i class="fa fa-video me-2"></i>{{#str}}previewvideo, local_customenrol{{/str}}
+        </h2>
+        {{{customfields.previewvideo}}}
+    </div>
+    {{/customfields.previewvideo}}
+    <div class="card-footer">
+            {{{ enroloptions }}}
+          </div>
+
+    {{! What You Will Learn }}
+    {{#customfields.whatyouwilllearn}}
+    <div class="what-you-will-learn mb-4">
+        <h2 class="htitle">
+            <i class="fa fa-lightbulb me-2"></i>{{#str}}whatyouwilllearn, local_customenrol{{/str}}
+        </h2>
+        <p>{{{customfields.whatyouwilllearn}}}</p>
+    </div>
+    {{/customfields.whatyouwilllearn}}
+
+
+      <section>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h2 class="mb-0 customenrol-section-title">
+            <i class="fa fa-list me-2"></i>{{#str}}coursecontent, local_customenrol{{/str}}
+          </h2>
+        </div>
+        <div class="text-end mb-3">
+          <button id="expand-all" class="btn btn-outline-primary btn-sm me-2">
+            <i class="fa fa-plus-square me-1"></i>{{#str}}expandall{{/str}}
+          </button>
+          <button id="collapse-all" class="btn btn-outline-secondary btn-sm">
+            <i class="fa fa-minus-square me-1"></i>{{#str}}collapseall{{/str}}
+          </button>
+        </div>
+
+        {{#curriculum}}
+        <div class="mb-2 border rounded">
+          <div class="p-3 bg-light d-flex justify-content-between align-items-center lce-section-head">
+            <span><i class="fa fa-folder me-3 text-primary"></i>{{name}}</span>
+            <span class="text-muted small">{{count}} items <i class="fa fa-chevron-up ms-2"></i></span>
+          </div>
+          <ul class="list-group list-group-flush lce-items is-open">
+            {{#items}}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                {{#iconurl}}
+                <img src="{{iconurl}}" alt="{{modname}}" class="me-2" style="width:18px;height:18px;">
+                {{/iconurl}}
+                <a href="{{{url}}}" class="text-decoration-none">{{name}}</a>
+              </div>
+              <span class="badge bg-light text-muted">
+                <i class="fa fa-cube me-1"></i>{{modname}}</span>
+            </li>
+            {{/items}}
+          </ul>
+        </div>
+        {{/curriculum}}
+</section>
+
+
+
+      </div>
+
+      {{! Sidebar }}
+  <aside class="col-lg-3">
+<div class="card course-details-card mb-4 shadow-sm">
+    <div class="card-body">
+        <h2 class="htitle mb-4 d-flex align-items-center">
+            <i class="fa fa-info-circle me-2 text-primary"></i>
+            {{#str}} coursedetails, local_customenrol {{/str}}
+        </h2>
+
+        <ul class="details-list list-unstyled">
+            {{#customfields.compliance}}
+            <li>
+                <i class="fa fa-shield-alt text-success"></i>
+                <span><strong>{{#str}}compliance, local_customenrol{{/str}}:</strong> {{customfields.compliance}}</span>
+            </li>
+            {{/customfields.compliance}}
+
+            {{#customfields.learning_level}}
+            <li>
+                <i class="fa fa-signal text-warning"></i>
+                <span><strong>{{#str}}learning_level, local_customenrol{{/str}}:</strong> {{customfields.learning_level}}</span>
+            </li>
+            {{/customfields.learning_level}}
+
+            {{#customfields.skills}}
+            <li>
+                <i class="fa fa-lightbulb text-info"></i>
+                <span><strong>{{#str}}skills, local_customenrol{{/str}}:</strong> {{customfields.skills}}</span>
+            </li>
+            {{/customfields.skills}}
+
+            {{#customfields.duration}}
+            <li>
+                <i class="fa fa-hourglass-half text-danger"></i>
+                <span><strong>{{#str}}duration, local_customenrol{{/str}}:</strong> {{customfields.duration}}</span>
+            </li>
+            {{/customfields.duration}}
+
+            {{#startdate}}
+            <li>
+                <i class="fa fa-calendar-alt text-primary"></i>
+                <span><strong>{{#str}}startdate, local_customenrol{{/str}}:</strong> {{startdate}}</span>
+            </li>
+            {{/startdate}}
+
+            {{#enddate}}
+            <li>
+                <i class="fa fa-calendar-check text-success"></i>
+                <span><strong>{{#str}}enddate, local_customenrol{{/str}}:</strong> {{enddate}}</span>
+            </li>
+            {{/enddate}}
+
+            <li>
+                <i class="fa fa-user-graduate text-secondary"></i>
+                <span><strong>{{#str}}studentsenrolled, local_customenrol{{/str}}:</strong> {{studentscount}}</span>
+            </li>
+
+            <li>
+                <i class="fa fa-layer-group text-warning"></i>
+                <span><strong>{{#str}}modulescount, local_customenrol{{/str}}:</strong> {{modulescount}}</span>
+            </li>
+
+            <li>
+                <i class="fa fa-list-ol text-danger"></i>
+                <span><strong>{{#str}}sectionscount, local_customenrol{{/str}}:</strong> {{sectionscount}}</span>
+            </li>
+        </ul>
+    </div>
+</div>
+    {{#teachers.0}}
+        <div class="card teachers-card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="htitle mb-4 d-flex align-items-center">
+              <i class="fa fa-chalkboard-teacher me-2 text-primary"></i>
+              {{#str}}taughtby, local_customenrol{{/str}}
+            </h2>
+
+            <ul class="list-unstyled teacher-list">
+              {{#teachers}}
+              <li class="d-flex align-items-start mb-4 teacher-item">
+                <div class="teacher-avatar me-3">
+                  {{{teacheruserpicture}}}
+                </div>
+                <div>
+                  <a href="{{{teacherprofileurl}}}" class="fw-bold teacher-name">
+                    <i class="fa fa-user me-1"></i>{{teacherfullname}}
+                  </a>
+                  <div class="small text-muted">{{{teacherdescription}}}</div>
+                  <div class="small">
+                    <i class="fa fa-book me-1"></i>{{teachercoursecount}} Courses
+                  </div>
+                </div>
+              </li>
+              {{/teachers}}
+            </ul>
+          </div>
+        </div>
+      {{/teachers.0}}
+</aside>
+
+    </div>
+  </div>
+</div>
+
+
+<style>
+/* ==== Hero Section ==== */
+.hero-banner {
+  background: radial-gradient(126.66% 86.17% at 40.93% 42.48%, 
+              oklch(53.33% .2476 301.09deg) 0, 
+              oklch(28.29% .1348 286.02deg) 100%);
+  color: #fff;
+  border-radius: 0;
+  min-height: 500px;
+}
+
+.custwhitebg {
+  padding: 52px;
+}
+
+.cusconpad {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  height: 400px;
+}
+
+.hero-banner .row {
+  align-items: flex-start; 
+}
+
+.hero-banner h1 {
+  font-size: 35px;
+  line-height: 1.3;
+}
+
+.hero-banner p.lead {
+  font-size: 1.1rem;
+  color: #444;
+}
+
+.hero-image-wrapper {
+  width: 100%;
+  height: 317px;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.hero-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 16px;
+  transition: transform 0.3s ease;
+}
+
+.hero-image-wrapper img:hover {
+  transform: scale(1.05);
+}
+
+/* Badge Custom */
+.bagecust {
+  background-color: #3e7ebe !important;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.4rem 0.7rem;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 767.98px) {
+  .hero-banner {
+    text-align: left;
+    padding: 2rem 1rem;
+    min-height: 343px;
+  }
+  .custwhitebg {
+    padding: 0;
+  }
+  .cusconpad {
+    height: auto;
+    padding: 20px;
+  }
+  .hero-banner h1 {
+    font-size: 1.8rem;
+    line-height: 1.2;
+  }
+  .hero-banner p.lead {
+    font-size: 1rem;
+    margin-top: -10px;
+  }
+  .hero-image-wrapper {
+    display: none !important;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+  .cusconpad {
+    padding: 25px;
+    height: auto;
+  }
+  .hero-banner h1 {
+    font-size: 2rem;
+  }
+  .hero-banner p.lead {
+    font-size: 1rem;
+  }
+  .hero-image-wrapper {
+  }
+  .hero-image-wrapper img {
+    object-fit: cover;
+    border-radius: 12px;
+  }
+}
+
+.btn-custom {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* Gradient */
+    color: #fff;
+    font-weight: 500;
+    border: none;
+    border-radius: 12px;
+    padding: 0.4rem 2rem;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    text-decoration: none;
+    color: #fff;
+}
+
+.lce-items { display: none; }
+.lce-items.is-open { display: block; }
+.mediaplugin{
+background: #e4e1e138;
+    padding-top: 20px;
+    padding-bottom:20px;
+    border-radius: 14px;
+    box-shadow: red;
+}
+</style>
+
+
+

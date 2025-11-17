@@ -1,0 +1,226 @@
+{{! Hero section full width }}
+<section class="lce-hero text-white" style="background-image: url('{{courseimage}}');">
+  <div class="lce-hero-overlay py-4">
+    <div class="container">
+      <nav class="lce-breadcrumb mb-2">
+        <a href="{{{wwwroot}}}" class="text-light"><i class="fa fa-home"></i> {{#str}}home{{/str}}</a> ›
+        <a href="{{{coursecategoryurl}}}" class="text-light"><i class="fa fa-folder-open"></i> {{coursecategory}}</a> ›
+        <span><i class="fa fa-book"></i> {{fullname}}</span>
+      </nav>
+      <h1 class="lce-title display-5">{{{fullname}}}</h1>
+      <div class="lce-summary mb-3">{{{summary_html}}}</div>
+
+      {{#rating.has}}
+      <div class="lce-rating mb-3">
+        <span class="lce-rating-avg"><i class="fa fa-star text-warning"></i> {{avg}}</span>
+        <span class="lce-stars" aria-label="{{avg}} out of 5">
+          {{#stars}}<span class="lce-star text-warning">★</span>{{/stars}}
+        </span>
+        <span class="lce-rating-count">({{count}})</span>
+      </div>
+      {{/rating.has}}
+      <div class="lce-tags">
+        {{#tags}}
+          <a class="badge bg-secondary me-1 bagecust" href="{{url}}"><i class="fa fa-tag"></i> {{name}}</a>
+        {{/tags}}
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container my-4">
+  {{! Left column }}
+  <div class="row">
+    <div class="col-lg-9">
+    {{! Preview Video }}
+  {{#customfields.previewvideo}}
+  <div class="preview-video mb-4">
+      <h2 class="section-heading"><i class="fa fa-video me-2"></i>{{#str}}previewvideo, local_customenrol{{/str}}</h2>
+      {{{customfields.previewvideo}}}
+  </div>
+  {{/customfields.previewvideo}}
+
+  {{! Enrolment Options }}
+  <div class="card-footer">
+    {{{ enroloptions }}}
+  </div>
+      {{! Tabs }}
+  <ul class="nav nav-tabs custom-tabs mb-3" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active custlink" data-bs-toggle="tab" href="#overview">
+            <i class="fa fa-info-circle"></i> {{#str}}overview, local_customenrol{{/str}}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link custlink" data-bs-toggle="tab" href="#curriculum">
+            <i class="fa fa-list-ul"></i> {{#str}}curriculum, local_customenrol{{/str}}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link " data-bs-toggle="tab" href="#instructors">
+            <i class="fa fa-chalkboard-teacher"></i> {{#str}}instructors, local_customenrol{{/str}}
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" data-bs-toggle="tab" href="#rating">
+            <i class="fa fa-star"></i> {{#str}}rating, local_customenrol{{/str}}
+        </a>
+    </li>
+</ul>
+
+      <div class="tab-content">
+        <div id="overview" class="tab-pane fade show active">
+      
+
+          {{! What You Will Learn }}
+    {{#customfields.whatyouwilllearn}}
+    <div class="what-you-will-learn mb-4">
+        <h2 class="section-heading">
+            <i class="fa fa-lightbulb me-2"></i>{{#str}}whatyouwilllearn, local_customenrol{{/str}}
+        </h2>
+        <p>{{{customfields.whatyouwilllearn}}}</p>
+    </div>
+    {{/customfields.whatyouwilllearn}}
+
+
+          <div>{{{summary_html}}}</div>
+        </div>
+
+        <div id="curriculum" class="tab-pane fade">
+  <div class="d-flex justify-content-end mb-2">
+    <button id="expand-all" class="btn btn-sm btn-outline-primary me-2"><i class="fa fa-plus-square"></i> {{#str}}expandall, local_customenrol{{/str}}</button>
+    <button id="collapse-all" class="btn btn-sm btn-outline-secondary"><i class="fa fa-minus-square"></i> {{#str}}collapseall, local_customenrol{{/str}}</button>
+  </div>
+  {{#curriculum}}
+  <div class="mb-3 border rounded">
+    <div class="p-2 bg-light d-flex justify-content-between align-items-center lce-section-head">
+      <span class="fw-bold"><i class="fa fa-chevron-right lce-toggle-arrow me-1"></i>{{name}}</span>
+      <small class="text-muted"><i class="fa fa-file-alt"></i> {{count}} items</small>
+    </div>
+    <ul class="list-group list-group-flush lce-items">
+      {{#items}}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center">
+          {{#iconurl}}<img src="{{iconurl}}" alt="{{modname}}" class="me-2" style="height:20px;">{{/iconurl}}
+          <a href="{{{url}}}">{{name}}</a>
+        </div>
+        <span class="text-muted small ms-3"><i class="fa fa-cube"></i> {{modname}}</span>
+      </li>
+      {{/items}}
+    </ul>
+  </div>
+  {{/curriculum}}
+</div>
+
+        <div id="instructors" class="tab-pane fade">
+          <div class="row">
+            {{#teachers}}
+            <div class="col-md-6 mb-3">
+              <div class="card h-100">
+                <div class="card-body d-flex">
+                  <div class="me-3">{{{teacheruserpicture}}}</div>
+                  <div>
+                    <a href="{{{teacherprofileurl}}}" class="fw-bold">{{teacherfullname}}</a>
+                    <div class="small">{{{teacherdescription}}}</div>
+                    <div class="text-muted small">{{teachercoursecount}} courses</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {{/teachers}}
+          </div>
+        </div>
+
+        <div id="rating" class="tab-pane fade">
+          {{#rating.has}}
+          <div class="text-center">
+            <div class="display-4"><i class="fa fa-star text-warning"></i> {{avg}}</div>
+            <div>{{#stars}}<span class="text-warning">★</span>{{/stars}}</div>
+            <div class="text-muted">{{count}} total ratings</div>
+          </div>
+          {{/rating.has}}
+          {{^rating.has}}
+          <p><i class="fa fa-info-circle"></i> No ratings yet.</p>
+          {{/rating.has}}
+        </div>
+      </div>
+    </div>
+
+  <aside class="col-lg-3">
+  {{#previewurl}}
+  <div class="mb-3">
+    <video class="w-100" src="{{previewurl}}" controls preload="metadata"></video>
+  </div>
+  {{/previewurl}}
+  <div class="card">
+    <div class="card-body">
+    <h5 class="details-heading mb-4">
+    <i class="fa fa-info-circle me-2"></i>
+    {{#str}} coursedetails, local_customenrol {{/str}}
+  </h5>
+    {{! Compliance }}
+         <ul class="details-list list-unstyled">
+        {{#customfields.compliance}}
+        <li>
+          <i class="fa fa-shield-alt"></i>
+          <span><strong>{{#str}}compliance, local_customenrol{{/str}}:</strong> {{customfields.compliance}}</span>
+        </li>
+        {{/customfields.compliance}}
+
+        {{#customfields.learning_level}}
+        <li>
+          <i class="fa fa-signal"></i>
+          <span><strong>{{#str}}learning_level, local_customenrol{{/str}}:</strong> {{customfields.learning_level}}</span>
+        </li>
+        {{/customfields.learning_level}}
+
+        {{#customfields.skills}}
+        <li>
+          <i class="fa fa-lightbulb"></i>
+          <span><strong>{{#str}}skills, local_customenrol{{/str}}:</strong> {{customfields.skills}}</span>
+        </li>
+        {{/customfields.skills}}
+
+        {{#customfields.duration}}
+        <li>
+          <i class="fa fa-hourglass-half"></i>
+          <span><strong>{{#str}}duration, local_customenrol{{/str}}:</strong> {{customfields.duration}}</span>
+        </li>
+        {{/customfields.duration}}
+
+        {{#startdate}}
+        <li>
+          <i class="fa fa-calendar-alt"></i>
+          <span><strong>{{#str}}startdate, local_customenrol{{/str}}:</strong> {{startdate}}</span>
+        </li>
+        {{/startdate}}
+
+        {{#enddate}}
+        <li>
+          <i class="fa fa-calendar-check"></i>
+          <span><strong>{{#str}}enddate, local_customenrol{{/str}}:</strong> {{enddate}}</span>
+        </li>
+        {{/enddate}}
+
+        <li>
+          <i class="fa fa-user-graduate"></i>
+          <span><strong>{{#str}}studentsenrolled, local_customenrol{{/str}}:</strong> {{studentscount}}</span>
+        </li>
+
+        <li>
+          <i class="fa fa-layer-group"></i>
+          <span><strong>{{#str}}modulescount, local_customenrol{{/str}}:</strong> {{modulescount}}</span>
+        </li>
+
+        <li>
+          <i class="fa fa-list-ol"></i>
+          <span><strong>{{#str}}sectionscount, local_customenrol{{/str}}:</strong> {{sectionscount}}</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</aside>
+  </div>
+</div>
+
+

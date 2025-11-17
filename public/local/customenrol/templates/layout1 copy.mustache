@@ -1,0 +1,225 @@
+<!-- Make sure Font Awesome is loaded in your theme head -->
+<div class="container-fluid px-0">
+
+  {{! Hero section }}
+  <section class="hero-banner position-relative text-white">
+  <div class="custwhitebg">
+  <div class="container cusconpad">
+  
+    <div class="row align-items-center">
+      <!-- Left content -->
+      <div class="col-lg-7 col-md-7 cust7">
+        <h1 class="fw-bolds text-dark">
+          {{{fullname}}}
+        </h1>
+        <p class="lead mb-4 csumm">{{{summary_html}}}</p>
+
+        <div class="custrte">
+        <div class="d-flex align-items-center mb-3">
+          <span class="fs-4 fw-bold me-2 text-dark">4.6</span>
+          <span class="text-warning me-2">
+            <i class="fa fa-star"></i>
+          </span>
+          <span class="small text-dark">26</span>
+        </div>
+       
+        <div class="lce-tags mb-3">
+            <a href="{{url}}" class="badge bg-light text-dark me-1">
+              <i class="fa fa-tag me-1"></i>Beginner
+            </a>
+          
+        </div>
+
+        <a href="#enrol" class="btn btn-primary btn-lg px-4">
+          {{#str}}getstarted, local_customenrol{{/str}}
+        </a>
+        <p>1.5M learners already enrolled</p>
+        </div>
+      </div>
+
+      <!-- Right image (hidden on mobile) -->
+     <div class="col-lg-5 col-md-5 d-none d-md-block">
+  <div class="hero-image-wrapper">
+    <img src="{{courseimage}}" alt="{{fullname}}">
+  </div>
+</div>
+
+
+    </div>
+  </div>
+  </div>
+</section>
+
+
+  <div class="container my-5">
+    <div class="row g-4">
+      
+      {{! Left column }}
+      <div class="col-lg-9">
+
+      {{! Preview Video }}
+    {{#customfields.previewvideo}}
+    <div class="preview-video mb-4">
+        <h2 class="section-heading">
+            <i class="fa fa-video me-2"></i>{{#str}}previewvideo, local_customenrol{{/str}}
+        </h2>
+        {{{customfields.previewvideo}}}
+    </div>
+    {{/customfields.previewvideo}}
+    <div class="card-footer">
+            {{{ enroloptions }}}
+          </div>
+
+    {{! What You Will Learn }}
+    {{#customfields.whatyouwilllearn}}
+    <div class="what-you-will-learn mb-4">
+        <h2 class="htitle">
+            <i class="fa fa-lightbulb me-2"></i>{{#str}}whatyouwilllearn, local_customenrol{{/str}}
+        </h2>
+        <p>{{{customfields.whatyouwilllearn}}}</p>
+    </div>
+    {{/customfields.whatyouwilllearn}}
+
+
+        <section>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="mb-0 customenrol-section-title"><i class="fa fa-list me-2"></i>{{#str}}coursecontent, local_customenrol{{/str}}</h2>
+            <button id="toggle-all" class="btn btn-outline-secondary btn-sm">
+              <i class="fa fa-compress-alt me-1"></i>{{#str}}collapseall{{/str}}
+            </button>
+          </div>
+
+          {{#curriculum}}
+          <div class="mb-2 border rounded">
+            <div class="p-3 bg-light d-flex justify-content-between align-items-center lce-section-head" data-toggle="section">
+              <span><i class="fa fa-folder me-2 text-primary"></i>{{name}}</span>
+              <span class="text-muted small">{{count}} items <i class="fa fa-chevron-down ms-2"></i></span>
+            </div>
+            <ul class="list-group list-group-flush lce-items" style="display:none;">
+              {{#items}}
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  {{#iconurl}}
+                    <img src="{{iconurl}}" alt="{{modname}}" class="me-2" style="width:18px;height:18px;">
+                  {{/iconurl}}
+                  <a href="{{{url}}}" class="text-decoration-none">{{name}}</a>
+                </div>
+                <span class="badge bg-light text-muted"><i class="fa fa-cube me-1"></i>{{modname}}</span>
+              </li>
+              {{/items}}
+            </ul>
+          </div>
+          {{/curriculum}}
+        </section>
+
+      </div>
+
+      {{! Sidebar }}
+  <aside class="col-lg-3">
+<div class="card course-details-card mb-4 shadow-sm">
+    <div class="card-body">
+        <h2 class="htitle mb-4 d-flex align-items-center">
+            <i class="fa fa-info-circle me-2 text-primary"></i>
+            {{#str}} coursedetails, local_customenrol {{/str}}
+        </h2>
+
+        <ul class="details-list list-unstyled">
+            {{#customfields.compliance}}
+            <li>
+                <i class="fa fa-shield-alt text-success"></i>
+                <span><strong>{{#str}}compliance, local_customenrol{{/str}}:</strong> {{customfields.compliance}}</span>
+            </li>
+            {{/customfields.compliance}}
+
+            {{#customfields.learning_level}}
+            <li>
+                <i class="fa fa-signal text-warning"></i>
+                <span><strong>{{#str}}learning_level, local_customenrol{{/str}}:</strong> {{customfields.learning_level}}</span>
+            </li>
+            {{/customfields.learning_level}}
+
+            {{#customfields.skills}}
+            <li>
+                <i class="fa fa-lightbulb text-info"></i>
+                <span><strong>{{#str}}skills, local_customenrol{{/str}}:</strong> {{customfields.skills}}</span>
+            </li>
+            {{/customfields.skills}}
+
+            {{#customfields.duration}}
+            <li>
+                <i class="fa fa-hourglass-half text-danger"></i>
+                <span><strong>{{#str}}duration, local_customenrol{{/str}}:</strong> {{customfields.duration}}</span>
+            </li>
+            {{/customfields.duration}}
+
+            {{#startdate}}
+            <li>
+                <i class="fa fa-calendar-alt text-primary"></i>
+                <span><strong>{{#str}}startdate, local_customenrol{{/str}}:</strong> {{startdate}}</span>
+            </li>
+            {{/startdate}}
+
+            {{#enddate}}
+            <li>
+                <i class="fa fa-calendar-check text-success"></i>
+                <span><strong>{{#str}}enddate, local_customenrol{{/str}}:</strong> {{enddate}}</span>
+            </li>
+            {{/enddate}}
+
+            <li>
+                <i class="fa fa-user-graduate text-secondary"></i>
+                <span><strong>{{#str}}studentsenrolled, local_customenrol{{/str}}:</strong> {{studentscount}}</span>
+            </li>
+
+            <li>
+                <i class="fa fa-layer-group text-warning"></i>
+                <span><strong>{{#str}}modulescount, local_customenrol{{/str}}:</strong> {{modulescount}}</span>
+            </li>
+
+            <li>
+                <i class="fa fa-list-ol text-danger"></i>
+                <span><strong>{{#str}}sectionscount, local_customenrol{{/str}}:</strong> {{sectionscount}}</span>
+            </li>
+        </ul>
+    </div>
+</div>
+    {{#teachers.0}}
+        <div class="card teachers-card shadow-sm mb-4">
+          <div class="card-body">
+            <h2 class="htitle mb-4 d-flex align-items-center">
+              <i class="fa fa-chalkboard-teacher me-2 text-primary"></i>
+              {{#str}}taughtby, local_customenrol{{/str}}
+            </h2>
+
+            <ul class="list-unstyled teacher-list">
+              {{#teachers}}
+              <li class="d-flex align-items-start mb-4 teacher-item">
+                <div class="teacher-avatar me-3">
+                  {{{teacheruserpicture}}}
+                </div>
+                <div>
+                  <a href="{{{teacherprofileurl}}}" class="fw-bold teacher-name">
+                    <i class="fa fa-user me-1"></i>{{teacherfullname}}
+                  </a>
+                  <div class="small text-muted">{{{teacherdescription}}}</div>
+                  <div class="small">
+                    <i class="fa fa-book me-1"></i>{{teachercoursecount}} Courses
+                  </div>
+                </div>
+              </li>
+              {{/teachers}}
+            </ul>
+          </div>
+        </div>
+      {{/teachers.0}}
+</aside>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
