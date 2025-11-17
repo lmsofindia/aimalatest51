@@ -1,0 +1,32 @@
+.customfooter {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 1px solid #ccc;
+    justify-content: space-around;
+    align-items: center;
+    padding: 15px 0;
+    z-index: 9999;
+}
+
+.footer-item {
+    text-align: center;
+    font-size: 12px;
+    color: #000;
+    text-decoration: none;
+}
+
+.footer-item i {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 2px;
+}
+
+@media (max-width: 768px) {
+    .customfooter {
+        display: flex;
+    }
+}
