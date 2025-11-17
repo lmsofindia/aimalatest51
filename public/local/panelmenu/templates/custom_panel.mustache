@@ -1,0 +1,350 @@
+<div id="custom-panel-sidebar" class="custom-sidebar" style="background-color: {{bgcolor}}; color: {{textcolor}};">
+  <div class="sidebar-content d-flex flex-column" style="height: 100%;">
+
+    <!-- Header row: Close button -->
+    <div class="d-flex justify-content-start p-2">
+    <a href="#" class="backbtn d-none" >← Back</a>
+      <a href="#" class="closebtn fs-3" style="color: {{textcolor}}; text-decoration: none !important;">&times;</a>
+    </div>
+   <!--<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #000; border-radius: 8px 8px 0 0; color: #fff;">
+    <a href="#" class="backbtn" style="text-decoration: none; font-size: 1rem; color: #fff;">← Edit Course</a>
+    <a href="#" class="closebtn" style="text-decoration: none; font-size: 1.5rem; color: #fff;">&times;</a>
+  </div>-->
+
+
+
+    <!-- Body: Two column layout -->
+    <div class="menu-layout d-flex flex-grow-1">
+      
+      <!-- LEFT COLUMN -->
+      <div class="menu-column p-3  border-end w-30" >
+        <ul class="menu list-unstyled mb-0">
+        
+         
+          {{#has_users_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-users" >
+                <span>{{#str}}manageusers, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_users_links}}
+
+          {{#has_course_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-course">
+                <span>{{#str}}managecourse, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_course_links}}
+
+          {{#has_branding_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-branding">
+                <span>{{#str}}managebranding, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_branding_links}}
+
+          {{#has_server_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-server">
+                <span>{{#str}}manageserver, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_server_links}}
+
+          {{#has_reports_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-reports">
+                <span>{{#str}}managereports, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_reports_links}}
+
+          {{#has_coursesetting_links}}
+            <li>
+              <a href="#"
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+                data-target="submenu-course-setting">
+                <span>{{#str}}coursesetting, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_coursesetting_links}}
+
+        </ul>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="content-column w-70" style=" background-color: {{bgcolor}}; color: {{textcolor}};">
+        {{#has_users_links}}
+          <div id="submenu-users" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}manageusers, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}manageusers_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid of cards -->
+            <div class="submenu-grid">
+              {{#users_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/users_links}}
+            </div>
+
+          </div>
+        {{/has_users_links}}
+
+        {{#has_course_links}}
+          <div id="submenu-course" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}managecourse, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}managecourse_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="submenu-grid">
+              {{#course_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/course_links}}
+            </div>
+
+          </div>
+        {{/has_course_links}}
+
+
+        {{#has_branding_links}}
+          <div id="submenu-branding" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}managebranding, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}managebranding_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="submenu-grid">
+              {{#branding_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/branding_links}}
+            </div>
+
+          </div>
+        {{/has_branding_links}}
+
+
+        {{#has_server_links}}
+          <div id="submenu-server" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}manageserver, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}manageserver_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="submenu-grid">
+              {{#server_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/server_links}}
+            </div>
+
+          </div>
+        {{/has_server_links}}
+
+
+        {{#has_reports_links}}
+          <div id="submenu-reports" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}managereports, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}managereports_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="submenu-grid">
+              {{#reports_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/reports_links}}
+            </div>
+
+          </div>
+        {{/has_reports_links}}
+
+
+        {{#has_coursesetting_links}}
+          <div id="submenu-course-setting" class="submenu-content">
+
+            <!-- Title & Subtitle -->
+            <div class="submenu-header  mb-5 ms-2">
+              <h3 class="submenu-heading" style="color: {{headingcolor}};">
+                {{#str}}coursesetting, local_panelmenu{{/str}}
+              </h3>
+              <p class="submenu-subtitle " style="color: {{textcolor}};">
+                {{#str}}coursesetting_desc, local_panelmenu{{/str}}
+              </p>
+            </div>
+
+            <!-- Grid -->
+            <div class="submenu-grid">
+              {{#coursesetting_links}}
+                <div class="submenu-card">
+                  <a href="{{url}}" class="submenu-link">
+                    <div class="submenu-title">{{label}}</div>
+                    {{#description}}
+                      <div class="submenu-desc">{{description}}</div>
+                    {{/description}}
+                    <span class="submenu-arrow">→</span>
+                  </a>
+                </div>
+              {{/coursesetting_links}}
+            </div>
+
+          </div>
+        {{/has_coursesetting_links}}
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<style>
+  .submenu-link:hover {
+    background-color: {{textcolor}};
+    color: {{bgcolor}};
+  }
+  .submenu-link:hover .submenu-title,
+  .submenu-link:hover .submenu-desc,
+  .submenu-link:hover .submenu-arrow {
+    color: {{bgcolor}};
+  }
+  .menu-column .menu-item.active {
+      background-color: {{textcolor}};
+      color: {{bgcolor}};
+      font-weight: 600;
+    
+  }
+  .menu-column .menu-item {
+      color: {{textcolor}};
+    
+  }
+  .custom-sidebar .sidebar-content a{
+    color: {{textcolor}}
+  }
+   .custom-sidebar .sidebar-content a:active{
+    color: {{bgcolor}}
+  }
+ 
+</style>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const contents = document.querySelectorAll('.submenu-content');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // reset all
+            menuItems.forEach(i => i.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            // activate clicked
+            this.classList.add('active');
+            const target = this.getAttribute('data-target');
+            document.getElementById(target)?.classList.add('active');
+        });
+    });
+
+    // show first submenu by default
+    if (menuItems.length > 0) {
+        menuItems[0].classList.add('active');
+        const firstTarget = menuItems[0].getAttribute('data-target');
+        document.getElementById(firstTarget)?.classList.add('active');
+    }
+});
+</script>

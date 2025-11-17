@@ -1,0 +1,149 @@
+<div id="custom-panel-sidebar" class="custom-sidebar" style="background-color: {{bgcolor}}; color: {{textcolor}};">
+  <div class="sidebar-content d-flex flex-column" style="height: 100%;">
+
+    <!-- Header row: Close button -->
+    <div class="d-flex justify-content-end p-2">
+      <a href="#" class="closebtn fs-3" style="color: {{textcolor}}; text-decoration: none !important;">&times;</a>
+    </div>
+
+    <!-- Body: Two column layout -->
+    <div class="menu-layout d-flex flex-grow-1">
+      
+      <!-- LEFT COLUMN -->
+      <div class="menu-column p-3  border-end w-30" style="flex: 1;">
+        <ul class="menu list-unstyled mb-0">
+          {{#has_course_links}}
+            <li>
+              <a href="#" 
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center" 
+                data-target="submenu-course" 
+                style="color: {{textcolor}};">
+                
+                <span>{{#str}}editcourse, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_course_links}}
+          {{#has_common_links}}
+            <li>
+              <a href="#" 
+                class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center" 
+                data-target="submenu-common" 
+                style="color: {{textcolor}};">
+                
+                <span>{{#str}}learning, local_panelmenu{{/str}}</span>
+                <i class="fa-solid fa-chevron-right ms-2 d-none"></i>
+              </a>
+            </li>
+          {{/has_common_links}}
+
+
+          {{#has_student_teacher_links}}
+          <li class="menu-column">
+            <a href="#"
+              class="menu-item fw-bold d-block mb-2 d-flex justify-content-between align-items-center"
+              data-target="submenu-teacher"
+              style="color: {{textcolor}};">
+              <span>{{#str}}myaccount, local_panelmenu{{/str}}</span>
+              <i class="fa-solid fa-chevron-right d-none"></i>
+            </a>
+          </li>   
+          {{/has_student_teacher_links}}
+
+          
+          
+        </ul>
+      </div>
+
+      <!-- RIGHT COLUMN -->
+      <div class="content-column p-3  w-70" style="flex: 3; background-color: {{bgcolor}}; color: {{textcolor}};">
+        {{#has_course_links}}
+            <div id="submenu-course" class="submenu-content">
+                <div class="submenu-grid">
+                {{#course_links}}
+                    <div class="submenu-card">
+                    <a href="{{url}}" class="submenu-link">
+                        <div class="submenu-title">{{label}}</div>
+                        {{#description}}
+                        <div class="submenu-desc">{{description}}</div>
+                        {{/description}}
+                        <span class="submenu-arrow">→</span>
+                    </a>
+                    </div>
+                {{/course_links}}
+                </div>
+            </div>
+          {{/has_course_links}}
+
+        {{#has_student_teacher_links}}
+          <div id="submenu-teacher" class="submenu-content">
+              <div class="submenu-grid">
+                  {{#student_teacher_links}}
+                  <div class="submenu-card">
+                      <a href="{{url}}" class="submenu-link" style="color: {{textcolor}};">
+                          <div class="submenu-title">{{label}}</div>
+                          {{#description}}
+                          <div class="submenu-desc">{{description}}</div>
+                          {{/description}}
+                          <span class="submenu-arrow">→</span>
+                      </a>
+                  </div>
+                  {{/student_teacher_links}}
+              </div>
+            </div>
+        {{/has_student_teacher_links}}
+
+        {{#has_common_links}}
+          <div id="submenu-common" class="submenu-content">
+              <div class="submenu-grid">
+                  {{#common_links}}
+                  <div class="submenu-card">
+                      <a href="{{url}}" class="submenu-link" style="color: {{textcolor}};">
+                          <div class="submenu-title">{{label}}</div>
+                          {{#description}}
+                          <div class="submenu-desc">{{description}}</div>
+                          {{/description}}
+                          <span class="submenu-arrow">→</span>
+                      </a>
+                  </div>
+                  {{/common_links}}
+              </div>
+          </div>
+        {{/has_common_links}}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const menuItems = document.querySelectorAll('.menu-item');
+    const contents = document.querySelectorAll('.submenu-content');
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // reset all
+            menuItems.forEach(i => i.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            // activate clicked
+            this.classList.add('active');
+            const target = this.getAttribute('data-target');
+            document.getElementById(target)?.classList.add('active');
+        });
+    });
+
+    // show first submenu by default
+    if (menuItems.length > 0) {
+        menuItems[0].classList.add('active');
+        const firstTarget = menuItems[0].getAttribute('data-target');
+        document.getElementById(firstTarget)?.classList.add('active');
+    }
+});
+</script>

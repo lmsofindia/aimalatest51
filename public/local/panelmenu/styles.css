@@ -1,0 +1,417 @@
+/* Mihir panel menu */
+.custom-sidebar {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    background-color: #222;
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    color: white;
+    
+}
+/* .custom-sidebar.open {
+  width: 100%;
+  margin-top: 76px;
+  max-height: 70%;
+  padding-left: 250px;
+} */
+.custom-sidebar .closebtn {
+    position: absolute;
+    top: px;
+    right: 20px;
+    font-size: 20px;
+    border-radius: 10px;
+    margin-left: 10px;
+}
+.custom-sidebar .closebtn a:hover {
+    text-decoration: none !important;
+
+}
+.custom-sidebar .sidebar-content a {
+    padding: 15px 13px;
+    font-size: 15px;
+    display: block;
+    /* color: #ddd; */
+    text-decoration: none;
+}
+
+
+/** Mobile view **/
+
+@media (max-width: 768px) {
+    .custom-sidebar.open {
+        width: 100vw; /* Full width for mobile */
+    }
+
+    .custom-sidebar .sidebar-content {
+        padding: 0px;
+        font-size: 1em;
+    }
+    .custom-sidebar .sidebar-content a {
+        padding: 14px 13px;
+    }
+    .menu-column{
+      flex: 1.8;
+    }
+}
+
+.navbar-nav .custom-panel-link {
+    order: -999; /* Push to the beginning */
+}
+
+
+
+.custom-sidebar.active {
+    left: 0;
+}
+
+.sidebar-content {
+    padding: 0px;
+    width: 80%;
+}
+.sidebar-content h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+.sidebar-content ul {
+    list-style: none;
+    padding: 0;
+}
+.sidebar-content li {
+    margin: 0.25rem 0;
+}
+.titlefs {
+    font-size: 15px;
+}
+
+
+
+/* //suman style */
+
+.custom-sidebar {
+    display: flex;
+    height: 100%;
+    /* background: #fff; */
+    border-right: 1px solid #ddd;
+    font-family: Arial, sans-serif;
+}
+
+.menu-column {
+    width: 300px;
+    flex: 1;
+    border-right: 1px solid #ddd;
+}
+
+
+
+.menu-column ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+
+.menu-column li {
+    margin: 8px 0;
+}
+
+
+.menu-column .menu-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    /* color: #111; */
+    border-radius: 6px;
+    margin: 4px 8px;
+}
+/* .menu-item {
+    display: block;
+    padding: 8px 12px;
+    border-radius: 4px;
+} */
+
+
+/* Show + rotate arrow only when active */
+
+/* .menu-item.active {
+    background: #232f3e;
+    color: #fff !important;
+} */
+
+
+.content-column {
+    flex: 3;
+    /* padding: 24px; */
+    /* background: #fff; */
+    overflow-y: auto;
+    margin-left: 50px;
+    margin-top: 25px;
+}
+/* .content-column {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #fff;
+    color: #000;
+} */
+.submenu-content {
+    display: none;
+}
+
+.submenu-content.active {
+    display: block;
+}
+.panel-content {
+    display: none;
+}
+
+.panel-content.active {
+    display: block;
+}
+
+.panel-content h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.panel-content p {
+    color: #555;
+    margin-bottom: 20px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.grid div {
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 16px;
+    border: 1px solid #eee;
+    transition: background 0.2s;
+}
+
+.grid div:hover {
+    background: #f1f1f1;
+}
+
+
+.aws-sidebar {
+  display: flex;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  font-family: Arial, sans-serif;
+}
+
+.aws-sidebar-container {
+  display: flex;
+  width: 100%;
+}
+
+/* Left Column */
+.aws-sidebar-left {
+  width: 250px;
+  border-right: 1px solid #e5e5e5;
+  background: #fafafa;
+}
+
+.aws-sidebar-left ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.aws-sidebar-left .aws-menu-item {
+  padding: 12px 16px;
+  cursor: pointer;
+}
+
+.aws-sidebar-left .aws-menu-item.active {
+  background: #111827;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 6px;
+}
+
+.aws-sidebar-left .aws-menu-item .arrow {
+  float: right;
+}
+
+/* Right Column */
+.aws-sidebar-right {
+  flex: 1;
+  padding: 20px;
+}
+
+.aws-sidebar-right .aws-panel {
+  display: none;
+}
+
+.aws-sidebar-right .aws-panel.active {
+  display: block;
+}
+
+.aws-sidebar-right h2 {
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.aws-sidebar-right .hub-link {
+  color: #0a0aeb;
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+/* Services Grid */
+.aws-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.aws-service h3 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+/* Cards */
+.aws-cards {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.aws-card {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 6px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.menu-layout {
+    display: flex;
+    height: 100%;
+}
+
+
+
+
+/* //right column submenu styles */
+
+.submenu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+.submenu-card {
+  background: transparent;
+  border-radius: 8px;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.submenu-link {
+  display: block;
+  padding: 16px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+
+.submenu-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.submenu-desc {
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.4;
+  padding-right: 10px;
+}
+
+.submenu-arrow {
+  position: absolute;
+  right: 8px;
+  top: 53px;
+  transform: translateY(-50%);
+  opacity: 0;
+  transition: opacity 0.2s;
+  font-size: 18px;
+}
+
+.submenu-link:hover {
+  background: #f3f4f6;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.submenu-link:hover .submenu-arrow {
+  opacity: 1;
+}
+
+.backbtn{
+  text-decoration:none;
+  font-size:1.2rem;
+}
+
+@media (max-width: 768px) {
+  .custom-sidebar.open {
+    padding-left: 100px; /* Full width for mobile */
+  }
+
+  .sidebar-content {
+    width: 100%;
+  }
+  .submenu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 10px;
+  }
+  .menu-column{
+    flex: 2;
+   }
+}
+
+@media (max-width: 450px) {
+
+  custom-sidebar .closebtn {
+
+    right: 0px;
+    margin-top: -18px;
+  }
+  .backbtn{
+   
+    font-size:1rem;
+  }
+  .custom-sidebar .closebtn {
+    
+    top: 3px;
+    right: 2px;
+   
+  }
+  .content-column {
+   
+    margin-left: 50px;
+    margin-top: 25px;
+  }
+  .content-column {
+
+  margin-left: 17px;
+  margin-top: 13px;
+  }
+
+   
+}
+

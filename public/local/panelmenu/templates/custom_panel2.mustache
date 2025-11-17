@@ -1,0 +1,56 @@
+<div id="custom-panel-sidebar" class="custom-sidebar" style="background-color: {{bgcolor}}; color: {{textcolor}};">
+    <div class="sidebar-content">
+        <a href="#" class="closebtn" style="color: {{textcolor}};text-decoration: none !important;">&times;</a>
+        {{#isadmin}}
+        <h2 style="color:{{headingcolor}}" class="titlefs">{{#str}}manage, local_panelmenu{{/str}}</h2>
+        <p>{{#str}}manageinfo, local_panelmenu{{/str}}</p>
+        <ul>
+            {{#admin_links}}
+            <li><a href="{{url}}" style="color: {{textcolor}};">{{label}}</a></li>
+            {{/admin_links}}
+        </ul>
+        {{/isadmin}}
+
+        {{#lastcourse}}
+        <div class="last-course">
+            <h2 class="titlefs" style="color:{{headingcolor}}">{{#str}}lastaccessedcourse, local_panelmenu{{/str}}</h2>
+            <p><a href="{{url}}" style="color: {{textcolor}};">{{name}}</a></p>
+        </div>
+        {{/lastcourse}}
+
+        {{#has_course_links}}
+        <h2 class="titlefs" style="color:{{headingcolor}}">{{#str}}editcourse, local_panelmenu{{/str}}</h2>
+        <ul>
+            {{#course_links}}
+            <li><a href="{{url}}" style="color: {{textcolor}};">{{label}}</a></li>
+            {{/course_links}}
+        </ul>
+        {{/has_course_links}}
+
+        {{#has_student_teacher_links}}
+        <h2 class="titlefs" style="color:{{headingcolor}}">{{#str}}myaccount, local_panelmenu{{/str}}</h2>
+        <ul>
+            {{#student_teacher_links}}
+            <li><a href="{{url}}" style="color: {{textcolor}};">{{label}}</a></li>
+            {{/student_teacher_links}}
+        </ul>
+        {{/has_student_teacher_links}}
+
+        {{#has_common_links}}
+        <h2 class="titlefs" style="color:{{headingcolor}}">{{#str}}learning, local_panelmenu{{/str}}</h2>
+        <ul>
+            {{#common_links}}
+            <li><a href="{{url}}" style="color: {{textcolor}};">{{label}}</a></li>
+            {{/common_links}}
+        </ul>
+        {{/has_common_links}}
+
+    </div>
+</div>
+
+<style>
+.custom-sidebar .sidebar-content a:hover {
+    color: {{hovercolor}} !important;
+    text-decoration: underline !important;
+}
+</style>
