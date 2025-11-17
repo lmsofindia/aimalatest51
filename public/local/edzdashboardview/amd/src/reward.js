@@ -1,0 +1,379 @@
+define(['jquery', 'core/ajax', 'core/chartjs'], function($, Ajax, Chart) {
+    let certificateChart, badgeChart, rewardChart, data = {};
+
+    // ---------- CERTIFICATE CHART ----------
+
+    function renderCertificateChart(range, data) {
+        if (certificateChart) certificateChart.destroy();
+        let labels = [], chartData = [];
+
+        if (range === "1day") {
+            let now = new Date(), h = now.getHours();
+            for (let i = 0; i <= h; i++) {
+                let hour = (i % 12 === 0) ? 12 : i % 12;
+                let ampm = i < 12 ? "AM" : "PM";
+                labels.push(hour + " " + ampm);
+                chartData.push(data?.certificates?.['1day']?.[i] ?? 0);
+            }
+        } else if (range === "7day") {
+            let today = new Date();
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                labels.push(d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }));
+                chartData.push(data?.certificates?.['7day']?.[i] ?? 0);
+            }
+        } else if (range === "30day") {
+            for (let i = 1; i <= 4; i++) {
+                labels.push("Week " + i);
+                chartData.push(data?.certificates?.['30day']?.[i - 1] ?? 0);
+            }
+        } else if (range === "1year") {
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            for (let i = 0; i < 12; i++) {
+                labels.push(months[i]);
+                chartData.push(data?.certificates?.['1year']?.[i] ?? 0);
+            }
+        }
+
+        const ctx = $('#certificateChart')[0].getContext("2d");
+        const gradient = ctx.createLinearGradient(0,0,0,400);
+        gradient.addColorStop(0,"rgba(255,99,132,0.9)");
+        gradient.addColorStop(1,"rgba(255,99,132,0.2)");
+
+        certificateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Certificates (' + range + ')',
+                    data: chartData,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: "rgba(255,99,132,1)",
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.raw} certificates`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(200,200,200,0.2)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: "Certificates Issued", color: "#000" }
+                    },
+                    x: {
+                        grid: { color: "rgba(200,200,200,0.1)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: range, color: "#000" }
+                    }
+                }
+            }
+        });
+    }
+
+   // ---------- BADGE CHART ----------
+    function renderBadgeChart(range, data) {
+        if (badgeChart) badgeChart.destroy();
+        let labels = [], chartData = [];
+
+        if (range === "1day") {
+            let now = new Date(), h = now.getHours();
+            for (let i = 0; i <= h; i++) {
+                let hour = (i % 12 === 0) ? 12 : i % 12;
+                let ampm = i < 12 ? "AM" : "PM";
+                labels.push(hour + " " + ampm);
+                chartData.push(data?.badges?.['1day']?.[i] ?? 0);
+            }
+        } else if (range === "7day") {
+            let today = new Date();
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                labels.push(d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }));
+                chartData.push(data?.badges?.['7day']?.[i] ?? 0);
+            }
+        } else if (range === "30day") {
+            for (let i = 1; i <= 4; i++) {
+                labels.push("Week " + i);
+                chartData.push(data?.badges?.['30day']?.[i - 1] ?? 0);
+            }
+        } else if (range === "1year") {
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            for (let i = 0; i < 12; i++) {
+                labels.push(months[i]);
+                chartData.push(data?.badges?.['1year']?.[i] ?? 0);
+            }
+        }
+
+        const ctx = $('#badgeChart')[0].getContext("2d");
+        const gradient = ctx.createLinearGradient(0,0,0,400);
+        gradient.addColorStop(0,"rgba(255,206,86,0.9)");
+        gradient.addColorStop(1,"rgba(255,206,86,0.2)");
+
+        badgeChart = new Chart(ctx, {
+            type: 'line', // same as certificates
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Badges (' + range + ')',
+                    data: chartData,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: "rgba(255,206,86,1)",
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.raw} badges`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(200,200,200,0.2)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: "Badges Earned", color: "#000" }
+                    },
+                    x: {
+                        grid: { color: "rgba(200,200,200,0.1)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: range, color: "#000" }
+                    }
+                }
+            }
+        });
+    }
+
+
+    // ---------- REWARD POINTS CHART ----------
+
+    function renderRewardChart(range, data) {
+        if (rewardChart) rewardChart.destroy();
+        let labels = [], chartData = [];
+
+        // ✅ Update reward cards
+        let earned = data?.rewardpoints?.[range]?.earned ?? 0;
+        let topuser = data?.rewardpoints?.[range]?.topuser?.name ?? "N/A";
+        let toppoints = data?.rewardpoints?.[range]?.topuser?.points ?? 0;
+
+        $("#card-rewardpoints").text(earned);
+        $("#card-rewardpoints-detail").text(
+            "Top: " + topuser + " (" + toppoints + " pts)"
+        );
+
+        // ✅ Build labels & data for chart
+        if (range === "1day") {
+            let now = new Date(), h = now.getHours();
+            for (let i = 0; i <= h; i++) {
+                let hour = (i % 12 === 0) ? 12 : i % 12;
+                let ampm = i < 12 ? "AM" : "PM";
+                labels.push(hour + " " + ampm);
+                chartData.push(data?.rewardpoints?.['1day']?.[i] ?? 0);
+            }
+        } else if (range === "7day") {
+            let today = new Date();
+            for (let i = 0; i < 7; i++) {
+                let d = new Date(today);
+                d.setDate(today.getDate() - (6 - i));
+                labels.push(d.toLocaleDateString("en-GB", { day: "2-digit", month: "short" }));
+                chartData.push(data?.rewardpoints?.['7day']?.[i] ?? 0);
+            }
+        } else if (range === "30day") {
+            for (let i = 1; i <= 4; i++) {
+                labels.push("Week " + i);
+                chartData.push(data?.rewardpoints?.['30day']?.[i - 1] ?? 0);
+            }
+        } else if (range === "1year") {
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            for (let i = 0; i < 12; i++) {
+                labels.push(months[i]);
+                chartData.push(data?.rewardpoints?.['1year']?.[i] ?? 0);
+            }
+        }
+
+        // ✅ Chart.js setup
+        const ctx = $('#rewardChart')[0].getContext("2d");
+        const gradient = ctx.createLinearGradient(0,0,0,400);
+        gradient.addColorStop(0,"rgba(255,152,0,0.9)");
+        gradient.addColorStop(1,"rgba(255,152,0,0.2)");
+
+        rewardChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Reward Points (' + range + ')',
+                    data: chartData,
+                    fill: true,
+                    backgroundColor: gradient,
+                    borderColor: "rgba(255,152,0,1)",
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: true },
+                    tooltip: {
+                        callbacks: {
+                            label: function(ctx) {
+                                return `${ctx.raw} points`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: "rgba(200,200,200,0.2)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: "Reward Points", color: "#000" }
+                    },
+                    x: {
+                        grid: { color: "rgba(200,200,200,0.1)" },
+                        ticks: { color: "#444", font: { size: 12 } },
+                        title: { display: true, text: range, color: "#000" }
+                    }
+                }
+            }
+        });
+    }
+
+
+
+    // ---------- LOAD DATA ----------
+    function loadData(range) {
+        Ajax.call([{
+            methodname: 'local_edzdashboardview_get_reward_dashboard_data',
+            args: { range: range }
+        }])[0].done(function(resp) {
+            data = resp;
+
+            console.log("Reward Tab Response:", resp);
+
+            // ✅ Top user for card
+            let topUser = resp.cards.topusers?.[range]?.[0] ?? null;
+
+            // ✅ Update summary cards
+            $('#card-rewardpointss').html(resp.cards.rewardpoints?.[range] ?? 0);
+            $('#card-toprewards').html(topUser?.fullname ?? "N/A");
+            $('#card-toprewards-detail').html("Points: " + (topUser?.points ?? 0));
+            $('#card-certificatess').html(resp.cards.certificatesissued?.[range] ?? 0);
+            $('#card-badgess').html(resp.cards.badgesissued?.[range] ?? 0);
+
+            // ✅ Build Top 10 User Leaderboard
+            let topUsers = resp.cards.topusers?.[range] ?? [];
+            let html = `
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered leaderboard-table align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Rank</th>
+                                <th>Level</th>
+                                <th>Participant</th>
+                                <th>Total</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            topUsers.slice(0, 10).forEach((user, i) => {
+                html += `
+                    <tr class="${i === 0 ? 'table-warning' : ''}">
+                        <td><strong>${i + 1}</strong></td>
+                        
+                        <!-- Star badge for Level -->
+                        <td>
+                            <div class="star-badge d-inline-flex justify-content-center align-items-center" 
+                                style="background:${user.color ?? '#ddd'}; width:40px; height:40px; border-radius:50%;">
+                                <span>${user.level ?? '-'}</span>
+                            </div>
+                        </td>
+                        
+                        <!-- Participant -->
+                        <td class="d-flex align-items-center">
+                            <img src="https://www.gravatar.com/avatar/${user.userid}?s=60&d=identicon" 
+                                class="rounded-circle me-2 flex-shrink-0 mr-2" width="70" height="70" />
+                            <span class="text-truncate" style="max-width:120px;">${user.fullname}</span>
+                        </td>
+                        
+                        <!-- Total XP -->
+                        <td><strong>${(user.points ?? 0).toLocaleString()}<sup>xp</sup></strong></td>
+                        
+                        <!-- Progress -->
+                        <td>
+                            <div class="progress" style="height:10px;">
+                                <div class="progress-bar" 
+                                    role="progressbar" 
+                                    style="width: ${user.progress ?? 0}%;" 
+                                    aria-valuenow="${user.progress ?? 0}" aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <small class="text-muted">next level in ${user.nextxp ?? 0}xp</small>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += "</tbody></table></div>";
+            $("#toprewarduserlist").html(html);
+
+            // ✅ Pass range & data to chart functions
+            renderCertificateChart(range, data);
+            renderBadgeChart(range, data);
+            renderRewardChart(range, data);
+
+        }).fail(function(err) {
+            console.error("Reward tab Ajax failed:", err);
+        });
+    }
+
+
+    return {
+        init: function() {
+            console.log("✅ reward.js init called");
+            // Default load with 1day
+            loadData('1day');
+
+            // Bind change event for reward selection
+            $('input[name="range-rewards"]').on('change', function() {
+                let range = $(this).val();
+                loadData(range);
+            });
+        }
+    };
+
+});

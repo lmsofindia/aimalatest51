@@ -1,0 +1,133 @@
+<!-- Users Section Tab -->
+<div class="users-tab">
+
+  <!-- Range Selector -->
+ <div class="mb-3 text-end">
+  <div class="btn-group" role="group" aria-label="Range selector">
+    <input type="radio" class="btn-check" name="range-users" id="range-users-1day" value="1day" autocomplete="off" checked>
+    <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-users-1day">
+      {{#str}} today, local_edzdashboardview {{/str}}
+    </label>
+
+    <input type="radio" class="btn-check" name="range-users" id="range-users-7day" value="7day" autocomplete="off">
+    <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-users-7day">
+      {{#str}} sevendays, local_edzdashboardview {{/str}}
+    </label>
+
+    <input type="radio" class="btn-check" name="range-users" id="range-users-30day" value="30day" autocomplete="off">
+    <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-users-30day">
+      {{#str}} thirtydays, local_edzdashboardview {{/str}}
+    </label>
+
+    <input type="radio" class="btn-check" name="range-users" id="range-users-1year" value="1year" autocomplete="off">
+    <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-users-1year">
+      {{#str}} oneyear, local_edzdashboardview {{/str}}
+    </label>
+  </div>
+</div>
+
+  <!-- Info Cards -->
+  <div class="row equal-card-row">
+
+    <!-- Active users -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-activeuser"></h3>
+              <p class="card-text mb-0">{{#str}} activeusers, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-primary">
+              <i class="fa fa-users"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enrolments -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-enroluser"></h3>
+              <p class="card-text mb-0">{{#str}} enrolments, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-success">
+              <i class="fa fa-book-open"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Registered users -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-registereduser">{{cards.registered.1day}}</h3>
+              <p class="card-text mb-0">{{#str}} registeredusers, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-warning">
+              <i class="fa fa-user-plus"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Web & Mobile -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-webmobileuser">0</h3>
+              <p class="card-text mb-0">{{#str}} webmobileusers, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-danger">
+              <i class="fa fa-globe"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Charts -->
+  <div class="container-fluid dashboard-charts">
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} activeuserstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="userChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} enrolmentstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="enrolChart"></canvas>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} registeredstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="registeredChart"></canvas>
+        </div>
+      </div>
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} webmobilestatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="webMobileChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

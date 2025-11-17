@@ -1,0 +1,276 @@
+/* Remove Bootstrap default borders */
+.simple-tabs {
+  border-bottom: 1px solid #121213;
+}
+
+.simple-tabs .nav-link {
+  border: none;
+  background: transparent;
+  color: #555;
+  font-weight: 500;
+  padding: 10px 20px;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.simple-tabs .nav-link:hover {
+  color: #000 !important;
+   background-color: #e6e8eb;   /* light background */
+  border-color: #d7d9db #c2c4c5 #b9b6b6; /* keep border consistent */
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-tabs .nav-link.active {
+  color: #495057 !important;
+  background-color: transparent !important;
+  border-bottom: 2px solid #02030e !important;
+}
+
+
+.btn-group-toggle .btn {
+  color: #333;              /* Dark gray text */
+  background-color: #f8f9fa; /* Light gray background */
+  border-color: #ddd;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-group-toggle .btn:hover {
+  background-color: #e9ecef; /* Slightly darker on hover */
+  color: #000 !important;
+  font-weight: 600;
+}
+
+.btn-group-toggle .btn.active {
+  background-color: #343a40; /* Light black active */
+  color: #fff;
+  border-color: #343a40;
+}
+
+
+
+
+.info-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.info-card .card-icon {
+  position: absolute;
+  right: 15px;
+  bottom: 10px;
+  font-size: 3rem;
+  color: rgba(255, 255, 255, 0.25); /* light transparent */
+  pointer-events: none;
+}
+
+
+/* Base card */
+.info-card {
+  border: none;
+  border-radius: 15px;
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Hover effect */
+.info-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Card text */
+.info-card .card-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #222;
+}
+
+.info-card .card-text {
+  font-size: 0.95rem;
+  color: #666;
+}
+
+/* Icon design */
+.icon-box {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 22px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Colors */
+.icon-box.bg-primary { background: linear-gradient(135deg, #007bff, #0056b3); }
+.icon-box.bg-success { background: linear-gradient(135deg, #28a745, #1e7e34); }
+.icon-box.bg-warning { background: linear-gradient(135deg, #ffc107, #e0a800); }
+.icon-box.bg-danger  { background: linear-gradient(135deg, #dc3545, #a71d2a); }
+
+
+
+
+
+.dashboard-charts {
+  padding: 20px;
+  background: #f5f7fa;
+}
+
+/* Unique glassmorphism style */
+.chart-card {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Hover effect */
+.chart-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.12);
+}
+
+/* Headings inside cards */
+.chart-card h5 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+  border-left: 4px solid #4e73df;
+  padding-left: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* Canvas sizing */
+.chart-card canvas {
+  width: 100% !important;
+  height: 350px !important;
+}
+
+/* Responsive tweak */
+@media (max-width: 768px) {
+  .chart-card canvas {
+    height: 280px !important;
+  }
+}
+
+
+
+/* #enrolChart {
+    width: 100% !important;
+    height: 400px !important;
+} */
+
+.chart-card {
+    background: #fff;
+    border: 2px solid #A0DFA3;
+    border-radius: 15px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+    padding: 20px;
+    margin: 15px 0;
+    transition: all 0.3s ease;
+}
+
+.chart-card:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    transform: translateY(-5px);
+}
+
+
+
+.btn-group-toggle .btn {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #444;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.btn-group.btn-group-toggle {
+  gap: 5px;
+}
+
+.btn-group-toggle .btn:hover {
+  background: #f9f9f9;
+}
+
+.btn-group-toggle .btn.active {
+  background: #e9f3ff;
+  border-color: #80bdff;
+  color: #007bff;
+  font-weight: 500;
+}
+
+
+.star-badge {
+  width: 60px;
+  height: 60px;
+  clip-path: polygon(
+    50% 0%, 61% 35%, 98% 35%, 
+    68% 57%, 79% 91%, 50% 70%, 
+    21% 91%, 32% 57%, 2% 35%, 
+    39% 35%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  margin: auto;
+}
+
+
+/* Smooth hover effect for info-cards */
+.hover-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+    cursor: pointer;
+    background-color:#f6e6be ;
+    border-color: #9112BC 2px solid;
+    color: black;
+}
+
+.chart-card:hover {
+  box-shadow: 0 10px 25px rgba(0,0,0,.12);
+  transform: translateY(-5px);
+  background-color: #e1e0e5;
+}
+
+
+
+/* Equal height cards inside .equal-card-row only */
+.equal-card-row > [class*="col-"] {
+  display: flex;
+}
+
+.equal-card-row > [class*="col-"] .card {
+  flex: 1 1 auto;
+}
+
+.btn-group label:hover {
+  background-color: #e41111;  /* light grey background */
+  border-color: #6c757d;      /* keep border visible */
+  color: #000;                /* dark text on hover */
+  cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+

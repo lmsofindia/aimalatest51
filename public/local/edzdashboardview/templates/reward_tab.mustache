@@ -1,0 +1,145 @@
+<!-- Reward Section Tab -->
+<div class="reward-tab">
+
+  <!-- Chart Section -->
+  <div class="mb-3 text-end">
+    <div class="btn-group" role="group" aria-label="Reward range selector">
+
+      <input type="radio" class="btn-check" name="range-rewards" id="range-rewards-1day" value="1day" autocomplete="off" checked>
+      <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-rewards-1day">
+        {{#str}} today, local_edzdashboardview {{/str}}
+      </label>
+
+      <input type="radio" class="btn-check" name="range-rewards" id="range-rewards-7day" value="7day" autocomplete="off">
+      <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2 " for="range-rewards-7day">
+        {{#str}} sevendays, local_edzdashboardview {{/str}}
+      </label>
+
+      <input type="radio" class="btn-check" name="range-rewards" id="range-rewards-30day" value="30day" autocomplete="off">
+      <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-rewards-30day">
+        {{#str}} thirtydays, local_edzdashboardview {{/str}}
+      </label>
+
+      <input type="radio" class="btn-check" name="range-rewards" id="range-rewards-1year" value="1year" autocomplete="off">
+      <label class="btn btn-sm btn-outline-secondary rounded-pill px-3 me-2" for="range-rewards-1year">
+        {{#str}} oneyear, local_edzdashboardview {{/str}}
+      </label>
+
+    </div>
+  </div>
+
+  <!-- Info Cards Section -->
+  <div class="row equal-card-row">
+
+    <!-- Reward Info -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-rewardpointss">{{cards.rewardpoints.1day}}</h3>
+              <p class="card-text mb-0">{{#str}} rewardpoints, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-primary">
+              <i class="fa-solid fa-trophy"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Reward Info -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class=" mb-1" id="card-toprewards"></h5>
+              <p class="card-text mb-0">{{#str}} toprewardpointsinfo, local_edzdashboardview {{/str}}</p>
+              <small id="card-toprewards-detail">Reward Earn: {{cards.rewardpoints.1day}}</small>
+            </div>
+            <div class="icon-box bg-success">
+              <i class="fa-solid fa-circle-user"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificates Issued -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-certificatess">{{cards.certificates.1day}}</h3>
+              <p class="card-text mb-0">{{#str}} certificatesissued, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-warning">
+              <i class="fa fa-certificate"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges Issued -->
+    <div class="col-md-3 mb-2">
+      <div class="card info-card shadow-sm">
+        <div class="card-body hover-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title mb-1" id="card-badgess">{{cards.badges.1day}}</h3>
+              <p class="card-text mb-0">{{#str}} badgesissued, local_edzdashboardview {{/str}}</p>
+            </div>
+            <div class="icon-box bg-danger">
+              <i class="fa fa-award"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Charts Section -->
+  <div class="container-fluid dashboard-charts">
+    <div class="row">
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} rewardstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="rewardChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Certificate Issued -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} certificateissuedstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="certificateChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Badges Issued -->
+      <div class="col-md-6 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} badgeissuedstatistics, local_edzdashboardview {{/str}}</h5>
+          <canvas id="badgeChart"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- Top 10 Users -->
+      <div class="col-md-12 mb-4">
+        <div class="chart-card">
+          <h5>{{#str}} top10userlist, local_edzdashboardview {{/str}}</h5>
+          <div id="toprewarduserlist"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
