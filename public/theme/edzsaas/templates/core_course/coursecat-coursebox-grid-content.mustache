@@ -1,0 +1,35 @@
+<div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm">
+        {{#overviewfiles}}
+            {{#isimage}}
+            <a href="{{courseurl}}">
+                <img src="{{fileurl}}" class="card-img-top" alt="{{fullname}}">
+            </a>
+            {{/isimage}}
+        {{/overviewfiles}}
+
+        {{^overviewfiles}}
+            <a href="{{courseurl}}">
+                <img src="{{{config.wwwroot}}}/theme/edzsaas/pix/edzsaas/defaultcourse.webp" class="card-img-top" alt="{{fullname}}">
+            </a>
+        {{/overviewfiles}}
+
+        <div class="card-body">
+            <h5 class="card-title">
+                <a href="{{courseurl}}" class="text-decoration-none">{{fullname}}</a>
+            </h5>
+            <p class="card-text">{{{summary}}}</p>
+        </div>
+        
+        <div class="card-footer bg-white border-top-0">
+            <span class="badge bg-primary me-2">
+                <i class="fa-regular fa-circle-user"></i> {{enrolledusercount}} {{#str}}students, theme_edzsaas{{/str}}
+            </span>
+            {{#coursecontacts}}
+                <div class="small text-muted mt-1">
+                    {{rolename}}: <a href="{{userurl}}">{{username}}</a>
+                </div>
+            {{/coursecontacts}}
+        </div>
+    </div>
+</div>

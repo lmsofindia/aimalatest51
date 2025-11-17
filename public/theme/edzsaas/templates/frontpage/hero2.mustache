@@ -1,0 +1,125 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{#hero2enabled}}
+<section class="hero2-section edz-hero text-white d-flex align-items-center justify-content-center text-center"
+    style="background-image: url('{{{hero2bg}}}'); background-color: {{herobgcolor}};">
+     <div class="hero-overlay position-absolute top-0 start-0 w-100 h-100" style="background-color: {{herobgoverlay}};"></div>
+    <div class="container position-relative z-2">
+        <div class="hero2-content">
+            <h1 class="hero-title fw-bold" style="color:{{herotitlecolor}}">{{{hero2title}}}</h1>
+            <p class="hero-subtitle" style="color:{{herodesccolor}}">{{{hero2desc}}}</p>
+            {{#hero2searchtoggle}}
+            <div class="hero2-search-form d-flex justify-content-center mt-4 position-relative">
+              <div class="container position-relative">
+                <div class="row">
+                  <div class="col-md-12">
+                    <div class="input-group">
+                      <input class="form-control form-control-lg hero2-search-input"
+                        type="search" placeholder="{{hero2searchplaceholder}}" autocomplete="off"
+                        aria-label="Search" id="hero2-search" name="q">
+                      <button class="btn  px-4 text-white" type="button" id="hero2-search-btn"
+                        style="background-color:{{herobtnbgcolor}} !important">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- SUGGESTIONS should be inside this .container -->
+                <ul id="hero2-suggestions" class="list-group position-absolute w-100" style="display: none;"></ul>
+              </div>
+            </div>
+
+            {{/hero2searchtoggle}}
+        </div>
+    </div>
+</section>
+{{/hero2enabled}}
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('hero2-search');
+    const suggestions = document.getElementById('hero2-suggestions');
+    const searchBtn = document.getElementById('hero2-search-btn');
+    if (!input || !suggestions || !searchBtn) return;
+    input.addEventListener('input', function () {
+        const query = input.value.trim();
+        if (query.length < 3) { 
+            suggestions.style.display = 'none';
+            return;
+        }
+        fetch(M.cfg.wwwroot + '/theme/edzsaas/ajax/search_courses.php?q=' + encodeURIComponent(query))
+            .then(response => response.json())
+            .then(data => {
+                suggestions.innerHTML = '';
+                // ===== Show keywords first =====
+                if (data.keywords && data.keywords.length > 0) {
+                    data.keywords.forEach(keyword => {
+                        const item = document.createElement('li');
+                        item.className = 'list-group-item list-group-item-action d-flex align-items-center viewmore';
+                        item.innerHTML = `
+                            <i class="fa fa-search me-2 text-muted"></i> 
+                            <span>${keyword}</span>
+                             <span style="margin-left:auto; color:#007bff; font-size: 12px;">View all</span>
+                        `;
+                        item.addEventListener('click', function () {
+                            window.location.href = M.cfg.wwwroot + '/course/search.php?search=' + encodeURIComponent(keyword);
+                        });
+                        suggestions.appendChild(item);
+                    });
+                }
+                // ===== Show courses below =====
+                if (data.courses && data.courses.length > 0) {
+                    data.courses.forEach(course => {
+                        const item = document.createElement('li');
+                        item.className = 'list-group-item list-group-item-action d-flex align-items-center';
+                        item.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <img src="${course.image || M.cfg.wwwroot + '/theme/edzsaas/pix/edzsaas/no_image.jpeg'}" 
+                                  class="me-2" style="width: 40px; height: 40px; border-radius: 4px;"
+                                  onerror="this.onerror=null;this.src='${M.cfg.wwwroot}/theme/edzsaas/pix/edzsaas/no_image.jpeg';">
+                                  <div>
+                                  <div>${course.fullname}</div>
+                                  <div class="text-muted mt-3" style="font-size: 12px;">Course</div>
+                                </div>
+                            </div>
+                        `;
+                        item.addEventListener('click', function () {
+                            window.location.href = course.url;
+                        });
+                        suggestions.appendChild(item);
+                    });
+                }
+                suggestions.style.display = 'block';
+            });
+    });
+    // Manual search button click
+    searchBtn.addEventListener('click', function () {
+        const query = input.value.trim();
+        if (query.length > 0) {
+            window.location.href = M.cfg.wwwroot + '/course/search.php?search=' + encodeURIComponent(query);
+        }
+    });
+    // Hide suggestions if clicked outside
+    document.addEventListener('click', function (e) {
+        if (!e.target.closest('#hero2-search') && !e.target.closest('#hero2-suggestions')) {
+            suggestions.style.display = 'none';
+        }
+    });
+});
+</script>

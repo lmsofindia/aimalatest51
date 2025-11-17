@@ -1,0 +1,84 @@
+{{#block24enabled}}
+<section id="block24" style="background-color: {{block24bgcolor}};">
+    <div class="container py-4">
+        {{#block24header}}
+        <div class="d-flex flex-column align-items-center mb-4 pb-3">
+            <div class="section-title-fp hytext text-center py-2 pt-2 mb-5">
+                <h4 class="caption-title">{{{block24header}}}</h4>
+            </div>
+            <div class="filters-inline d-flex flex-wrap justify-content-center">
+                <button class="btn btn-outline-primary filter-btn active mb-2 btnmargin filteact" data-filter="all">
+                    {{#str}} all, theme_edzsaas {{/str}}
+                </button>
+                {{#filters}}
+                <button class="btn btn-outline-primary filter-btn pt-2 pb-2 mb-2 btnmargin filteact" data-filter="cat{{id}}">
+                    {{name}}
+                </button>
+                {{/filters}}
+            </div>
+        </div>
+        {{/block24header}}
+
+        <div class="courses-wrapper">
+            <div class="courses-grid">
+                {{#courses}}
+                <div class="course-card cat{{categoryid}}">
+                    <!-- Image -->
+                    <div class="course-image" style="background-image: url({{image}});">
+                        {{#cost}}
+                        <div class="course-price">
+                            {{cost}} {{currency}}
+                        </div>
+                        {{/cost}}
+                    </div>
+
+                    <div class="course-content">
+                        <small class="course-category">
+                            <a href="{{categorylink}}" class="text-decoration-none text-dark">
+                                <i class="fa fa-chevron-circle-right"></i> {{categoryname}}
+                            </a>
+                        </small>
+
+                        <h6 class="course-title">
+                            <a href="{{url}}">
+                                {{#shortname}}{{shortname}}{{/shortname}}
+                                {{#fullname}}{{fullname}}{{/fullname}}
+                            </a>
+                        </h6>
+                    </div>
+
+                    <div class="course-footer">
+                        <small class="hytext">Updated {{update}}</small>
+                    </div>
+                </div>
+                {{/courses}}
+            </div>
+
+            <div class="pagination-symbols">
+                <button id="prev-page">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
+                <button id="next-page">
+                    <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Empty message -->
+        <div id="empty-message" class="text-center fw-bold mt-4" style="display: none;">
+            This category is empty
+        </div>
+        <div class="d-flex justify-content-center hy-pt-5 blockbgcolor-b mt-6">
+            <div class="hire-us-btn">
+                <a class="hybtn" href="{{block24buttonlink}}">{{block24button}}</a>
+            </div>
+        </div>
+    </div>
+
+    {{#js}}
+    require(['theme_edzsaas/block24'], function(block24) {
+        block24.init();
+    });
+    {{/js}}
+</section>
+{{/block24enabled}}

@@ -1,0 +1,94 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+
+{{#block21enabled}}
+<section id="block21" style="background-color: {{block21bgcolor}};">
+    <div class="container py-4">
+
+        <!-- Caption -->
+        <div class="row mb-4">
+
+            <div class="section-title-fp hytext">
+                <div class="section-title-fp  hytext text-center pt-2 pb-2">
+                    <h4 class="caption-title">{{{block21caption}}}</h4>
+                    <div class="caption-underline"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Counters -->
+        <div class="row mb-0 text-center counter-section">
+
+            <div class="col-md-3 counter">
+                <h2 class="value" data-target="{{block21_counter1}}">{{startcounter}}</h2>
+                <p>{{block21_desc1}}</p>
+            </div>
+            <div class="col-md-3 counter">
+                <h2 class="value" data-target="{{block21_counter2}}">{{startcounter}}</h2>
+                <p>{{block21_desc2}}</p>
+            </div>
+            <div class="col-md-3 counter">
+                <h2 class="value" data-target="{{block21_counter3}}">{{startcounter}}</h2>
+                <p>{{block21_desc3}}</p>
+            </div>
+            <div class="col-md-3 counter">
+                <h2 class="value" data-target="{{block21_counter4}}">{{startcounter}}</h2>
+                <p>{{block21_desc4}}</p>
+            </div>
+        </div>
+        
+
+        <!-- Button -->
+        {{#block21buttontext}}
+        <div class="row  pt-2 pb-2">
+
+            <div class="col-12 text-center">
+                <a href="{{block21buttonurl}}" class="hybtn get-started-btn p-8">
+                    {{block21buttontext}}
+                </a>
+            </div>
+        </div>
+        {{/block21buttontext}}
+
+    </div>
+</section>
+{{/block21enabled}}
+
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll('.value');
+    const speed = 200; // lower = faster
+
+    counters.forEach(counter => {
+        const animate = () => {
+            const value = +counter.getAttribute('data-target');
+            const data = +counter.innerText;
+            const increment = value / speed;
+
+            if (data < value) {
+                counter.innerText = Math.ceil(data + increment);
+                setTimeout(animate, 10);
+            } else {
+                counter.innerText = value;
+            }
+        };
+        animate();
+    });
+});
+</script>
+
