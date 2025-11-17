@@ -1,0 +1,248 @@
+/* =========================
+   Edz Workplace Report Styles (complete)
+   Two-column compact form layout + modern visuals
+   ========================= */
+
+/* Root theme variables */
+:root {
+  --edz-bg: #fbfdff;
+  --edz-card-bg: #ffffff;
+  --edz-text: #0f172a;
+  --edz-muted: #6b7280;
+  --edz-primary-1: #0ea5e9;
+  --edz-primary-2: #0369a1;
+  --edz-accent-1: #fb923c;
+  --edz-success-1: #10b981;
+}
+
+/* Page base */
+#page-local-edzworkplacerpt-index .region-content,
+#edz_report_container {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  color: var(--edz-text);
+}
+
+/* Filter card wrapper (if index.php wraps form in .edz-filter-card) */
+.edz-filter-card {
+  width: 100%;
+  /* max-width: 1200px; */
+  margin: 0 0 1rem 0;
+  background: linear-gradient(
+    180deg,
+    var(--edz-card-bg) 0%,
+    var(--edz-bg) 100%
+  );
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  box-shadow: 0 8px 26px rgba(16, 24, 40, 0.06);
+  border: 1px solid rgba(16, 24, 40, 0.03);
+}
+
+/* Two-column container */
+.edz-two-col-card {
+  display: block;
+  width: 100%;
+}
+
+/* Each row uses a two-column grid */
+.edz-two-col-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  align-items: start;
+  margin-bottom: 0.6rem;
+}
+
+/* left/right cells */
+.edz-two-col-cell {
+  min-width: 0;
+}
+
+/* For left cells, align smaller controls nicely */
+.edz-two-col-cell.edz-left .fitem,
+.edz-two-col-cell.edz-right .fitem {
+  margin-bottom: 0;
+}
+
+/* Ensure default Moodle labels show above inputs and look consistent */
+.edz-two-col-cell .fitem .flabel {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.28rem;
+  color: var(--edz-text);
+}
+
+/* Make the checkbox label inline and concise */
+.edz-two-col-cell .fitem .felement .form-checkbox,
+.edz-two-col-cell .fitem .felement .form-inline-checkbox {
+  margin-top: 6px;
+}
+
+/* Narrow the checkbox container */
+.edz-two-col-cell .fitem .felement .form-checkbox input[type="checkbox"],
+.edz-two-col-cell
+  .fitem
+  .felement
+  .form-inline-checkbox
+  input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+}
+
+/* Date/select/input styling */
+.edz-two-col-card input[type="text"].form-control,
+.edz-two-col-card select.form-select,
+.edz-two-col-card .date_selector {
+  border-radius: 8px;
+  padding: 0.42rem 0.6rem;
+  border: 1px solid rgba(16, 24, 40, 0.07);
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Show-only (right cell, radios) style */
+.edz-showonly-label {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+
+/* Hide default radio inputs (we keep them for accessibility) and style labels as pills */
+.edz-two-col-cell.edz-right input[type="radio"] {
+  display: none;
+}
+
+/* Moodle usually outputs input + label so we style the label that follows the input */
+.edz-two-col-cell.edz-right label[for*="showonly"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.34rem 0.6rem;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffffff, #f3f4f6);
+  border: 1px solid rgba(16, 24, 40, 0.06);
+  font-weight: 600;
+  margin-right: 0.3rem;
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 140ms ease;
+}
+
+/* Hover/active */
+.edz-two-col-cell.edz-right label[for*="showonly"]:hover {
+  transform: translateY(-2px);
+}
+
+/* When the radio is checked the following label should show active styles
+   This rule relies on typical Moodle markup: input + label. */
+.edz-two-col-cell.edz-right
+  input[type="radio"]:checked
+  + label[for*="showonly"] {
+  background: linear-gradient(
+    180deg,
+    var(--edz-primary-1),
+    var(--edz-primary-2)
+  );
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgba(3, 105, 161, 0.14);
+  transform: translateY(-2px) scale(1.01);
+}
+
+/* Submit row: right cell contains submit button */
+.edz-submit-row {
+  margin-top: 0.2rem;
+}
+.edz-submit-row .edz-right .fitem {
+  display: flex;
+  justify-content: flex-end;
+}
+.edz-submit-row input[type="submit"] {
+  padding: 0.45rem 0.85rem;
+  border-radius: 10px;
+  background: linear-gradient(
+    180deg,
+    var(--edz-primary-1),
+    var(--edz-primary-2)
+  );
+  color: #fff;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(3, 105, 161, 0.12);
+}
+
+/* Responsive: stack on small screens */
+@media (max-width: 780px) {
+  .edz-two-col-row {
+    grid-template-columns: 1fr;
+  }
+  .edz-submit-row .edz-right .fitem {
+    justify-content: flex-start;
+    margin-top: 0.4rem;
+  }
+}
+
+/* ---------- Charts + table styles (kept modern) ---------- */
+#edz_charts_container {
+  margin: 1.25rem 0;
+}
+.edz-chart-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.edz-chart-col {
+  flex: 1 1 320px;
+  min-width: 260px;
+  background: linear-gradient(180deg, #fff, #fbfdff);
+  border-radius: 12px;
+  padding: 0.95rem;
+  box-shadow: 0 8px 26px rgb(16 24 40 / .06);
+}
+.edz-chart-title {
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.edz-chart-col canvas {
+  width: 100% !important;
+  height: 260px !important;
+}
+
+/* Table styling */
+#edz_report_container table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(16, 24, 40, 0.04);
+}
+#edz_report_container table thead th {
+  background: linear-gradient(90deg, #f8fafc, #ffffff);
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+#edz_report_container table tbody td {
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+}
+#edz_report_container table tbody tr:hover td {
+  background: linear-gradient(
+    90deg,
+    rgba(14, 165, 233, 0.02),
+    rgba(14, 165, 233, 0.01)
+  );
+}
+
+/* small animation */
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
