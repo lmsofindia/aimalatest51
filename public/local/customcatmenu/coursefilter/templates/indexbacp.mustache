@@ -1,0 +1,37 @@
+<div id="lc-container" class="local-coursefilter space-y-4">
+  <div class="lc-searchbar d-flex gap-2">
+    <input id="lc-search" class="form-control" type="text" placeholder="{{searchplaceholder}}" />
+    <button id="lc-allfilters" class="btn btn-secondary">{{#str}}allfilters, local_coursefilter{{/str}}</button>
+  </div>
+
+  {{#filtersenabled}}
+  <div class="lc-quickfilters d-flex flex-wrap gap-3">
+    {{#filters}}
+    <div class="lc-filter">
+      <label class="form-label">{{name}}</label>
+      <select name="filters[{{shortname}}]" id="filter-{{shortname}}" class="form-select lc-filter-field" data-field="{{shortname}}">
+        <option value="">{{#str}}any, local_coursefilter{{/str}}</option>
+        {{#options}}
+        <option value="{{value}}">{{label}}</option>
+        {{/options}}
+      </select>
+    </div>
+    {{/filters}}
+  </div>
+  {{/filtersenabled}}
+  {{^filtersenabled}}
+    <div class="alert alert-warning">{{#str}}nofilterenabled, local_coursefilter{{/str}}</div>
+  {{/filtersenabled}}
+
+  <div id="lc-results">
+    {{> local_coursefilter/coursegrid}}
+  </div>
+</div>
+
+
+
+{{#js}}
+require(['local_coursefilter/ui'], function(mod) {
+    mod.init();
+});
+{{/js}}

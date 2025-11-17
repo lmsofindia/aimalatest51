@@ -1,0 +1,205 @@
+/* Shared width */
+:root {
+  --menu-width: 260px;
+}
+
+/* Hover wrapper */
+.edzmenu-hover-container {
+  position: relative;
+}
+
+/* Explore panel */
+#edz-explore-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 2px;
+  display: none;
+  z-index: 999;
+  min-width: var(--menu-width);
+  border-radius: 8px;
+  border:1px solid rgb(230, 228, 228);
+}
+
+/* Show on hover */
+.edzmenu-hover-container:hover #edz-explore-panel {
+  display: block;
+}
+
+/* Main content layout */
+.explore-menu-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Column */
+.explore-col {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Title */
+.explore-col h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+  padding-left: 8px;
+  padding-top: 5px;
+}
+
+/* List styling */
+.explore-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.explore-col ul li {
+  position: relative;
+}
+
+.explore-col ul li a {
+  display: block;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.explore-col ul li a:hover {
+  background-color: #f0f4ff;
+  color: #0047b3;
+}
+
+/* Submenu */
+.submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  min-width: var(--menu-width);
+  padding: 10px;
+  border-radius: 6px;
+  display: none;
+  white-space: nowrap;
+}
+
+.has-sub:hover > .submenu {
+  display: block;
+}
+
+.submenu li a {
+  display: block;
+  font-size: 13px;
+  padding: 8px 12px;
+  color: #333;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.submenu li a:hover {
+  background-color: #f0f4ff;
+  color: #333;
+  margin:1px 1px 1px 1px;
+}
+
+
+.has-sub > a::after {
+  content: "\f105"; 
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  float: right;
+  margin-left: 6px;
+  color: #666;
+  font-size: 12px;
+}
+
+.edzmenu-hover-container ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.has-sub {
+  position: relative;
+}
+
+.submenu {
+  display: none;
+  position: absolute;
+  left: 100%;
+  top: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  z-index: 999;
+  min-width: 220px;
+  padding: 5px 0;
+}
+
+.has-sub:hover .submenu {
+  display: block;
+}
+
+
+@media (max-width: 768px) {
+  :root {
+    --menu-width: 100%; /* Full width on mobile */
+  }
+
+  .edzmenu-hover-container {
+    width: 100%;
+  }
+
+  #edz-explore-panel {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+    display: none; /* Hidden by default, shown by JS toggle */
+  }
+
+  .edzmenu-hover-container.active #edz-explore-panel {
+    display: block;
+  }
+
+  .explore-menu-content {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .submenu {
+    position: static;
+    display: none;
+    box-shadow: none;
+    padding-left: 15px;
+  }
+
+  .has-sub.active > .submenu {
+    display: block;
+  }
+
+  .has-sub > a::after {
+    content: '▸';
+    float: right;
+    margin-left: 6px;
+    font-size: 14px;
+  }
+
+  .has-sub.active > a::after {
+    content: '▾'; /* Change icon when submenu is open */
+  }
+
+  .explore-col ul li a {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+}

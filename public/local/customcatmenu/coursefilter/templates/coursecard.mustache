@@ -1,0 +1,31 @@
+<div class="lc-coursecard col">
+  <div class="card h-100">
+    {{#courseimage}}
+    <img src="{{courseimage}}" class="card-img-top" alt="{{fullname}}">
+      {{#badge}}
+        <div class="course-badge">{{badge}}</div>
+      {{/badge}}
+    {{/courseimage}}
+    {{^courseimage}}
+    <div class="ratio ratio-16x9 bg-light d-flex align-items-center justify-content-center">
+ 
+      <span class="text-muted">{{shortname}}</span>
+    </div>
+    {{/courseimage}}
+
+    <div class="card-body">
+    <div style="height:200px">
+      <p class="ccatogry">{{categoryname}}</p>
+      <h5 class="card-title mb-2"><a class="ncolor" href="{{url}}">{{{fullname}}}</a></h5>
+      <div class="card-text text-muted small ellipsis-text">{{{summary}}}</div>
+      <p class="text-muted small mb-1"><strong>Teacher:</strong> {{teachers}}</p>
+      <p class="text-muted small mb-2"><strong>Start date:</strong> {{startdate}}</p>
+      </div>
+      <div class="mt-auto d-grid">
+        <a href="{{url}}" class="btn btn-primary btn-sm fw-semibold rounded-pill">
+          Enroll Now
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

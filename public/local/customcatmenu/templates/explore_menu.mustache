@@ -1,0 +1,30 @@
+<div class="edzmenu-hover-container">
+  <div id="edz-explore-panel">
+    <div class="explore-menu-content">
+      <div class="explore-col">
+        <p class="pl-4 pb-2 py-4">{{exploreheading}}</p>
+        <ul>
+          {{#categories}}
+            <li class="{{#subcats.0}}has-sub{{/subcats.0}}">
+              <a href="{{url}}">
+                {{name}}
+                {{#subcats.0}}<i class="fa fa-angle-right" style="float: right; margin-top: 4px;"></i>{{/subcats.0}}
+              </a>
+              {{#subcats.0}}
+                <ul class="submenu">
+                  {{#subcats}}
+                    <li>
+                      <a href="{{url}}">
+                        {{name}}
+                      </a>
+                    </li>
+                  {{/subcats}}
+                </ul>
+              {{/subcats.0}}
+            </li>
+          {{/categories}}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
