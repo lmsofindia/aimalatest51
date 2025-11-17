@@ -1,0 +1,122 @@
+/* Container */
+.navsearch-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Icon toggle */
+.navsearch-toggle {
+    color: #000;
+    font-size: 18px;
+    padding: 8px;
+    cursor: pointer;
+    display: block;
+    margin-top: 14px;
+}
+
+/* Dropdown */
+.navsearch-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%; /* below navbar */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    border-radius: 6px;
+    width: 320px;
+    z-index: 999;
+}
+
+/* Show when expanded */
+.navsearch-container.expanded .navsearch-dropdown {
+    display: block;
+}
+
+/* Arrow on top */
+.navsearch-dropdown::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 30px;
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent #ddd transparent;
+}
+
+/* Input wrapper */
+.navsearch-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 6px;
+}
+
+/* Input field */
+.navsearch-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 6px 8px;
+    font-size: 14px;
+}
+
+/* Button */
+.navsearch-submit {
+    background: #c00;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    margin-left: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+/* Clear button */
+.navsearch-clear {
+    margin-left: 8px;
+    font-size: 18px;
+    cursor: pointer;
+    color: #999;
+}
+
+/* Results */
+.navsearch-results {
+    margin-top: 10px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+a.list-group-item.list-group-item-action.d-flex.align-items-center .navsearchresult-pad{
+    padding: 1rem;
+}
+.fnsize{ font-size: 15px;}
+
+#navsearchresults .alert.alert-warning.d-flex.align-items-center {
+    font-size: 15px;
+}
+
+ 
+/* Mobile view (below 768px, adjust as needed) */
+@media (max-width: 768px) {
+    .navsearch-dropdown::before {
+        left: 146px;  
+    }
+}
+
+/* Extra small (phones <480px) */
+@media (max-width: 480px) {
+    .navsearch-dropdown::before {
+        left: 146px;
+    
+    }
+}
+
+@media (min-width: 1000px) {
+    .navsearch-dropdown::before {
+        left: 150px;  
+    }
+}
