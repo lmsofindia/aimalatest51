@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<XMLDB PATH="local/edztrainingcalendar/db" VERSION="1" COMMENT="table for training calendar staging">
+  <TABLES>
+    <TABLE NAME="local_edztrainingcalendar_journey" COMMENT="Stores learning journey data for users">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" UNSIGNED="true" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="useremail" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="courseshortname" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="coursestartdate" TYPE="char" LENGTH="50" NOTNULL="false"/>
+        <FIELD NAME="timestamp_coursestartdate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0"/>
+        <FIELD NAME="expectedcmpldate" TYPE="char" LENGTH="50" NOTNULL="false"/>
+        <FIELD NAME="timestamp_expectedcmpldate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0"/>
+        <FIELD NAME="cohortidentifier" TYPE="char" LENGTH="100" NOTNULL="false"/>
+        <FIELD NAME="uploadeddate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="uploadedby" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="processed_flag" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="errormsg" TYPE="text" NOTNULL="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" />
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_email_course_date" UNIQUE="false" FIELDS="userid,timestamp_coursestartdate"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>

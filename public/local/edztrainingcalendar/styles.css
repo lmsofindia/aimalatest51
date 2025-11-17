@@ -1,0 +1,62 @@
+/* Dashboard Stat Boxes */
+.edz-stat-cards .edz-box {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  color: #212529;
+  border: none;
+}
+
+.edz-stat-cards .edz-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Softer vibrant gradients */
+.edz-box-allocated {
+  background: linear-gradient(135deg, #a6c8ff 0%, #d6e4ff 100%);
+}
+.edz-box-completed {
+  background: linear-gradient(135deg, #b0f3c6 0%, #d1ffd8 100%);
+}
+.edz-box-inprogress {
+  background: linear-gradient(135deg, #ffe6b3 0%, #fff3cd 100%);
+}
+.edz-box-notstarted {
+  background: linear-gradient(135deg, #e4e4e4 0%, #f8f9fa 100%);
+}
+
+/* Subtle icons with matching tint */
+.edz-box i {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* Chart Area */
+#edztrainingchart,
+#edztrainingbarchart {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 10px;
+}
+
+/* Bar filter select */
+#barFilter {
+  border-radius: 6px;
+  border: 1px solid #dee2e6;
+  background-color: #f8f9fa;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+/* Search/Download Bar */
+#edz-search {
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+}
+
+#edz-search:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+}
+.edz-calendar-report .edz-box {
+  min-height: 110px;
+}
