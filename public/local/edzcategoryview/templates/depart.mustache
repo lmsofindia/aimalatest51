@@ -1,0 +1,37 @@
+<div class="browse-header" style="background-color: {{bgcolor}}">
+    <div class="breadcrumb">
+        {{#breadcrumb}}
+            <p style="color:{{titlecolor}}">
+                <a href="{{url}}">{{name}}</a> / {{#str}}department, local_edzcategoryview{{/str}}
+            </p>
+        {{/breadcrumb}}
+    </div>
+    <h1 style="color:{{titlecolor}}">{{heading}}</h1>
+    <p style="color:{{titlecolor}}">{{subheading}}</p>
+</div>
+
+<div class="category-item">
+    <div class="department-list">
+        {{#departments}}
+            <div class="category-header">
+                <span class="department-icon"><i class="fa-regular fa-building"></i></span>
+                <h2>{{name}}</h2>
+            </div>
+            {{#subcategories}}
+                <div class="department-item">
+                    <div class="department-info">
+                        <h5>{{name}}</h5>
+                        <p>{{coursecount}} {{#str}}courses, local_edzcategoryview{{/str}}</p>
+                    </div>
+
+                    <div class="department-action">
+                        <a href="{{url}}" class="department-view">
+                            {{#str}}view, local_edzcategoryview{{/str}}
+                            <i class="fa-solid fa-chevron-right ml-3"></i>
+                        </a>
+                    </div>
+                </div>
+            {{/subcategories}}
+        {{/departments}}
+    </div>
+</div>

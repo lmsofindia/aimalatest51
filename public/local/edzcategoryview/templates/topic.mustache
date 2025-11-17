@@ -1,0 +1,33 @@
+<div class="browse-header" style="background-color: {{bgcolor}}">
+    <div class="breadcrumb">
+        {{#breadcrumb}}
+            <p style="color:{{titlecolor}}">
+                <a href="{{url}}">{{name}}</a> / {{#str}}topic, local_edzcategoryview{{/str}}
+            </p>
+        {{/breadcrumb}}
+    </div>
+    <h1 style="color:{{titlecolor}}">{{heading}}</h1>
+    <p style="color:{{titlecolor}}">{{subheading}}</p>
+</div>
+
+{{#categories}}
+    <div class="category-item">
+        <div class="category-block">
+            <div class="category-header mb-3">
+                <span class="category-icon"><i class="fa-solid fa-folder"></i></span>
+                <h2>
+                    {{name}}
+                    <a href="{{url}}" class="view-link">
+                        ({{totalcourses}} {{#str}}courses, local_edzcategoryview{{/str}})
+                    </a>
+                </h2>
+            </div>
+
+            <div class="category-tags">
+                {{#subcategories}}
+                    {{> local_edzcategoryview/subcategory }}
+                {{/subcategories}}
+            </div>
+        </div>
+    </div>
+{{/categories}}
