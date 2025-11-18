@@ -64,8 +64,8 @@
 
 .explore-col ul li a {
   display: block;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 5px 7px;
+  font-size: 13px;
   color: #333;
   text-decoration: none;
   border-radius: 5px;
@@ -112,16 +112,6 @@
 }
 
 
-.has-sub > a::after {
-  content: "\f105"; 
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  float: right;
-  margin-left: 6px;
-  color: #666;
-  font-size: 12px;
-}
-
 .edzmenu-hover-container ul {
   list-style: none;
   padding: 0;
@@ -151,7 +141,7 @@
 
 @media (max-width: 768px) {
   :root {
-    --menu-width: 100%; /* Full width on mobile */
+    --menu-width: 100%; 
   }
 
   .edzmenu-hover-container {
@@ -163,7 +153,7 @@
     width: 100%;
     box-shadow: none;
     border: none;
-    display: none; /* Hidden by default, shown by JS toggle */
+    display: none; 
   }
 
   .edzmenu-hover-container.active #edz-explore-panel {
@@ -195,7 +185,7 @@
   }
 
   .has-sub.active > a::after {
-    content: '▾'; /* Change icon when submenu is open */
+    content: '▾'; 
   }
 
   .explore-col ul li a {
@@ -203,3 +193,4 @@
     font-size: 15px;
   }
 }
+
