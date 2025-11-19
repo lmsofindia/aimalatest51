@@ -1,0 +1,14 @@
+{{#hascourses}}
+<div class="edzallencou-hover-container">
+  <div id="edz-allencou-panel">
+    <div class="edzallencou-menu-content">
+      {{#courses}}
+      <div class="edz-course-item">
+        <p><a href="{{url}}">{{name}}</a></p>
+        <span>({{category_path}})</span>
+      </div>
+      {{/courses}}
+    </div>
+  </div>
+</div>
+{{/hascourses}}
