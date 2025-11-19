@@ -64,17 +64,17 @@
 
 .explore-col ul li a {
   display: block;
-  padding: 5px 7px;
+  padding: 10px 10px;
   font-size: 13px;
   color: #333;
   text-decoration: none;
   border-radius: 5px;
   transition: background 0.3s ease, color 0.3s ease;
+  font-weight: normal;
 }
 
 .explore-col ul li a:hover {
   background-color: #f0f4ff;
-  color: #0047b3;
 }
 
 /* Submenu */
