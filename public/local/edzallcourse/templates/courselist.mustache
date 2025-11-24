@@ -1,0 +1,50 @@
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mt-2">
+    {{#courses}}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <!-- Image or Gradient -->
+            <div class="ratio ratio-16x9 d-flex align-items-center justify-content-center {{#courseimage}}bg-light{{/courseimage}} gradient-bg">
+                {{#courseimage}}
+                <img src="{{courseimage}}" class="img-fluid w-100 h-100 object-fit-cover" alt="{{fullname}}">
+                {{/courseimage}}
+                {{^courseimage}}
+                <span class="text-white fw-bold">{{shortname}}</span>
+                {{/courseimage}}
+            </div>
+
+            <div class="card-body d-flex flex-column">
+                <!-- Course Category -->
+                <p class="text-muted small mb-1 ccatogry">{{categoryname}}</p>
+
+                <!-- Course Title -->
+                <h5 class="card-title mb-2">
+                    <a class="ncolor" href="{{url}}">{{fullname}}</a>
+                </h5>
+
+                <!-- Course Summary -->
+                <div class="card-text text-muted small ellipsis-text mb-2">
+                    {{{summary}}}
+                </div>
+
+                <!-- Teacher & Start Date -->
+                <p class="text-muted small mb-1"><strong>Teacher:</strong> {{teachers}}</p>
+                <p class="text-muted small mb-3"><strong>Start Date:</strong> {{startdate}}</p>
+
+                <!-- Enroll Button -->
+                <div class="mt-auto d-grid">
+                    <a href="{{url}}" class="btn btn-primary btn-sm fw-semibold rounded-pill">
+                        Enroll Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/courses}}
+
+{{#noresults}}
+<div class="alert alert-info mt-3 w-50 text-center mx-auto">
+    {{#str}}noresults, local_edzallcourse{{/str}}
+</div>
+{{/noresults}}
+
+</div>
