@@ -67,15 +67,15 @@ class hook_callbacks
                 return;
             }
 
-            // if ($SCRIPT === '/course/index.php') {
-            //     $params = [];
-            //     if (!empty($_GET['categoryid'])) {
-            //         $params['categoryid'] = (int)$_GET['categoryid'];
-            //     }
+            if ($SCRIPT === '/course/index.php') {
+                $params = [];
+                if (!empty($_GET['categoryid'])) {
+                    $params['categoryid'] = (int)$_GET['categoryid'];
+                }
 
-            //     $url = new \moodle_url('/local/edzallcourse/', $params);
-            //     redirect($url);
-            // }
+                $url = new \moodle_url('/local/edzallcourse/', $params);
+                redirect($url);
+            }
         }
 
 }
