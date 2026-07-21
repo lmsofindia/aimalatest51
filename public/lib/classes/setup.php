@@ -41,7 +41,7 @@ class setup {
         if ($this->does_wwwroot_end_in_public()) {
             // The wwwroot should not end in /public as this may suggest a misconfiguration.
             // There may be legitimate sites out there that currently do this but it is not recommended.
-            //throw new moodle_exception('wwwrootpublic', 'error');
+            throw new moodle_exception('wwwrootpublic', 'error');
         }
 
         return true;
