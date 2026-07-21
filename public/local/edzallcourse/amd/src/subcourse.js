@@ -1,0 +1,87 @@
+define(["jquery", "core/notification"], function ($, Notification) {
+  const state = {
+    ajaxUrl: M.cfg.wwwroot + "/local/edzallcourse/subcat_ajax.php",
+    limit: 6,
+  };
+
+  function fetchCourses(subcatId, offset) {
+    offset = offset || 0;
+
+    if (!subcatId) {
+      $("#courselist-results").empty();
+      return;
+    }
+
+    $.ajax({
+      url: state.ajaxUrl,
+      method: "POST",
+      data: {
+        subcategoryid: subcatId,
+        sesskey: M.cfg.sesskey,
+        offset: offset,
+        limit: state.limit,
+      },
+      dataType: "json",
+    })
+      .done(function (resp) {
+        if (resp.html) {
+          $("#courselist-results").html(resp.html);
+        } else {
+          $("#courselist-results").html("<p>No courses found.</p>");
+        }
+
+        if (resp.categoryname) {
+          $(".subcatname").html(resp.categoryname);
+          $(".subcatinfo").html(resp.description);
+        } else {
+          $(".subcatname").empty();
+          $(".subcatinfo").empty();
+        }
+
+        // Smooth scroll to results
+        $("html, body").animate(
+          {
+            scrollTop: $("#courselist-results").offset().top - 100,
+          },
+          300,
+        );
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        Notification.exception(
+          new Error("Failed to fetch courses: " + errorThrown),
+        );
+      });
+  }
+
+  function bindSubcategorySelect() {
+    $(document).on("change", "#subcategory", function () {
+      fetchCourses($(this).val(), 0);
+    });
+  }
+
+  function bindPagination() {
+    $(document).on("click", "#course-pagination .page-link", function () {
+      var $li = $(this).closest(".page-item");
+
+      // Disabled ya active page pe click ignore karo
+      if ($li.hasClass("disabled") || $li.hasClass("active")) {
+        return;
+      }
+
+      var offset = parseInt($(this).data("offset"));
+      var categoryid = $(this).data("categoryid");
+
+      fetchCourses(categoryid, offset);
+    });
+  }
+
+  function init() {
+    bindSubcategorySelect();
+    bindPagination();
+  }
+
+  return {
+    init: init,
+    fetchCourses: fetchCourses,
+  };
+});

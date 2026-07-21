@@ -1,0 +1,22 @@
+
+
+<div class="row">
+   
+    <div class="col-12">
+        <div class="parent-category-info p-3 border rounded">
+            <h3>{{parent.name}}</h3>
+            <p>{{{parent.description}}}</p>
+              <h6 class="subcatname"></h6>
+            <p class="subcatinfo"></p>
+        </div>
+    </div>
+    <div class="col-12 mt-1">
+        <div class="subcategory-select p-3 border rounded">
+            <select id="subcategory" name="subcategory" class="form-control">
+                {{#subcategories}}
+                    <option value="{{id}}">{{path}}</option>
+                {{/subcategories}}
+            </select>
+        </div>
+    </div>
+</div>
