@@ -1,0 +1,162 @@
+
+
+{{#haspagination}}
+<nav class="mt-5" id="course-pagination">
+    <ul class="pagination justify-content-right flex-wrap gap-1">
+        {{#hasprev}}
+        <li class="page-item">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{prevoffset}}"
+                    data-categoryid="{{categoryid}}">
+                &laquo; Prev
+            </button>
+        </li>
+        {{/hasprev}}
+        {{^hasprev}}
+        <li class="page-item disabled">
+            <button class="page-link rounded-pill px-3">&laquo; Prev</button>
+        </li>
+        {{/hasprev}}
+
+        {{#pages}}
+        <li class="page-item {{#active}}active{{/active}}">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{offset}}"
+                    data-categoryid="{{categoryid}}">
+                {{number}}
+            </button>
+        </li>
+        {{/pages}}
+
+        {{#hasnext}}
+        <li class="page-item">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{nextoffset}}"
+                    data-categoryid="{{categoryid}}">
+                Next &raquo;
+            </button>
+        </li>
+        {{/hasnext}}
+        {{^hasnext}}
+        <li class="page-item disabled">
+            <button class="page-link rounded-pill px-3">Next &raquo;</button>
+        </li>
+        {{/hasnext}}
+
+    </ul>
+</nav>
+{{/haspagination}}
+<div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mt-1" id="course-list-container">
+    {{#courses}}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <!-- Image or Gradient -->
+                {{#courseimage}}
+            <div class="ratio ratio-16x9 position-relative overflow-hidden rounded">
+                
+                <img src="{{courseimage}}"
+                    class="img-fluid w-100 h-100 object-fit-cover"
+                    alt="{{fullname}}">
+
+                <span class="course-category-badge ccatogry">
+                    {{{categoryname}}}
+                </span>
+            </div>
+            {{/courseimage}}
+
+            {{^courseimage}}
+            <div class="ratio ratio-16x9 position-relative overflow-hidden rounded"
+                style="background-color: {{coursecolor}};
+                        background-image: url('{{coursepattern}}');
+                        background-size: 100px 100px;
+                        background-repeat: repeat;">
+                <span class="course-category-badge ccatogry">
+                    {{{categoryname}}}
+                </span>
+
+            </div>
+            {{/courseimage}}
+            <div class="card-body d-flex flex-column">
+                <!-- Course Category -->
+                <!--<p class="text-muted small mb-1 ccatogry">{{{categoryname}}}</p>-->
+
+                <!-- Course Title -->
+                <h5 class="card-title mb-2">
+                    <a class="ncolor" href="{{url}}">{{{fullname}}}</a>
+                </h5>
+
+                <!-- Course Summary -->
+                <div class="card-text text-muted small ellipsis-text mb-2">
+                    {{{summary}}}
+                </div>
+
+                <!-- Teacher & Start Date -->
+                <p class="text-muted small mb-1"><strong>Teacher:</strong> {{teachers}}</p>
+                <p class="text-muted small mb-3"><strong>Start Date:</strong> {{startdate}}</p>
+
+                <!-- Enroll Button -->
+                <div class="mt-auto d-grid">
+                    <a href="{{url}}" class="btn btn-primary btn-sm fw-semibold rounded-pill">
+                        Enroll Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/courses}}
+
+{{#noresults}}
+<div class="alert alert-info mt-3 w-50 text-center mx-auto">
+    {{#str}}noresults, local_edzallcourse{{/str}}
+</div>
+{{/noresults}}
+
+</div>
+
+{{#haspagination}}
+<nav class="mt-4" id="course-pagination">
+    <ul class="pagination justify-content-center flex-wrap gap-1">
+
+        {{#hasprev}}
+        <li class="page-item">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{prevoffset}}"
+                    data-categoryid="{{categoryid}}">
+                &laquo; Prev
+            </button>
+        </li>
+        {{/hasprev}}
+        {{^hasprev}}
+        <li class="page-item disabled">
+            <button class="page-link rounded-pill px-3">&laquo; Prev</button>
+        </li>
+        {{/hasprev}}
+
+        {{#pages}}
+        <li class="page-item {{#active}}active{{/active}}">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{offset}}"
+                    data-categoryid="{{categoryid}}">
+                {{number}}
+            </button>
+        </li>
+        {{/pages}}
+
+        {{#hasnext}}
+        <li class="page-item">
+            <button class="page-link rounded-pill px-3"
+                    data-offset="{{nextoffset}}"
+                    data-categoryid="{{categoryid}}">
+                Next &raquo;
+            </button>
+        </li>
+        {{/hasnext}}
+        {{^hasnext}}
+        <li class="page-item disabled">
+            <button class="page-link rounded-pill px-3">Next &raquo;</button>
+        </li>
+        {{/hasnext}}
+
+    </ul>
+</nav>
+{{/haspagination}}
