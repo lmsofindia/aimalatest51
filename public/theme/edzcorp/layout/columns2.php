@@ -101,11 +101,15 @@ if (method_exists($OUTPUT, 'edit_mode_link')) {
 // (Moodle 5.x sometimes returns empty on incourse/activity pages).
 if (empty($editmodebutton) && $PAGE->user_allowed_editing()) {
     $editingon  = $PAGE->user_is_editing();
-    $editurl    = new moodle_url('/course/view.php', [
-        'id'      => $PAGE->course->id,
-        'edit'    => ($editingon ? 'off' : 'on'),
-        'sesskey' => sesskey(),
-    ]);
+    // Toggle editing on the CURRENT page, then let Moodle strip the params.
+    // Previously this was hardcoded to /course/view.php?id=<course>, which on
+    // dashboard/admin pages (e.g. /my/indexsys.php) resolves to the SITE course
+    // (id 1). Moodle then treats /course/view.php?id=1 as the site home and
+    // redirects there — the "turn editing on bounces me to the home page" bug.
+    // Using $PAGE->url keeps the toggle on whatever page we are actually editing.
+    $editurl = new moodle_url($PAGE->url);
+    $editurl->param('edit', $editingon ? 'off' : 'on');
+    $editurl->param('sesskey', sesskey());
     $tooltiplabel   = $editingon ? get_string('turneditingoff', 'core') : get_string('turneditingon', 'core');
     $editmodebutton = html_writer::link(
         $editurl,

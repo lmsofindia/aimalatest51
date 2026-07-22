@@ -150,15 +150,30 @@
             {{#fp_has_topics}}
             <section class="edz-topics">
                 <p class="edz-topics__heading">{{fp_topics_heading}}</p>
+                {{#fp_topics_is_cards}}
+                {{! Card style — small icon tiles, 6 or 8 per row on desktop. }}
+                <div class="edz-topics-cards {{fp_topics_grid_class}}">
+                    {{#fp_topics}}
+                    <a href="{{url}}" class="edz-topic-card" style="--edz-topic-color:{{color}}">
+                        <span class="edz-topic-card__icon"><i class="fa-solid {{icon}}" aria-hidden="true"></i></span>
+                        <span class="edz-topic-card__name">{{{name}}}</span>
+                        <span class="edz-topic-card__count">{{count}}</span>
+                    </a>
+                    {{/fp_topics}}
+                </div>
+                {{/fp_topics_is_cards}}
+                {{^fp_topics_is_cards}}
+                {{! Button style — pill chips (default). }}
                 <div class="edz-topics__pills">
                     {{#fp_topics}}
                     <a href="{{url}}" class="edz-topic-pill">
                         <span class="edz-topic-pill__dot" style="background:{{color}}"></span>
-                        <span class="edz-topic-pill__name">{{name}}</span>
+                        <span class="edz-topic-pill__name">{{{name}}}</span>
                         <span class="edz-topic-pill__count">&middot; {{count}}</span>
                     </a>
                     {{/fp_topics}}
                 </div>
+                {{/fp_topics_is_cards}}
             </section>
             {{/fp_has_topics}}
 
@@ -352,10 +367,10 @@
                         {{! Media: course image, or per-course gradient fallback }}
                         <div class="edz-fp-course-card__media{{^image}} edz-fp-course-card__media--{{gradclass}}{{/image}}">
                             {{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}
-                            {{#category}}<span class="edz-fp-course-card__tag">{{category}}</span>{{/category}}
+                            {{#category}}<span class="edz-fp-course-card__tag">{{{category}}}</span>{{/category}}
                         </div>
                         <div class="edz-fp-course-card__body">
-                            <h3 class="edz-fp-course-card__name">{{name}}</h3>
+                            <h3 class="edz-fp-course-card__name">{{{name}}}</h3>
                             {{#summary}}
                             <p class="edz-fp-course-card__desc">{{summary}}</p>
                             {{/summary}}

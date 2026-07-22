@@ -255,6 +255,21 @@ $string['fp_content_headingdesc'] = 'The "Popular topics" pills are auto-populat
 $string['fp_topics_heading']     = 'Topics section heading';
 $string['fp_topics_headingdesc'] = 'Section label shown above the category pills (displayed in small caps).';
 
+$string['fp_topics_source']          = 'Topics source';
+$string['fp_topics_sourcedesc']      = 'Which categories feed the Popular topics section.';
+$string['fp_topics_source_alltop']   = 'All top-level categories';
+$string['fp_topics_source_all']      = 'All categories (including sub-categories)';
+$string['fp_topics_source_specific'] = 'One specific category';
+$string['fp_topics_specific']        = 'Specific category';
+$string['fp_topics_specificdesc']    = 'Used only when "Topics source" is set to "One specific category". The chosen category is shown as a single tile.';
+$string['fp_topics_specific_none']   = '— None selected —';
+$string['fp_topics_style']           = 'Topics display style';
+$string['fp_topics_styledesc']       = 'Show topics as pill buttons (default) or as icon cards.';
+$string['fp_topics_style_buttons']   = 'Buttons (pills)';
+$string['fp_topics_style_cards']     = 'Cards (icon tiles)';
+$string['fp_topics_percard']         = 'Cards per row';
+$string['fp_topics_percarddesc']     = 'How many cards per row on wide screens (used only for the card style). Fewer are shown automatically on smaller screens.';
+
 $string['fp_courses_heading']     = 'Recently launched section heading';
 $string['fp_courses_headingdesc'] = 'Section label shown above the course cards.';
 
