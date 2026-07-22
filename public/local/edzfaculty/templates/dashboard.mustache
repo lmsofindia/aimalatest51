@@ -1,0 +1,194 @@
+{{!
+    This file is part of the local_edzfaculty plugin for Moodle.
+
+    Faculty dashboard template.
+
+    @template local_edzfaculty/dashboard
+}}
+<div class="edzf" data-region="edzfaculty">
+    <script type="application/json" data-region="edzf-data">{{{datajson}}}</script>
+
+    <p class="edzf-greet">{{#str}}dashboardtitle, local_edzfaculty{{/str}} · <span class="edzf-muted">{{teachername}}</span></p>
+
+    {{! ===== Zone 0: Course Focus ===== }}
+    <section class="edzf-card edzf-focus">
+        <div class="edzf-card-h">
+            <h2 class="edzf-h2">{{#str}}coursefocus, local_edzfaculty{{/str}}</h2>
+            <span class="edzf-ctx" data-region="cf-ctx">{{focusall.ctx}}</span>
+            <div class="edzf-cselect">
+                <label for="edzf-course">{{labels.course}}</label>
+                <select id="edzf-course" data-action="course-focus">
+                    <option value="0">{{#str}}allcourses, local_edzfaculty{{/str}} ({{coursecount}})</option>
+                    {{#courseoptions}}
+                        <option value="{{id}}">{{label}}</option>
+                    {{/courseoptions}}
+                </select>
+            </div>
+        </div>
+        <div class="edzf-card-b">
+            <div class="edzf-statgrid">
+                <div class="edzf-stat"><span class="edzf-ic b-blue">◎</span><div><div class="edzf-v" data-region="cf-live">{{focusall.live}}</div><div class="edzf-l">{{#str}}stat_live, local_edzfaculty{{/str}}</div></div></div>
+                <div class="edzf-stat"><span class="edzf-ic b-crit">✎</span><div><div class="edzf-v" data-region="cf-assign">{{focusall.assign}}</div><div class="edzf-l">{{#str}}stat_assign, local_edzfaculty{{/str}}</div></div></div>
+                <div class="edzf-stat"><span class="edzf-ic b-warn">❋</span><div><div class="edzf-v" data-region="cf-disc">{{focusall.disc}}</div><div class="edzf-l">{{#str}}stat_disc, local_edzfaculty{{/str}}</div></div></div>
+                <div class="edzf-stat"><span class="edzf-ic b-good">▤</span><div><div class="edzf-v" data-region="cf-quiz">{{focusall.quiz}}</div><div class="edzf-l">{{#str}}stat_quiz, local_edzfaculty{{/str}}</div></div></div>
+            </div>
+            <div class="edzf-qalbl" data-region="cf-qalbl">{{focusall.label}}</div>
+            <div class="edzf-qarow">
+                <a class="edzf-qa" data-qa="review" href="{{focusall.actions.review}}">{{#str}}qa_review, local_edzfaculty{{/str}}</a>
+                <a class="edzf-qa" data-qa="attendance" href="{{focusall.actions.attendance}}">{{#str}}qa_attendance, local_edzfaculty{{/str}}</a>
+                <a class="edzf-qa" data-qa="discuss" href="{{focusall.actions.discuss}}">{{#str}}qa_discuss, local_edzfaculty{{/str}}</a>
+                <a class="edzf-qa" data-qa="upload" href="{{focusall.actions.upload}}">{{#str}}qa_upload, local_edzfaculty{{/str}}</a>
+                <a class="edzf-qa" data-qa="schedule" href="{{focusall.actions.schedule}}">{{#str}}qa_schedule, local_edzfaculty{{/str}}</a>
+                <a class="edzf-qa" data-qa="assess" href="{{focusall.actions.assess}}">{{#str}}qa_assess, local_edzfaculty{{/str}}</a>
+            </div>
+        </div>
+    </section>
+
+    {{! ===== Zone 1a: KPIs ===== }}
+    <div class="edzf-kpirow">
+        <div class="edzf-card edzf-kpi k-crit"><div class="edzf-kpi-l">{{#str}}kpi_tograde, local_edzfaculty{{/str}}</div><div class="edzf-kpi-v">{{kpi.tograde}}</div></div>
+        <div class="edzf-card edzf-kpi k-warn"><div class="edzf-kpi-l">{{#str}}kpi_unanswered, local_edzfaculty{{/str}}</div><div class="edzf-kpi-v">{{kpi.unanswered}}</div></div>
+        <div class="edzf-card edzf-kpi k-crit"><div class="edzf-kpi-l">{{#str}}kpi_atrisk, local_edzfaculty{{/str}}{{#showai}} <span class="edzf-pill ai">AI</span>{{/showai}}</div><div class="edzf-kpi-v">{{kpi.atrisk}}</div></div>
+        <div class="edzf-card edzf-kpi k-blue">
+            <div class="edzf-kpi-l">{{#str}}kpi_nextclass, local_edzfaculty{{/str}}</div>
+            {{#kpi.nextclass}}<div class="edzf-kpi-v">{{time}}</div><div class="edzf-kpi-m">{{name}}</div>{{#url}} <a class="edzf-btn sm" href="{{.}}">{{#str}}join, local_edzfaculty{{/str}}</a>{{/url}}{{/kpi.nextclass}}
+            {{^kpi.nextclass}}<div class="edzf-kpi-v edzf-muted">—</div>{{/kpi.nextclass}}
+        </div>
+    </div>
+
+    {{! ===== Zone 1b: Worklist + Timeline ===== }}
+    <div class="edzf-two">
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}needsattention, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-tabs" data-region="tabs">
+                <button class="edzf-tab active" data-tab="grade">{{#str}}tab_grading, local_edzfaculty{{/str}} <span class="edzf-cnt">{{count_grading}}</span></button>
+                <button class="edzf-tab" data-tab="disc">{{#str}}tab_discussions, local_edzfaculty{{/str}} <span class="edzf-cnt">{{count_discussions}}</span></button>
+                <button class="edzf-tab" data-tab="risk">{{#str}}tab_atrisk, local_edzfaculty{{/str}} <span class="edzf-cnt">{{count_atrisk}}</span></button>
+                <button class="edzf-tab" data-tab="over">{{#str}}tab_overdue, local_edzfaculty{{/str}} <span class="edzf-cnt">{{count_overdue}}</span></button>
+            </div>
+
+            <div class="edzf-pane active" data-pane="grade">
+                {{#grading}}
+                <div class="edzf-row">
+                    <span class="edzf-mark sev-{{sev}}"></span>
+                    <div class="edzf-rmain"><div class="edzf-rtitle">{{name}} <span class="edzf-pill sec">{{section}}</span>{{#showai}} <span class="edzf-pill ai">✦ AI draft</span>{{/showai}}</div>
+                    <div class="edzf-rsub">{{#str}}submissions, local_edzfaculty, {{pending}}{{/str}}</div></div>
+                    <span class="edzf-pill age-{{sev}}">{{age}}</span>
+                    <a class="edzf-btn sm" href="{{url}}">{{#str}}grade, local_edzfaculty{{/str}}</a>
+                </div>
+                {{/grading}}
+                {{^hasgrading}}<div class="edzf-empty">{{#str}}nogradingdue, local_edzfaculty{{/str}}</div>{{/hasgrading}}
+            </div>
+
+            <div class="edzf-pane" data-pane="disc">
+                {{#discussions}}
+                <div class="edzf-row">
+                    <span class="edzf-mark sev-{{sev}}"></span>
+                    <div class="edzf-rmain"><div class="edzf-rtitle">{{name}} <span class="edzf-pill sec">{{section}}</span></div></div>
+                    <span class="edzf-pill age-{{sev}}">{{age}}</span>
+                    <a class="edzf-btn sm" href="{{url}}">{{#str}}reply, local_edzfaculty{{/str}}</a>
+                </div>
+                {{/discussions}}
+                {{^hasdiscussions}}<div class="edzf-empty">{{#str}}nounanswered, local_edzfaculty{{/str}}</div>{{/hasdiscussions}}
+            </div>
+
+            <div class="edzf-pane" data-pane="risk">
+                {{#atriskrows}}
+                <div class="edzf-row edzf-clickable" data-action="student"
+                     data-userid="{{userid}}" data-courseid="{{courseid}}"
+                     data-name="{{fullname}}" data-initials="{{initials}}" data-section="{{section}}"
+                     data-attendance="{{attendance}}" data-avgscore="{{avgscore}}" data-lastaccess="{{lastaccess}}"
+                     data-missed="{{missed}}" data-forumposts="{{forumposts}}" data-trend="{{trend}}"
+                     data-level="{{levellabel}}" data-reasons="{{reasonsjson}}" data-profileurl="{{profileurl}}"
+                    <span class="edzf-mark risk-{{level}}"></span>
+                    <div class="edzf-rmain"><div class="edzf-rtitle">{{fullname}} <span class="edzf-pill sec">{{section}}</span></div>
+                    <div class="edzf-rsub">{{reasonssummary}}</div></div>
+                    <span class="edzf-pill risk-{{level}}">{{levellabel}}</span>
+                    <button class="edzf-btn sm" data-action="student-btn">{{#str}}view, local_edzfaculty{{/str}}</button>
+                </div>
+                {{/atriskrows}}
+                {{^hasatrisk}}<div class="edzf-empty">{{#str}}noatrisk, local_edzfaculty{{/str}}</div>{{/hasatrisk}}
+            </div>
+
+            <div class="edzf-pane" data-pane="over">
+                {{#overdue}}
+                <div class="edzf-row">
+                    <span class="edzf-mark sev-hi"></span>
+                    <div class="edzf-rmain"><div class="edzf-rtitle">{{name}} <span class="edzf-pill sec">{{section}}</span></div>
+                    <div class="edzf-rsub">{{nonsub}} not submitted · due {{due}}</div></div>
+                    <a class="edzf-btn sm ghost" href="{{url}}">{{#str}}view, local_edzfaculty{{/str}}</a>
+                </div>
+                {{/overdue}}
+                {{^hasoverdue}}<div class="edzf-empty">{{#str}}nooverdue, local_edzfaculty{{/str}}</div>{{/hasoverdue}}
+            </div>
+        </section>
+
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}todayupcoming, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b">
+                {{#timeline}}
+                <div class="edzf-tl {{#islive}}live{{/islive}}{{#isexam}}exam{{/isexam}}">
+                    <div class="edzf-tl-body">
+                        <div class="edzf-tl-t">{{name}}</div>
+                        <div class="edzf-tl-s">{{section}} · {{date}}</div>
+                        {{#islive}}<span class="edzf-tl-tag live">{{#str}}tag_liveclass, local_edzfaculty{{/str}}</span>{{/islive}}
+                        {{#isexam}}<span class="edzf-tl-tag exam">{{#str}}tag_exam, local_edzfaculty{{/str}}</span>{{/isexam}}
+                        {{#joinurl}}<a class="edzf-btn sm edzf-join" href="{{.}}">{{#str}}join, local_edzfaculty{{/str}}</a>{{/joinurl}}
+                    </div>
+                </div>
+                {{/timeline}}
+                {{^hastimeline}}<div class="edzf-empty">{{#str}}notimeline, local_edzfaculty{{/str}}</div>{{/hastimeline}}
+            </div>
+        </section>
+    </div>
+
+    {{! ===== Zone 2: My Courses ===== }}
+    <section class="edzf-card">
+        <div class="edzf-card-h"><h2 class="edzf-h2">{{mycourseslabel}}</h2></div>
+        <div class="edzf-card-b">
+            <div class="edzf-coursegrid">
+                {{#courses}}
+                <a class="edzf-course" href="#" data-action="course-card" data-courseid="{{id}}">
+                    <div class="edzf-ct">{{name}}</div>
+                    <div class="edzf-cc">{{shortname}}</div>
+                    <div class="edzf-barwrap"><div class="edzf-bar" style="width:{{delivered}}%"></div></div>
+                    <div class="edzf-hint">{{#str}}contentdelivered, local_edzfaculty, {{delivered}}{{/str}}</div>
+                    <div class="edzf-cstats">
+                        <div><b>{{students}}</b><span>{{labels.students}}</span></div>
+                        <div><b>{{avgscore}}%</b><span>{{#str}}avgscore, local_edzfaculty{{/str}}</span></div>
+                        <div><b class="edzf-risk">{{atrisk}}</b><span>{{#str}}atrisklabel, local_edzfaculty{{/str}}</span></div>
+                    </div>
+                </a>
+                {{/courses}}
+                {{^hascourses}}<div class="edzf-empty">{{#str}}noaccess, local_edzfaculty{{/str}}</div>{{/hascourses}}
+            </div>
+        </div>
+    </section>
+
+    {{! ===== Zone 3: Insight ===== }}
+    <div class="edzf-two">
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}sectionperformance, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b"><canvas data-region="edzf-chart" height="180"></canvas></div>
+        </section>
+
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}engagementtitle, local_edzfaculty{{/str}}</h2>
+                {{#lastupdated}}<span class="edzf-ctx">{{.}}</span>{{/lastupdated}}
+                <button class="edzf-btn sm ghost" data-action="refresh">{{#str}}refresh, local_edzfaculty{{/str}}</button>
+            </div>
+            <div class="edzf-card-b">
+                <div class="edzf-segs" data-region="eng-segs">
+                    <button class="edzf-seg active" data-eng="0">{{#str}}allcourses, local_edzfaculty{{/str}}</button>
+                    {{#courseoptions}}<button class="edzf-seg" data-eng="{{id}}">{{label}}</button>{{/courseoptions}}
+                </div>
+                <div class="edzf-enggrid" data-region="eng-grid">
+                    {{#engagetiles}}
+                    <div class="edzf-e"><div class="edzf-ev" data-eng-key="{{key}}">{{value}}</div><div class="edzf-el">{{label}}</div><div class="edzf-et {{trendclass}}" data-eng-trend="{{key}}">{{trendtext}}</div></div>
+                    {{/engagetiles}}
+                </div>
+                {{#showai}}<div class="edzf-ainote"><span class="edzf-ai-ic">✦</span><p data-region="eng-ai"></p></div>{{/showai}}
+            </div>
+        </section>
+    </div>
+</div>

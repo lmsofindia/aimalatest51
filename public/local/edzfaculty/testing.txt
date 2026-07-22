@@ -1,0 +1,86 @@
+local_edzfaculty — Testing checklist (Phase 1)
+================================================
+
+PRE-REQ
+[ ] Moodle 5.0+ dev site with at least: 2 teaching courses, groups (sections),
+    5+ students, a mod_assign with submissions, a mod_forum with a student
+    question, some calendar events (a BBB/Zoom class + an exam).
+[ ] Test accounts: teacher1 (editingteacher on both courses), manager1, student1..5.
+
+INSTALL / UPGRADE
+[ ] Fresh install via Site admin > Notifications creates local_edzfaculty_cache
+    and local_edzfaculty_coursecache (check Site admin > Development > DB).
+[ ] purge_caches runs clean.
+[ ] Bump version + add a dummy upgrade block -> upgrade path runs without error.
+[ ] Uninstall drops both tables, leaves core untouched.
+
+CAPABILITIES / ACCESS
+[ ] teacher1 sees the dashboard at /local/edzfaculty/index.php.
+[ ] student1 (no teaching role) sees access notice, NOT the dashboard.
+[ ] manager1 can open ?teacherid=<teacher1> (viewall) read-only.
+[ ] Nav node "Faculty Dashboard" appears for teacher1 only.
+
+SCHEDULED TASK / CACHE
+[ ] Run: php admin/cli/scheduled_task.php --execute="\local_edzfaculty\task\refresh_cache"
+    -> mtrace shows courses processed, rows written to both cache tables.
+[ ] No $OUTPUT/$PAGE/session errors under CLI (Vidya lesson #9).
+[ ] Manual refresh (dashboard button) rebuilds teacher1's courses; second click
+    within 30 min is throttled with a notice.
+
+COURSE FOCUS (Zone 0)
+[ ] Selector lists teacher1's courses + "All courses".
+[ ] Switching course updates the 4 stat cards (live/assign/disc/quiz) via AJAX.
+[ ] Quick-action buttons deep-link to the correct Moodle page for the selected
+    course (assign grading, attendance, forum, add resource, add BBB, add quiz).
+[ ] Clicking a course card in Zone 2 sets the Course Focus + scrolls.
+
+TRIAGE (Zone 1)
+[ ] To-Grade KPI == count of assign submissions awaiting grade across courses.
+[ ] Grading tab lists items oldest-first with correct age + section pill.
+[ ] Discussions tab lists only threads whose last post is a student (unanswered).
+[ ] At-Risk tab lists cache rows with risklevel in (watch,critical); click opens
+    student-360 modal with correct metrics + reasons.
+[ ] Overdue tab: non-submitters count, unpublished module, unbuilt exam.
+[ ] Timeline shows today's classes (Join link for BBB/Zoom) + upcoming exams.
+
+INSIGHT (Zone 3)
+[ ] Section performance bar chart renders via core/chartjs (no bundled Chart.js).
+[ ] Engagement filter switches metrics + trend + AI insight per course (AJAX).
+[ ] Numbers reconcile with coursecache rows.
+
+TERMINOLOGY
+[ ] Setting = academic -> "Students / Sections". Setting = corporate ->
+    "Learners / Batches". No hardcoded label leaks.
+
+REGRESSION / STANDARDS
+[ ] Code passes moodle-plugin-ci codechecker (phpcs moodle standard).
+[ ] Privacy: tool_dataprivacy export/delete for a student returns cache rows.
+[ ] No PHP notices with debugging=DEVELOPER.
+[ ] AMD build in sync: grep dashboard.min.js matches src intent; grunt amd clean.
+
+PHASE 2 — NUDGE MESSAGING
+[ ] At-Risk tab -> click a student -> modal shows a nudge textarea.
+[ ] Send with empty box -> student receives the default templated notification
+    (check Notifications bell + email per message prefs).
+[ ] Send with edited text -> student receives that text; sender = the teacher.
+[ ] Teacher who does NOT teach that course cannot nudge (endpoint returns failed).
+[ ] Message provider "At-risk student nudge" appears in Preferences > Notifications.
+
+PHASE 2 — ZOOM ATTENDANCE AUTO-SYNC
+[ ] Install mod_zoom, hold a test Zoom class, let its cron pull participants.
+[ ] Set attendancesource = zoom (or auto) -> run refresh_cache ->
+    local_edzfaculty_cache.attendancepct populates from zoom_meeting_participants.
+[ ] zoomminminutes threshold respected (short joiners not counted attended).
+[ ] attendancesource = auto with mod_attendance present -> mod_attendance wins;
+    absent -> falls back to Zoom.
+[ ] attendancesource = off -> attendance ignored (null), risk score excludes it.
+
+PHASE 3 — POLISH
+[ ] Teacher with no teaching courses -> friendly access notice, not an empty page.
+[ ] Manager opening ?teacherid=X -> "viewing as" banner shows.
+[ ] Modal: Esc closes, close button focused on open, reason text is HTML-escaped.
+
+KNOWN LATER-PHASE GAPS (expected, not bugs)
+- Quiz manual-grading count is approximate (assign is precise).
+- AI-assist badges / plagiarism flags are UI-present, back end stubbed (axis-ai / Ravi).
+- Instant webhook recordings handled later by local_edzzoom (mod_zoom cron works now).
