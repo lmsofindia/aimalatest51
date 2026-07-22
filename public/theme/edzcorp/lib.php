@@ -606,7 +606,17 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     }
     $topics_is_cards    = (isset($s->fp_topics_style) && (string)$s->fp_topics_style === 'cards');
     $topics_percard     = (isset($s->fp_topics_percard) && (string)$s->fp_topics_percard === '8') ? 8 : 6;
-    $topics_specific_id = !empty($s->fp_topics_specific) ? (int)$s->fp_topics_specific : 0;
+    // "Specific category" now supports MULTIPLE ids (configmultiselect stores a
+    // comma-separated string, e.g. "3,5,7"). Parse into a clean int list.
+    $topics_specific_ids = [];
+    if (!empty($s->fp_topics_specific)) {
+        foreach (explode(',', (string)$s->fp_topics_specific) as $sid) {
+            $sid = (int)trim($sid);
+            if ($sid > 0) {
+                $topics_specific_ids[] = $sid;
+            }
+        }
+    }
 
     // Colour palette — cycles through if there are many categories.
     $topic_colors = ['#7c3aed', '#0891b2', '#059669', '#d97706', '#dc2626',
@@ -619,11 +629,11 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $fp_topics  = [];
     $color_idx  = 0;
 
-    // Append one category as a topic entry (respects hidden-category capability).
+    // Append one category as a topic entry. Hidden categories are NEVER shown on
+    // the public front page — not even to admins who could otherwise see them.
     $add_topic = function (\core_course_category $cat)
             use (&$fp_topics, &$color_idx, $topic_colors, $topic_icons) {
-        if (!$cat->visible
-                && !has_capability('moodle/category:viewhiddencategories', \context_system::instance())) {
+        if (!$cat->visible) {
             return;
         }
         $course_count = $cat->get_courses_count(['recursive' => true]);
@@ -639,11 +649,14 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     };
 
     try {
-        if ($topics_source === 'specific' && $topics_specific_id > 0) {
-            // One chosen category shown as a single featured tile.
-            $cat = \core_course_category::get($topics_specific_id, IGNORE_MISSING);
-            if ($cat) {
-                $add_topic($cat);
+        if ($topics_source === 'specific' && !empty($topics_specific_ids)) {
+            // One or more chosen categories, each shown as its own featured tile,
+            // in the order selected.
+            foreach ($topics_specific_ids as $cid) {
+                $cat = \core_course_category::get($cid, IGNORE_MISSING);
+                if ($cat) {
+                    $add_topic($cat);
+                }
             }
         } else if ($topics_source === 'all') {
             // Every category the user can see (top-level + sub-categories).
