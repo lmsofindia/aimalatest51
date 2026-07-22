@@ -1,0 +1,41 @@
+{{!
+    @template quizaccess_edproctoring/live_monitor
+
+    Chrome for the live proctoring wall. Tiles themselves are rendered by the
+    quizaccess_edproctoring/live_monitor AMD module, which polls the
+    quizaccess_edproctoring_get_live_sessions web service.
+
+    Context variables required for this template:
+    * cmid int Quiz course module id (0 = site-wide)
+    * refresh int Auto-refresh interval in seconds
+}}
+<div class="edp-live-wrap" data-cmid="{{cmid}}" data-refresh="{{refresh}}">
+    <div class="edp-live-toolbar">
+        <div class="edp-live-toolbar-left">
+            <span class="badge bg-secondary" id="edp-live-count">0</span>
+            <span class="edp-live-toolbar-label">{{#str}}livemonitor_active, quizaccess_edproctoring{{/str}}</span>
+        </div>
+        <div class="edp-live-toolbar-right">
+            <span class="edp-live-pulse" aria-hidden="true"></span>
+            <span class="edp-live-updated" id="edp-live-updated">{{#str}}livemonitor_connecting, quizaccess_edproctoring{{/str}}</span>
+            <button type="button" class="btn btn-sm btn-outline-secondary" id="edp-live-refresh">
+                {{#str}}livemonitor_refresh, quizaccess_edproctoring{{/str}}
+            </button>
+        </div>
+    </div>
+
+    <div id="edp-live-grid" class="edp-live-grid" aria-live="polite">
+        <div class="edp-live-loading" id="edp-live-loading">
+            <div class="spinner-border" role="status" aria-hidden="true"></div>
+            <div class="edp-live-loading-text">{{#str}}livemonitor_connecting, quizaccess_edproctoring{{/str}}</div>
+        </div>
+    </div>
+
+    <div id="edp-live-empty" class="alert alert-info" hidden>
+        {{#str}}livemonitor_none, quizaccess_edproctoring{{/str}}
+    </div>
+
+    <noscript>
+        <div class="alert alert-warning">{{#str}}livemonitor_nojs, quizaccess_edproctoring{{/str}}</div>
+    </noscript>
+</div>

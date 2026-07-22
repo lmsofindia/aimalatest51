@@ -1,0 +1,330 @@
+/* mod_edztrackvideo — redesigned locked player.
+   Theme-aware: reads --bs-primary / --bs-body-color where available. */
+
+.edztrackvideo-container {
+  --edztv-accent: var(--bs-primary, #0f6cbf);
+  --edztv-bg: #0b0d12;
+  --edztv-ctrl-bg: #11151c;
+  --edztv-text: #f5f7fa;
+  --edztv-muted: #aeb6c2;
+  --edztv-locked: rgba(255, 255, 255, 0.12);
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.edztrackvideo-player {
+  position: relative;
+  background: var(--edztv-bg);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+
+.edztrackvideo-player.edz-fullscreen {
+  border-radius: 0;
+}
+
+/* ---- Stage / media ---- */
+.edztrackvideo-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+}
+
+.edztrackvideo-media,
+.edztrackvideo-media iframe,
+.edztrackvideo-video {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  display: block;
+}
+
+.edztrackvideo-embed {
+  pointer-events: none; /* hide native YouTube/Vimeo chrome interaction */
+}
+
+/* The YouTube IFrame API REPLACES the holder div with an <iframe> that keeps the
+   id but drops our classes; Vimeo appends an <iframe> child. Target any iframe in
+   the stage so both are sized correctly AND non-interactive (no escape to provider). */
+.edztrackvideo-stage iframe {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0;
+  pointer-events: none;
+}
+
+.edztrackvideo-player.edz-fullscreen .edztrackvideo-stage {
+  aspect-ratio: auto;
+  height: calc(100vh - 64px);
+}
+
+/* ---- Overlays ---- */
+.edztrackvideo-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.edztrackvideo-watermark {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.55);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.02em;
+  user-select: none;
+}
+
+.edztrackvideo-bigplay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  transition: transform 0.12s ease, background 0.12s ease;
+}
+.edztrackvideo-bigplay:hover { background: var(--edztv-accent); transform: translate(-50%, -50%) scale(1.06); }
+.edz-bigplay-icon { margin-left: 4px; }
+.edztrackvideo-player.edz-playing .edztrackvideo-bigplay { display: none; }
+
+.edztrackvideo-toast {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  pointer-events: none;
+  max-width: 80%;
+  text-align: center;
+}
+
+.edztrackvideo-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edz-spinner {
+  width: 38px; height: 38px;
+  border: 3px solid rgba(255, 255, 255, 0.25);
+  border-top-color: var(--edztv-accent);
+  border-radius: 50%;
+  animation: edztv-spin 0.8s linear infinite;
+}
+@keyframes edztv-spin { to { transform: rotate(360deg); } }
+
+.edztrackvideo-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffd9d9;
+  background: rgba(40, 0, 0, 0.6);
+  font-size: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+/* ---- Controls ---- */
+.edztrackvideo-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--edztv-ctrl-bg);
+  color: var(--edztv-text);
+}
+
+.edz-btn {
+  background: transparent;
+  border: none;
+  color: var(--edztv-text);
+  cursor: pointer;
+  font-size: 15px;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s ease;
+}
+.edz-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.edz-btn.active { color: var(--edztv-accent); }
+
+.edz-volume { display: flex; align-items: center; gap: 4px; }
+.edz-volrange { width: 72px; accent-color: var(--edztv-accent); cursor: pointer; }
+
+.edz-time {
+  font-size: 12px;
+  color: var(--edztv-muted);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+/* progress bar */
+.edz-progress-wrap {
+  flex: 1 1 auto;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  outline: none;
+}
+.edz-progress-track {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+  transition: height 0.1s ease;
+}
+.edz-progress-wrap:hover .edz-progress-track { height: 9px; }
+
+.edz-progress-buffer,
+.edz-progress-fill,
+.edz-progress-locked {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  border-radius: 4px;
+}
+.edz-progress-buffer { left: 0; background: rgba(255, 255, 255, 0.28); width: 0; }
+.edz-progress-fill { left: 0; background: var(--edztv-accent); width: 0; }
+
+.edz-progress-locked {
+  display: none;
+  background: repeating-linear-gradient(
+    45deg,
+    var(--edztv-locked),
+    var(--edztv-locked) 5px,
+    rgba(255, 255, 255, 0.03) 5px,
+    rgba(255, 255, 255, 0.03) 10px
+  );
+}
+.edz-lock-glyph {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.edz-progress-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 3px;
+  height: 16px;
+  background: #fff;
+  border-radius: 2px;
+  display: none;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
+}
+.edz-progress-handle {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+.edz-progress-wrap:hover .edz-progress-handle { opacity: 1; }
+
+.edz-right { display: flex; align-items: center; gap: 6px; }
+.edz-speed {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--edztv-text);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  height: 32px;
+  padding: 0 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.edz-btn-cc { font-size: 12px; font-weight: 700; }
+
+/* completion ring */
+.edz-ring { position: relative; width: 30px; height: 30px; display: inline-flex; }
+.edz-ring-svg { width: 30px; height: 30px; transform: rotate(-90deg); }
+.edz-ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.2); stroke-width: 3; }
+.edz-ring-fg {
+  fill: none;
+  stroke: var(--edztv-accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.4s ease;
+}
+.edz-ring-check {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #38c172;
+  font-weight: 700;
+  font-size: 15px;
+}
+.edztrackvideo-player.edz-complete .edz-ring-fg { stroke: #38c172; }
+
+/* resume bar */
+.edztrackvideo-resumebar {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(15, 108, 191, 0.12);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+.edz-pill {
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.edz-pill-resume { background: var(--edztv-accent); color: #fff; }
+.edz-pill-dismiss { background: rgba(255, 255, 255, 0.12); color: var(--edztv-text); }
+
+/* info / intro */
+.edztrackvideo-info {
+  padding: 12px 4px 0;
+  color: var(--bs-body-color, inherit);
+  font-size: 14px;
+}
+
+/* responsive */
+@media (max-width: 600px) {
+  .edz-volrange { width: 48px; }
+  .edz-time { display: none; }
+  .edztrackvideo-controls { gap: 6px; padding: 6px 8px; }
+}

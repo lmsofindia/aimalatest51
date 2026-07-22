@@ -1,0 +1,115 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_reportpanel/consolidated
+
+    Consolidated user report: full-width user search (full mode) + summary charts +
+    report table + export.
+
+    Example context (json):
+    {
+        "backurl":"#","fullmode":true,"intro":"Search for a user.","baseurl":"#",
+        "searchlabel":"Search user","searchplaceholder":"Type...",
+        "hasuser":true,"username":"Jane Doe","useremail":"jane@x.io",
+        "reportfor":"Report for Jane Doe","rows":[],"hasrows":false,
+        "haschart":true,"hasdonut":true,"donutchart":"<canvas></canvas>",
+        "hasgradebar":true,"gradebarchart":"<canvas></canvas>",
+        "exportpdfurl":"#","exportcsvurl":"#","pickuser":"Choose a user."
+    }
+}}
+<div class="reportpanel-report">
+    <p><a href="{{backurl}}"><i class="fa fa-arrow-left"></i> {{#str}}backtopanel, local_reportpanel{{/str}}</a></p>
+    <p class="reportpanel-intro text-muted">{{intro}}</p>
+
+    {{#fullmode}}
+    <div class="reportpanel-usersearch" id="reportpanel-usersearch-wrap">
+        <label class="reportpanel-usersearch-label" for="reportpanel-usersearch">{{searchlabel}}</label>
+        <div class="reportpanel-usersearch-box">
+            <span class="reportpanel-usersearch-icon" aria-hidden="true"><i class="fa fa-magnifying-glass"></i></span>
+            <input type="text" class="form-control reportpanel-usersearch-input" id="reportpanel-usersearch"
+                   autocomplete="off" placeholder="{{searchplaceholder}}"
+                   aria-label="{{searchlabel}}" data-baseurl="{{baseurl}}">
+            <span class="reportpanel-usersearch-spinner" id="reportpanel-usersearch-spinner" hidden aria-hidden="true">
+                <i class="fa fa-circle-notch fa-spin"></i>
+            </span>
+        </div>
+        <div class="reportpanel-usersearch-results list-group" id="reportpanel-usersearch-results" hidden></div>
+    </div>
+    {{/fullmode}}
+
+    {{#hasuser}}
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+            <h3 class="h5 mb-0">{{reportfor}}</h3>
+            <div class="reportpanel-toolbar mb-0">
+                <a class="btn btn-outline-secondary btn-sm" href="{{exportpdfurl}}">
+                    <i class="fa fa-file-pdf"></i> {{#str}}downloadpdf, local_reportpanel{{/str}}
+                </a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{exportcsvurl}}">
+                    <i class="fa fa-file-csv"></i> {{#str}}downloadcsv, local_reportpanel{{/str}}
+                </a>
+            </div>
+        </div>
+        <p class="reportpanel-meta">{{username}} &middot; {{useremail}}</p>
+
+        {{#haschart}}
+        <div class="reportpanel-charts">
+            {{#hasdonut}}
+            <div class="reportpanel-chartcard">
+                <h4 class="reportpanel-chartcard-title">{{#str}}chart_completionstatus, local_reportpanel{{/str}}</h4>
+                <div class="reportpanel-chartcard-body">{{{donutchart}}}</div>
+            </div>
+            {{/hasdonut}}
+            {{#hasgradebar}}
+            <div class="reportpanel-chartcard">
+                <h4 class="reportpanel-chartcard-title">{{#str}}chart_gradepercourse, local_reportpanel{{/str}}</h4>
+                <div class="reportpanel-chartcard-body">{{{gradebarchart}}}</div>
+            </div>
+            {{/hasgradebar}}
+        </div>
+        {{/haschart}}
+
+        {{#hasrows}}
+        <div class="reportpanel-table-wrap">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{{#str}}course, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_completionpct, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_completiondate, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_grade, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_certdate, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_badges, local_reportpanel{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                    <tr>
+                        <td><a href="{{courseurl}}" class="reportpanel-cell-link">{{coursename}}</a></td>
+                        <td>
+                            {{#hascompletionpct}}<a href="{{completionurl}}" class="reportpanel-cell-link">{{completionpct}}</a>{{/hascompletionpct}}
+                            {{^hascompletionpct}}{{completionpct}}{{/hascompletionpct}}
+                        </td>
+                        <td>{{completiondate}}</td>
+                        <td>
+                            {{#hasgrade}}<a href="{{gradeurl}}" class="reportpanel-cell-link">{{grade}}</a>{{/hasgrade}}
+                            {{^hasgrade}}{{grade}}{{/hasgrade}}
+                        </td>
+                        <td>{{certdate}}</td>
+                        <td>{{badges}}</td>
+                    </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        </div>
+        {{/hasrows}}
+        {{^hasrows}}
+        <div class="alert alert-info">{{#str}}cons_nocourses, local_reportpanel{{/str}}</div>
+        {{/hasrows}}
+    {{/hasuser}}
+
+    {{^hasuser}}
+        {{#pickuser}}
+        <div class="alert alert-info">{{pickuser}}</div>
+        {{/pickuser}}
+    {{/hasuser}}
+</div>

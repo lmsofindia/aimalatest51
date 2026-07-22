@@ -1,0 +1,22 @@
+{{!
+    @template block_corpwelcome/search_results
+    Rendered via AJAX into data-region="cw-results"
+}}
+{{#courses}}
+<a href="{{url}}" class="cw-result-row">
+    <div class="cw-result-thumb">
+        {{#imgurl}}<img src="{{imgurl}}" alt="" loading="lazy">{{/imgurl}}
+        {{^imgurl}}<span class="cw-result-thumb-placeholder">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        </span>{{/imgurl}}
+    </div>
+    <div class="cw-result-meta">
+        {{#category}}<span class="cw-result-cat">{{category}}</span>{{/category}}
+        <span class="cw-result-name">{{name}}</span>
+    </div>
+    <svg class="cw-result-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+</a>
+{{/courses}}
+{{^courses}}
+<p class="cw-no-results">{{#str}}noresults, block_corpwelcome{{/str}}</p>
+{{/courses}}

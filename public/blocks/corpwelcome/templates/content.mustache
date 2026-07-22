@@ -1,0 +1,84 @@
+{{!
+    @template block_corpwelcome/content
+    Dark glassmorphism welcome — v2 design
+    @copyright 2025 EdzCorp
+}}
+<div class="cw2-wrap" data-bgcolor="{{bgcolor}}" data-instanceid="{{instanceid}}">
+    <div class="cw2-glow-layer"></div>
+
+    {{! Top bar: day label + streak }}
+    <div class="cw2-topbar">
+        <span class="cw2-daylabel">{{daylabel}}</span>
+        {{#hasstreak}}
+        <div class="cw2-streak-badge">
+            <span class="cw2-streak-flame">🔥</span>
+            <div class="cw2-streak-info">
+                <span class="cw2-streak-num">{{streak}}</span>
+                <span class="cw2-streak-lbl">DAY STREAK</span>
+            </div>
+        </div>
+        {{/hasstreak}}
+    </div>
+
+    {{! Heading }}
+    <div class="cw2-heading-block">
+        <h2 class="cw2-hey">Hey {{username}},</h2>
+        <h2 class="cw2-tagline">ready to level up?</h2>
+        <p class="cw2-sub">
+            {{#lastcourse}}You're {{goalPct}}% closer to your monthly goal. Let's make it {{goalTarget}}.{{/lastcourse}}
+            {{^lastcourse}}Welcome back! Start a course to build your streak.{{/lastcourse}}
+        </p>
+    </div>
+
+    {{! Stat cards }}
+    <div class="cw2-stats">
+        <div class="cw2-stat cw2-stat--orange">
+            <div class="cw2-stat-orb cw2-orb--orange"></div>
+            {{#hasnewenrolled}}<span class="cw2-delta">+{{newenrolled}}</span>{{/hasnewenrolled}}
+            <div class="cw2-stat-num">{{enrolledcount}}</div>
+            <div class="cw2-stat-lbl">Enrolled</div>
+        </div>
+        <div class="cw2-stat cw2-stat--teal">
+            <div class="cw2-stat-orb cw2-orb--teal"></div>
+            {{#hasnewcompleted}}<span class="cw2-delta">+{{newcompleted}}</span>{{/hasnewcompleted}}
+            <div class="cw2-stat-num">{{completedcount}}</div>
+            <div class="cw2-stat-lbl">Completed</div>
+        </div>
+        <div class="cw2-stat cw2-stat--blue">
+            <div class="cw2-stat-orb cw2-orb--blue"></div>
+            {{#hasnewcerts}}<span class="cw2-delta">+{{newcerts}}</span>{{/hasnewcerts}}
+            <div class="cw2-stat-num">{{certcount}}</div>
+            <div class="cw2-stat-lbl">Certificates</div>
+        </div>
+        <div class="cw2-stat cw2-stat--purple">
+            <div class="cw2-stat-orb cw2-orb--purple"></div>
+            {{#hasnewbadges}}<span class="cw2-delta">+{{newbadges}}</span>{{/hasnewbadges}}
+            <div class="cw2-stat-num">{{badgecount}}</div>
+            <div class="cw2-stat-lbl">Badges</div>
+        </div>
+    </div>
+
+    {{! Search bar }}
+    <div class="cw2-search-area">
+        <div class="cw2-search-row" data-region="cw-search-row">
+            <div class="cw2-search-box">
+                <svg class="cw2-search-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text"
+                       class="cw2-search-input"
+                       data-action="cw-search"
+                       placeholder="{{#str}}searchplaceholder, block_corpwelcome{{/str}}"
+                       autocomplete="off" />
+            </div>
+            <button class="cw2-find-btn" data-action="cw-search-btn">Find courses</button>
+        </div>
+
+        <div class="cw2-pills">
+            <button class="cw2-pill cw2-pill--active" data-action="cw-cat" data-catid="0">All</button>
+            {{#categories}}
+            <button class="cw2-pill" data-action="cw-cat" data-catid="{{id}}" data-catname="{{name}}">{{name}}</button>
+            {{/categories}}
+        </div>
+
+        <div class="cw2-results" data-region="cw-results" hidden></div>
+    </div>
+</div>

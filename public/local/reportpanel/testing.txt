@@ -1,0 +1,159 @@
+local_reportpanel — manual test checklist
+==========================================
+
+SETUP
+-----
+[ ] Copy local/reportpanel to MOODLE/local/reportpanel
+[ ] Site admin -> Notifications -> install runs clean (no XMLDB; no errors)
+[ ] php admin/cli/purge_caches.php
+[ ] After editing amd/src/*.js: grunt amd  (or confirm amd/build/*.min.js updated)
+
+SETTINGS
+--------
+[ ] Settings page loads under Plugins -> Local plugins -> Report panel
+[ ] Card URLs show relative defaults; editing one repoints the card
+[ ] Disabling an external card hides it from the grid
+
+PANEL (index.php)
+-----------------
+As ADMIN:
+[ ] All 8 cards render; layout is a clean responsive grid; theme colours respected
+[ ] Leaderboard / Site reports / Log report / Team reports / Badges open correct URLs (same tab)
+As HR MANAGER (role per hrmanager.md):
+[ ] Same 8 cards as admin
+As TEAM MANAGER (edzteams:viewteam, no viewall):
+[ ] Sees Team reports + Quiz/Cert/Consolidated/Leaderboard/Badges; Site reports & Log report hidden
+As PLAIN LEARNER:
+[ ] Sees Leaderboard, Quiz, Certificate, Consolidated, Badges; Site reports/Log/Team hidden
+[ ] Guest / logged-out -> redirected to login
+
+QUIZ REPORTS (quiz.php)
+-----------------------
+Full mode (admin/HR):
+[ ] Category dropdown lists visible categories
+[ ] Selecting a category AJAX-populates the course dropdown
+[ ] Selecting a course lists quizzes: attempts (distinct users), highest, min, average grade
+[ ] Numbers match a manual check on one quiz
+[ ] Clicking quiz name opens /mod/quiz/report.php?id=CMID&mode=overview
+[ ] Course with no quizzes -> friendly empty state
+Self mode (learner):
+[ ] No category/course pickers
+[ ] Lists own quiz attempts across enrolled courses with own grade + last attempt date
+[ ] Quiz name links to own review (or view if no attempt)
+
+CERTIFICATE REPORTS (certificate.php)
+-------------------------------------
+Full mode:
+[ ] category -> course cascade works
+[ ] Lists customcerts with issued count
+[ ] Clicking cert name opens /mod/customcert/view.php?id=CMID
+Self mode:
+[ ] Lists own issued certificates with issue date; name links to own cert view
+[ ] No customcert installed -> graceful message (no fatal)
+
+CONSOLIDATED USER REPORT (consolidated.php)
+-------------------------------------------
+Full mode:
+[ ] User search typeahead returns name/email matches (min 2 chars)
+[ ] Picking a user + submit shows table: Name, Email, Course, Completion %,
+    Completion date, Grade, Certificate date, Badge(s)
+[ ] Completion %, grade, cert date, badges verified against one real user
+[ ] Download PDF: branded header band on every page; meta shows user, email,
+    print date/time + printer; footer page x/y; landscape table readable
+[ ] Download CSV: opens in Excel; columns + rows correct; UTF-8 names intact
+Self mode (learner):
+[ ] No search box; table is own data only
+[ ] Direct hit of consolidated.php?userid=OTHER is blocked (forced to self)
+[ ] PDF/CSV export own report works
+
+SECURITY / EDGE
+---------------
+[ ] require_login + require_capability(local/reportpanel:view) on every page
+[ ] AJAX get_courses / search_users require local/reportpanel:viewall
+[ ] All output passed through format_string / s(); moodle_url for every link
+[ ] PHP lint: php -l on every .php file -> no syntax errors
+[ ] No PHP notices/warnings in error log during a full click-through
+
+PRIVACY
+-------
+[ ] Privacy provider is null_provider (plugin stores no user data) and registers clean
+
+=== v1.1.0 — course report + charts ===
+
+Consolidated course report (courseconsolidated.php) — full mode:
+[ ] Card "Consolidated course report" appears on the panel for admin/manager only
+    (NOT for a self-mode user).
+[ ] Category select changes -> course select repopulates -> picking a course loads it.
+[ ] Table lists every enrolled user with completion %, activities X/Y, grade,
+    completion date, status badge.
+[ ] Stat cards show correct totals (enrolled = completed + in-progress + not-started).
+[ ] Doughnut renders (completion status); grade bar renders (distribution).
+[ ] Course with no completion tracking: completion % and activities show "—",
+    users still listed, no PHP errors.
+[ ] Course with no enrolled users: "No users are enrolled" info box, no charts.
+[ ] Export PDF -> branded landscape PDF with summary line + full table.
+[ ] Export CSV -> 7 columns, one row per user.
+[ ] Direct-hit courseconsolidated.php as a self-mode user -> access denied (viewall required).
+
+Consolidated user report (consolidated.php) charts + search:
+[ ] Doughnut + grade-per-course bar appear above the table for a user with data.
+[ ] User with a single not-started course: charts still sane (donut shows not-started).
+[ ] Search box is full-width, rounded, with magnifier icon; typing >=2 chars shows
+    spinner then results; clicking a result loads that user's report.
+[ ] No-match query shows "No matching users found."
+
+Deploy: purge caches after install (new template + AMD-free charts + lang strings).
+
+=== v1.1.1 — UI/UX polish ===
+[ ] User & course reports: charts render compact (no giant page scroll), centred,
+    with an uppercase card title + divider.
+[ ] Selects (course category/course + status filter) show a custom chevron arrow.
+[ ] Course report stat cards: icon chip + light tinted bg, hover lift, NO left border.
+[ ] Course report: filter inputs (name, email) + status dropdown filter table live;
+    "X / Y" count updates; "no learners match" shows when nothing matches.
+[ ] User report table: Course -> /course/view.php, Completion % -> completion report,
+    Grade -> user's gradebook report (only linked when a grade exists).
+[ ] Course report table: Name -> user's in-course profile, Activities -> completion
+    report, Grade -> user's gradebook report.
+[ ] All links open the correct course/user context; "—" cells are not links.
+
+== v1.2.0 Time & engagement report ==
+[ ] As admin/HR Manager, the "Time & engagement" card appears on the hub; as a plain
+    user it does NOT, and opening engagement.php directly shows the managers-only notice
+    with a link to the personal performance page.
+[ ] With local_trackmytime installed + data present: KPIs, trend line, top-courses bar +
+    table, and heatmap all render. Charts are a sane height (not full-page tall).
+[ ] Date-range select switches window; "Custom range…" reveals From/To date inputs and
+    filters correctly. Active-users KPI reflects the `activedays` setting (default 7).
+[ ] "Download CSV" streams the top-courses-by-time table.
+[ ] Uninstall/disable local_trackmytime → engagement page shows the "time tracking
+    unavailable" info state, no PHP errors, rest of the Hub unaffected.
+[ ] Upgrade from 1.1.x: new capability-free card + `activedays` setting appear after
+    Notifications + purge caches.
+
+== v1.3.0 Rankings (D) + Site overview (B) ==
+[ ] After upgrade, the hub shows new "Rankings" and "Site overview" cards (managers only);
+    the old external "Site reports" card is gone.
+[ ] Rankings: all four blocks render with bar chart + table. Date range, category filter
+    and Top-N (10/20/50) all change results. Time-on-task block honours category.
+[ ] Overview: 8 KPI cards populate; three trend charts draw (or show empty state on a
+    quiet site); registration + enrolment-health tables show sane counts; top-courses
+    strip links to Rankings.
+[ ] With local_trackmytime absent: overview shows the "time unavailable" notice, time
+    KPI/trend degrade to 0/empty, no PHP errors; rankings time block simply empty.
+[ ] customcert not installed → "Certificates issued" KPI is 0 (no error).
+[ ] Verify no leftover references to /report/lmsace_reports in the hub.
+
+== v1.4.0 UI/UX + Domain E ==
+[ ] Ranking course/learner names and overview top-courses/KPIs are clickable and land on
+    the right course/user report (or engagement/rankings for KPIs).
+[ ] Overview KPI cards show ▲/▼ deltas vs the previous equal window; numbers have commas.
+[ ] Changing any filter dropdown auto-submits; re-opening a report (no query) restores the
+    last filter. Custom date range still needs Apply.
+[ ] Every report page shows the range chip + "As of ..."; CSV export works on all three.
+[ ] On a narrow screen the heatmap scrolls horizontally and filters stack full-width.
+[ ] Hub shows "Manager reports" and "My reports" sections (self-only users see just My).
+[ ] Domain E: pick a course on the consolidated course report → "Activity coverage" table
+    lists every activity with completion X/total, overdue badge, avg grade, avg time;
+    assignments show "N submitted · N graded · N late". Course with completion off shows —.
+[ ] trackmytime 1.2.0 deployed first (module_time_totals) so per-activity time populates.

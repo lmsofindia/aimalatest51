@@ -1,0 +1,274 @@
+quizaccess_edproctoring — Manual Test Checklist
+Phase 1
+===============================================================
+
+ENVIRONMENT SETUP
+-----------------
+Moodle URL: [your moodle URL]
+Admin login: admin / [password]
+Teacher login: teacher1 / [password]
+Student login: student1 / [password]
+Course: Test Course (with at least one quiz)
+Browser: Chrome (primary), Firefox (secondary)
+HTTPS: Required (camera won't work on HTTP)
+AMD: Confirm amd/build/ files exist before testing
+
+===============================================================
+SECTION 1: PLUGIN INSTALLATION
+===============================================================
+
+[ ] 1.1 Plugin files uploaded to /quizaccess/edproctoring/ with correct ownership
+[ ] 1.2 Visit Site admin > Notifications — plugin appears in list without errors
+[ ] 1.3 Database tables created: quizaccess_edproctoring, _session, _snap, _violation, _baseimg
+[ ] 1.4 Site admin > Plugins > Quiz access rules > Ed Proctoring settings page loads
+[ ] 1.5 All default settings visible and saveable
+[ ] 1.6 Purge caches — no errors in PHP error log
+
+===============================================================
+SECTION 2: QUIZ CONFIGURATION
+===============================================================
+
+[ ] 2.1 Open a quiz > Edit settings > "Extra restrictions on attempts"
+[ ] 2.2 "Ed Proctoring" appears as an option (plugin shows up as access rule)
+[ ] 2.3 Enable proctoring — additional settings fields appear
+[ ] 2.4 Save quiz settings — record saved in quizaccess_edproctoring table (verify via DB)
+[ ] 2.5 Capture interval field: accepts integer, rejects text, minimum 10 seconds enforced
+[ ] 2.6 Grace period: accepts integer 1–60
+[ ] 2.7 Auto-submit threshold: appears only when auto-submit is enabled
+[ ] 2.8 Disable proctoring — quiz is accessible normally without proctoring flow
+
+===============================================================
+SECTION 3: MOBILE BLOCKING
+===============================================================
+
+[ ] 3.1 With block_mobile=yes: access quiz on mobile browser — see "This quiz requires a desktop browser" message
+[ ] 3.2 No quiz attempt is created when mobile is blocked
+[ ] 3.3 With block_mobile=no: quiz accessible on mobile (camera flow may be degraded — acceptable)
+[ ] 3.4 Blocking uses User-Agent server-side check (not just JS — try spoofing UA in Moodle PHP env is not easy but verify logic in mobile_detector.php)
+
+===============================================================
+SECTION 4: CONSENT SCREEN
+===============================================================
+
+[ ] 4.1 Student navigates to proctored quiz > "Attempt quiz"
+[ ] 4.2 Consent screen appears BEFORE quiz attempt is created
+[ ] 4.3 Consent screen shows: institution name, retention days (from site settings), privacy policy link
+[ ] 4.4 Without ticking checkbox: "I Agree" button is disabled or validation fails
+[ ] 4.5 With checkbox ticked: proceed to pre-flight check
+[ ] 4.6 Decline (back browser button): no session record created, no attempt created
+[ ] 4.7 Consent is recorded: quizaccess_edproctoring_session.consent_given=1, consent_time populated
+
+===============================================================
+SECTION 5: PRE-FLIGHT CHECK
+===============================================================
+
+[ ] 5.1 Pre-flight wizard loads after consent
+[ ] 5.2 Step 1 - Camera Permission: browser prompts for camera access
+[ ] 5.3 Step 1 - Deny camera: quiz is blocked with clear message. No attempt created.
+[ ] 5.4 Step 1 - Allow camera: live video preview appears
+[ ] 5.5 Step 2 - Face Detection: face-api.js runs. With face in view: detection shows "Face detected ✓"
+[ ] 5.6 Step 2 - No face in view: "No face detected — please position yourself in front of camera"
+[ ] 5.7 Step 2 - Multiple faces: "Multiple people detected — please ensure only you are visible"
+[ ] 5.8 Step 2 - Low light: "Lighting is too low — please improve lighting"
+[ ] 5.9 Step 3 - All checks passed: "Start Quiz" button activates
+[ ] 5.10 Pre-flight takes a baseline snapshot (capture_type=pre_quiz) stored in Moodledata
+[ ] 5.11 Session record created in _session table after pre-flight passes
+
+===============================================================
+SECTION 6: IN-QUIZ CAPTURE & OVERLAY
+===============================================================
+
+[ ] 6.1 Camera overlay appears top-right of quiz page after pre-flight
+[ ] 6.2 Overlay shows: live video thumbnail (~120×90px), red recording dot, violation count (starts 0)
+[ ] 6.3 Interval capture fires every N seconds (set to 10s for testing, verify with DB inserts)
+[ ] 6.4 Each interval snapshot: new row in _snap table, file saved in Moodledata
+[ ] 6.5 Snapshot files are PNG format, in correct filearea (snapshots), associated with cmid context
+[ ] 6.6 Overlay does not obscure quiz navigation or question text
+
+===============================================================
+SECTION 7: VIOLATION DETECTION
+===============================================================
+
+FACE_ABSENT
+[ ] 7.1 Cover camera with hand for > grace_period seconds → FACE_ABSENT violation logged
+[ ] 7.2 Toast "⚠ Warning 1: Face not detected" appears
+[ ] 7.3 Burst capture fires (3 snapshots at 2s intervals) with capture_type=burst
+[ ] 7.4 Violation record in _violation table: type=FACE_ABSENT, severity=critical, weight=10
+[ ] 7.5 Cover camera briefly (< grace_period) → NO violation fires (grace period working)
+[ ] 7.6 Uncover camera → detection resumes, no repeated violations for same event
+
+MULTIPLE_FACES
+[ ] 7.7 Have a second person enter camera frame → MULTIPLE_FACES violation logged (weight=15)
+[ ] 7.8 Toast "⚠ Warning N: Multiple people detected" appears
+[ ] 7.9 Burst capture fires
+
+TAB_SWITCH
+[ ] 7.10 Switch to another browser tab → TAB_SWITCH violation logged (weight=8)
+[ ] 7.11 Violation elapsed_seconds and quiz_page populated correctly
+[ ] 7.12 Switch back to quiz — no additional violation
+
+FULLSCREEN_EXIT (if enabled)
+[ ] 7.13 Quiz requests fullscreen on start
+[ ] 7.14 Press Esc → FULLSCREEN_EXIT violation logged (weight=5)
+[ ] 7.15 "Re-enter fullscreen" button appears in overlay
+
+COPY_PASTE
+[ ] 7.16 Press Ctrl+C anywhere in quiz body → COPY_PASTE violation logged (weight=3)
+[ ] 7.17 Right-click in quiz body → COPY_PASTE violation logged
+[ ] 7.18 Ctrl+C in browser address bar (outside quiz body) → no violation
+
+LOW_LIGHT
+[ ] 7.19 Cover camera lens partially (very dark scene) → LOW_LIGHT violation (weight=2)
+
+CAMERA_BLOCKED
+[ ] 7.20 Revoke camera permission mid-quiz via browser settings → CAMERA_BLOCKED (weight=12)
+[ ] 7.21 Overlay shows "Camera disconnected" message
+
+===============================================================
+SECTION 8: WARNING SYSTEM & AUTO-SUBMIT
+===============================================================
+
+[ ] 8.1 Warning count in overlay increments with each violation
+[ ] 8.2 Auto-submit disabled (default): quiz continues regardless of violations
+[ ] 8.3 Auto-submit enabled with threshold=3: after 3 critical violations, quiz submits automatically
+[ ] 8.4 Auto-submit uses quiz's native finish mechanism (quiz_attempt record correctly finalized)
+[ ] 8.5 Grace period: rapid face disappear/reappear within grace_period → 0 violations
+
+===============================================================
+SECTION 9: SESSION COMPLETION & TRUST SCORE
+===============================================================
+
+[ ] 9.1 Student submits quiz normally → session.status set to 'completed'
+[ ] 9.2 Trust score calculated: 100 − sum of all violation weights
+[ ] 9.3 Score stored in session.trust_score (DECIMAL 2dp)
+[ ] 9.4 Example: 1×FACE_ABSENT(10) + 1×TAB_SWITCH(8) = trust score 82 ✓
+[ ] 9.5 Score cannot go below 0 (try many violations)
+[ ] 9.6 Quiz abandonment (browser close) → session.status set to 'abandoned' via mod_quiz event
+
+===============================================================
+SECTION 10: TEACHER REPORT — ATTEMPTS LIST
+===============================================================
+
+[ ] 10.1 Teacher logs in → opens proctored quiz → "Proctoring Report" link visible
+[ ] 10.2 Attempts list loads: student name, attempt#, start time, trust score, violation counts
+[ ] 10.3 Trust score colour coding: ≥80 green, 60–79 amber, <60 red
+[ ] 10.4 "Flagged" filter: shows only attempts with trust_score < notify_threshold
+[ ] 10.5 Date range filter works
+[ ] 10.6 Violation type filter: show only attempts with a specific violation type
+[ ] 10.7 "Detail" link opens attempt detail page
+[ ] 10.8 Teacher sees only their course's quiz attempts (not other courses)
+
+===============================================================
+SECTION 11: TEACHER REPORT — ATTEMPT DETAIL
+===============================================================
+
+[ ] 11.1 Detail page loads: student name, quiz, attempt, start/end time, final trust score
+[ ] 11.2 Trust score breakdown table shows each violation type with count + weight contribution
+[ ] 11.3 Violation timeline renders: horizontal bar, violations as dots at correct timestamps
+[ ] 11.4 Clicking a violation dot shows popup with type, severity, timestamp, associated snapshot
+[ ] 11.5 Image gallery shows all snapshots in chronological order
+[ ] 11.6 Each snapshot card: timestamp, capture_type badge, face_detected indicator, violation badge if is_violation=1
+[ ] 11.7 Click snapshot → enlarged view (lightbox or new tab)
+[ ] 11.8 "Delete images for this session" button: removes all snapshots + files, violation records remain
+[ ] 11.9 Dismiss violation button: marks dismissed=1, recalculates trust score, updates display
+
+===============================================================
+SECTION 12: NOTIFICATIONS
+===============================================================
+
+[ ] 12.1 Trust score < notify_threshold after quiz: teacher receives Moodle message
+[ ] 12.2 Message contains: student name, trust score, violation summary, link to report
+[ ] 12.3 Trust score ≥ notify_threshold: no message sent
+[ ] 12.4 notify_teacher=no on quiz: no message sent regardless of score
+[ ] 12.5 Multiple teachers in course: all receive the notification
+
+===============================================================
+SECTION 13: GDPR & DATA RETENTION
+===============================================================
+
+[ ] 13.1 Site admin > Privacy > Data requests > Export for student1 → includes proctoring data
+[ ] 13.2 Site admin > Privacy > Data requests > Delete for student1 → all _session, _snap, _violation records deleted, Moodledata files deleted
+[ ] 13.3 Scheduled task cleanup_images: manually run via CLI
+    php admin/cli/scheduled_task.php --execute="\quizaccess_edproctoring\task\cleanup_images"
+    Verify: snaps older than retention_days deleted. Recent snaps untouched.
+[ ] 13.4 Retention set to 1 day: run task next day → all snaps deleted
+[ ] 13.5 Privacy provider metadata() lists all tables + fields
+
+===============================================================
+SECTION 14: PERMISSIONS & SECURITY
+===============================================================
+
+[ ] 14.1 Student cannot access teacher report URL directly → 403 / redirect
+[ ] 14.2 Student cannot call log_violation for another student's session → error
+[ ] 14.3 Teacher in Course A cannot view reports from Course B
+[ ] 14.4 Manager can view all reports across all courses
+[ ] 14.5 Admin has full access including delete
+
+===============================================================
+SECTION 15: CACHING
+===============================================================
+
+[ ] 15.1 Quiz settings loaded from DB on first access → cached (check Moodle cache inspector)
+[ ] 15.2 Change quiz proctoring settings → purge cache → new settings reflected immediately
+[ ] 15.3 Settings cache does not persist after Moodle cache purge
+
+===============================================================
+SECTION 16: UPGRADE PATH TEST
+===============================================================
+
+[ ] 16.1 Install fresh (no previous version) → all 5 tables created cleanly
+[ ] 16.2 (Phase 2 test) Upgrade from 2025050100 to next version → upgrade.php runs without error, new columns added without data loss
+
+===============================================================
+SECTION 17: AMD MODULES
+===============================================================
+
+[ ] 17.1 amd/build/ files are present and non-empty
+[ ] 17.2 Browser console shows no AMD load errors on quiz page
+[ ] 17.3 proctoring_session.js initializes on quiz page load (check console log "EDP: session initialized")
+[ ] 17.4 face_detector.js loads face-api.js model without 404 errors
+[ ] 17.5 tab_monitor.js registers without error (check console)
+
+===============================================================
+SECTION 18: EDGE CASES
+===============================================================
+
+[ ] 18.1 Student starts quiz → loses internet mid-attempt → violation_reporter retries up to 3 times
+[ ] 18.2 Snapshot upload fails (server error) → JS does not crash, quiz continues, retry queued
+[ ] 18.3 Student navigates pages within quiz → quiz_page captured correctly in violation records
+[ ] 18.4 Very long quiz (3 hours) — session remains active, captures continue (no timeout)
+[ ] 18.5 Student opens quiz in two tabs simultaneously → second tab detects existing active session and shows warning
+[ ] 18.6 Quiz with time limit → auto-submit by Moodle timer → session correctly marked completed
+[ ] 18.7 Safari: getUserMedia works (requires HTTPS, tested on Safari 15.4+)
+
+===============================================================
+NOTES FOR TESTER
+===============================================================
+
+- After any AMD change: run `php admin/cli/purge_caches.php` AND clear browser cache
+- DB inspection: use Moodle XMLDB editor or direct DB client to verify records
+- Moodledata files: check /path/to/moodledata/filedir/ for PNG files (pathnamehash routing)
+- face-api.js requires a face to be visually clear — poor lighting or tiny faces will give inconsistent results (expected behaviour)
+- Auto-submit threshold testing: set to 2 critical violations, deliberately trigger FACE_ABSENT twice
+
+===============================================================
+SECTION 19: LIVE MONITOR (Option A) — v2026062700
+===============================================================
+
+[ ] 19.1 Teacher: proctoring report page shows "Open live monitor" button
+[ ] 19.2 report/live.php?cmid=X loads for a teacher with viewreport; denied without
+[ ] 19.3 Start an attempt as a student -> tile appears on the wall within one refresh (9s)
+[ ] 19.4 Tile shows latest webcam frame, name, course/quiz, elapsed, violation counts, trust
+[ ] 19.5 Trigger a violation (tab switch) -> counts + provisional trust update on next poll
+[ ] 19.6 Tiles sort suspicious-first (most critical, then lowest trust)
+[ ] 19.7 Close the student tab / stop camera -> tile flips to "Connection lost" after ~3x interval
+[ ] 19.8 Submit the attempt -> session leaves 'active', tile disappears next poll
+[ ] 19.9 Click a tile -> attempt_detail.php opens in a new tab for that session
+[ ] 19.10 Switch browser tab away from the wall -> polling pauses (no network calls); returning resumes + refetches
+[ ] 19.11 Manual "Refresh" button forces an immediate poll
+[ ] 19.12 Site-wide: /report/live.php (no cmid) shows active sessions across all quizzes for a manager (viewallreports); denied for a teacher without it
+[ ] 19.13 Site administration > Reports shows "Live proctoring monitor" link for managers
+[ ] 19.14 Empty state: no active attempts -> "no active sessions" message, no console errors
+[ ] 19.15 Admin setting "Live monitor refresh interval" changes the poll cadence after save + purge
+[ ] 19.16 No regression: existing report/index.php, attempt_detail.php, CSV/PDF export still work
+[ ] 19.17 After deploy: purge caches + bump triggers WS re-read; check no AMD 404 for live_monitor

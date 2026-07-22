@@ -1,0 +1,154 @@
+/* quizaccess_edproctoring — live monitor wall styles. */
+
+.edp-live-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .5rem;
+    margin-bottom: 1rem;
+}
+.edp-live-toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+}
+.edp-live-toolbar-label {
+    margin-left: .35rem;
+    color: #6c757d;
+}
+.edp-live-updated {
+    font-size: .85rem;
+    color: #6c757d;
+}
+.edp-live-pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #28a745;
+    display: inline-block;
+    animation: edp-live-pulse 1.6s ease-in-out infinite;
+}
+@keyframes edp-live-pulse {
+    0%   { opacity: 1; transform: scale(1); }
+    50%  { opacity: .35; transform: scale(.8); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.edp-live-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+.edp-live-loading {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #6c757d;
+    padding: 3rem 0;
+}
+.edp-live-loading-text {
+    margin-top: .5rem;
+}
+
+.edp-live-tile {
+    display: block;
+    border: 1px solid #dee2e6;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    transition: box-shadow .15s ease, transform .15s ease;
+}
+.edp-live-tile:hover {
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .12);
+    transform: translateY(-2px);
+}
+.edp-live-tile.edp-band-high   { border-color: #a51c30; }
+.edp-live-tile.edp-band-review { border-color: #b35900; }
+.edp-live-tile.edp-band-low    { border-color: #dee2e6; }
+
+.edp-live-imgwrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background: #11161c;
+}
+.edp-live-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.edp-live-noimg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: .85rem;
+}
+.edp-live-trust {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    background: rgba(0, 0, 0, .65);
+    color: #fff;
+    font-weight: 600;
+    font-size: .8rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+}
+.edp-band-high .edp-live-trust   { background: #a51c30; }
+.edp-band-review .edp-live-trust { background: #b35900; }
+.edp-band-low .edp-live-trust    { background: #1e7e34; }
+
+.edp-live-stale {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #6c757d;
+    color: #fff;
+    font-size: .72rem;
+    padding: 1px 7px;
+    border-radius: 10px;
+}
+.edp-live-tilestale .edp-live-imgwrap .edp-live-thumb { opacity: .45; filter: grayscale(70%); }
+.edp-live-tilestale { border-color: #6c757d; border-style: dashed; }
+
+.edp-live-meta {
+    padding: .55rem .65rem .65rem;
+}
+.edp-live-name {
+    font-weight: 600;
+    font-size: .92rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.edp-live-sub {
+    font-size: .78rem;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.edp-live-stats {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-top: .35rem;
+    font-size: .78rem;
+}
+.edp-live-crit { color: #a51c30; font-weight: 600; }
+.edp-live-warn { color: #b35900; font-weight: 600; }
+.edp-live-elapsed { color: #6c757d; margin-left: auto; }
+.edp-live-lastviol {
+    margin-top: .3rem;
+    font-size: .74rem;
+    color: #6c757d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

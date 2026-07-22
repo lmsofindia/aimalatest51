@@ -1,0 +1,149 @@
+define(['core/ajax', 'core/templates', 'core/notification'], function(Ajax, Templates, Notification) {
+
+    var ICON_SVG = {
+        login:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>',
+        quiz:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="12" y2="17"/></svg>',
+        assign:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>',
+        view:     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+        course:   '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>',
+        forum:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>',
+        complete: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>',
+        badge:    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>',
+        default:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+    };
+
+    function CUTBlock(instanceid) {
+        this.instanceid = instanceid;
+        this.wrap       = document.querySelector('[data-instanceid="' + instanceid + '"]');
+        this.feed       = this.wrap && this.wrap.querySelector('[data-region="cut-feed"]');
+        this.offset     = 15;
+        this.period     = 'week';
+    }
+
+    CUTBlock.prototype.init = function() {
+        if (!this.wrap) { return; }
+        var self = this;
+
+        // Inject SVG icons into existing events.
+        this.injectIcons(this.wrap);
+
+        // Period toggle.
+        var periodBtns = this.wrap.querySelectorAll('.cut-period-btn');
+        periodBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                periodBtns.forEach(function(b) { b.classList.remove('active'); });
+                this.classList.add('active');
+                self.period = this.dataset.period;
+                self.reload();
+            });
+        });
+
+        // Load more.
+        var lmbtn = this.wrap.querySelector('[data-action="cut-loadmore"]');
+        if (lmbtn) {
+            lmbtn.addEventListener('click', function() {
+                self.loadMore();
+            });
+        }
+    };
+
+    CUTBlock.prototype.injectIcons = function(container) {
+        var icons = container.querySelectorAll('.cut-icon');
+        icons.forEach(function(el) {
+            var key = el.className.match(/cut-icon--(\w+)/);
+            var k   = key ? key[1] : 'default';
+            el.innerHTML = ICON_SVG[k] || ICON_SVG['default'];
+        });
+    };
+
+    CUTBlock.prototype.reload = function() {
+        var self = this;
+        self.offset = 15;
+        Ajax.call([{
+            methodname: 'block_corpusertimeline_get_timeline',
+            args: { offset: 0, limit: 15, period: self.period },
+            done: function(data) {
+                self.renderGroups(data, false);
+                self.offset = 15;
+            },
+            fail: Notification.exception
+        }]);
+    };
+
+    CUTBlock.prototype.loadMore = function() {
+        var self = this;
+        Ajax.call([{
+            methodname: 'block_corpusertimeline_get_timeline',
+            args: { offset: self.offset, limit: 15, period: self.period },
+            done: function(data) {
+                self.renderGroups(data, true);
+                self.offset += data.total;
+            },
+            fail: Notification.exception
+        }]);
+    };
+
+    CUTBlock.prototype.renderGroups = function(data, append) {
+        var self = this;
+        var html = self.buildHtml(data.groups);
+        if (append) {
+            var frag = document.createElement('div');
+            frag.innerHTML = html;
+            while (frag.firstChild) { self.feed.appendChild(frag.firstChild); }
+        } else {
+            self.feed.innerHTML = html;
+        }
+        self.injectIcons(self.feed);
+
+        // Update load more.
+        var lmbtn = self.wrap.querySelector('[data-action="cut-loadmore"]');
+        if (!data.hasmore && lmbtn) {
+            lmbtn.parentElement.style.display = 'none';
+        } else if (data.hasmore && !lmbtn) {
+            var footer = document.createElement('div');
+            footer.className = 'cut-footer';
+            footer.innerHTML = '<button class="cut-loadmore" data-action="cut-loadmore">Load more</button>';
+            self.wrap.appendChild(footer);
+            footer.querySelector('[data-action="cut-loadmore"]').addEventListener('click', function() {
+                self.loadMore();
+            });
+        }
+    };
+
+    CUTBlock.prototype.buildHtml = function(groups) {
+        if (!groups || !groups.length) {
+            return '<p class="cut-empty">No activity recorded yet.</p>';
+        }
+        var out = '';
+        groups.forEach(function(group) {
+            out += '<div class="cut-day-group">';
+            out += '<div class="cut-day-label">' + group.daylabel + '</div>';
+            group.events.forEach(function(ev) {
+                out += '<div class="cut-event">';
+                out += '<div class="cut-event-line"></div>';
+                out += '<div class="cut-icon cut-icon--' + ev.iconkey + '">' + (ev.iconsvg || '') + '</div>';
+                out += '<div class="cut-event-body">';
+                out += '<div class="cut-event-row"><span class="cut-event-label">' + ev.label + '</span>';
+                out += '<span class="cut-event-time">' + ev.timestr + '</span></div>';
+                if (ev.coursename) {
+                    out += '<span class="cut-event-course">' + ev.coursename + '</span>';
+                }
+                if (ev.ispassed) {
+                    out += '<span class="cut-badge cut-badge--passed">Passed</span>';
+                } else if (ev.isbelow) {
+                    out += '<span class="cut-badge cut-badge--below">Below threshold</span>';
+                }
+                out += '</div></div>';
+            });
+            out += '</div>';
+        });
+        return out;
+    };
+
+    return {
+        init: function(opts) {
+            var b = new CUTBlock(opts.instanceid);
+            b.init();
+        }
+    };
+});

@@ -1,0 +1,36 @@
+block_corpusercmplchart — testing notes
+=======================================
+
+v1.0.1 (2026-07-03) — Removed demo mode; everything now live.
+Changes:
+- Deleted the hardcoded DEMO MODE block in block_corpusercmplchart.php. The block
+  now always renders real data from get_completion_data::fetch_data() (course
+  completion split, avg %, module %, quiz pass rate, nearest-milestone message).
+- Milestone message/detail now use the existing lang strings (milestone_message,
+  milestone_detail) instead of hardcoded English.
+
+Manual tests:
+[ ] Dashboard (/my) gauge shows REAL avg/module/quiz percentages for the user.
+[ ] Completed vs in-progress vs not-started counts match the user's real courses.
+[ ] Milestone line names the user's actual nearest in-progress course + target %.
+[ ] Quiz pass rate: 0 (no error) when mod_quiz has no finished attempts.
+[ ] No courses enrolled -> "nocourses" empty-state string shows, no JS error.
+[ ] Rings animate; percentages come from live init args (not fixed).
+
+Deploy: upload -> Site admin > Notifications -> purge caches. No DB schema change.
+Note: amd/src unchanged this round, so no grunt rebuild needed.
+
+v1.0.2 (2026-07-03) — Configurable background gradient.
+- The block background was a hardcoded dark gradient (#1a0533 → #0f172a).
+- New per-block settings (block config gear): Gradient start colour, Gradient
+  end colour (HEX), and Gradient direction. Defaults reproduce the original
+  look, so unconfigured blocks are unchanged.
+Manual tests:
+[ ] Block config gear now shows Gradient start/end colour + direction.
+[ ] Set start = theme primary hex, end = a darker shade -> block background
+    updates to that gradient; ring/label text stays readable.
+[ ] Change direction (diagonal/horizontal/vertical) -> gradient angle updates.
+[ ] Leave unset -> identical to the previous dark purple→navy look.
+[ ] Use a very light colour -> note white text may be low-contrast (expected;
+    pick darker tones for readability).
+Deploy: upload -> Notifications -> purge caches. No DB change; no AMD rebuild.

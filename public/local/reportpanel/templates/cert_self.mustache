@@ -1,0 +1,50 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_reportpanel/cert_self
+
+    Certificate reports, self mode: the current user's issued certificates.
+
+    Example context (json):
+    {
+        "backurl":"#","intro":"Your certificates.","installed":true,
+        "rows":[{"name":"Cert","url":"#","coursename":"Course","issuedate":"1 Jan 2026"}],
+        "hasrows":true
+    }
+}}
+<div class="reportpanel-report">
+    <p><a href="{{backurl}}"><i class="fa fa-arrow-left"></i> {{#str}}backtopanel, local_reportpanel{{/str}}</a></p>
+    <p class="reportpanel-intro text-muted">{{intro}}</p>
+
+    {{^installed}}
+    <div class="alert alert-warning">{{#str}}cert_notinstalled, local_reportpanel{{/str}}</div>
+    {{/installed}}
+
+    {{#installed}}
+        {{#hasrows}}
+        <div class="reportpanel-table-wrap">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>{{#str}}course, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cert_name, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cert_issuedate, local_reportpanel{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                    <tr>
+                        <td>{{coursename}}</td>
+                        <td><a href="{{url}}">{{name}}</a></td>
+                        <td>{{issuedate}}</td>
+                    </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+        </div>
+        {{/hasrows}}
+        {{^hasrows}}
+        <div class="alert alert-info">{{#str}}cert_none, local_reportpanel{{/str}}</div>
+        {{/hasrows}}
+    {{/installed}}
+</div>

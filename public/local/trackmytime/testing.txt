@@ -1,0 +1,58 @@
+================================================================================
+local_trackmytime — TEST CHECKLIST (v1.0.0)
+Goal: prove tracking + performance page work with NO theme_gemui installed.
+================================================================================
+
+PRE-TEST
+  1. Set the site theme to plain Boost (to prove independence).
+  2. rsync local/trackmytime -> <moodle>/local/trackmytime
+  3. Site admin -> Notifications -> install (creates {trackmytime} table)
+  4. php admin/cli/purge_caches.php ; hard refresh
+
+INSTALL
+  TC-01  Installs under Boost, no errors. {trackmytime} table created (XMLDB editor).
+  TC-02  Settings page: Site admin -> Plugins -> Local plugins -> Track My Time.
+         Two checkboxes present, both ON by default.
+
+TRACKING (the key independence proof)
+  TC-10  As a learner, open any activity (mod_page / mod_url / quiz view).
+         DevTools -> Network: within ~60s a POST to /lib/ajax/service.php with
+         info=local_trackmytime_record_session, response {"success":true}.
+         >>> This is the whole point: it fires with NO GemUI theme present.
+  TC-11  Switch browser tab away and back — heartbeat pauses while hidden,
+         flushes on blur/unload (sendBeacon on close).
+  TC-12  DB: {trackmytime} gains rows (userid, cmid, timespent, timestart).
+  TC-13  Turn OFF "Enable time tracking", purge caches -> no record_session
+         calls on activity pages.
+  TC-14  Non-mod pages (dashboard, course view) do NOT fire the heartbeat.
+
+PERFORMANCE PAGE
+  TC-20  /local/trackmytime/pages/performance.php loads under Boost, styled,
+         no [[string]] placeholders, no PHP errors.
+  TC-21  Heatmap shows 26 cells; cells with study time are shaded; hover shows
+         "Week N: X min". (Renders server-side — works with JS disabled.)
+  TC-22  Grade overview lists enrolled courses with grades (— when none).
+  TC-23  Badges section shows earned badges, else "No badges earned yet".
+  TC-24  Turn OFF "Show study heatmap" -> heatmap section hidden.
+  TC-25  As learner02, visiting ?userid=<learner01> is blocked (capability).
+
+INDEPENDENCE
+  TC-30  grep: zero theme_gemui/gemui_timetracker refs in code.
+  TC-31  With theme_gemui NOT installed at all, TC-10 + TC-20 still pass.
+
+REGRESSION
+  TC-40  Existing local_gemui_timetracker still works under GemUI theme
+         (separate table gemui_timetracker; no collision).
+
+NOTE
+  amd/build/timetracker.min.js is synced manually (terser). Re-minify after
+  editing amd/src/timetracker.js.
+  Privacy: metadata is declared; full GDPR export/delete is a stub (as in the
+  original) — a future enhancement.
+
+== v1.1.0 reporting API ==
+[ ] Upgrade from 1.0.x runs clean (no schema change; version bump only).
+[ ] With tracked data present: from a scratch script or the consumer, confirm
+    reporting::total_time(), active_users(7), course_rankings() return sane values.
+[ ] Uninstall trackmytime (or rename its table) → reporting::is_available() is false and
+    every method returns empty/zero with no PHP error (consumer degrades gracefully).

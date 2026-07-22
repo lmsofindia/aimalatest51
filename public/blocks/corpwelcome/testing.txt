@@ -1,0 +1,72 @@
+block_corpwelcome — testing notes
+=================================
+
+v1.0.1 (2026-07-03) — Removed demo mode; everything now live.
+Changes:
+- Deleted the hardcoded DEMO MODE block in block_corpwelcome.php. The block now
+  always renders real per-user data (enrolments, completions, badges, certs,
+  streak, category pills).
+- "Monthly goal" is now truthful: progress is based on course completions in the
+  CURRENT calendar month, measured against a configurable target.
+  New block setting: "Monthly completion goal" (config_monthlygoal, default 5).
+- Search placeholder now uses the searchplaceholder lang string (was hardcoded
+  "Search 800+ courses...").
+- Added missing *_help lang strings for existing config fields.
+
+Manual tests:
+[ ] Dashboard (/my) shows the block with REAL numbers for the logged-in user
+    (compare enrolled/completed against the user's actual courses).
+[ ] Complete a course this month -> "completed this month" count and the Monthly
+    goal bar move; goalremaining decreases.
+[ ] Set block config "Monthly completion goal" = 3 -> bar recalculates (X of 3).
+[ ] Badges/certs counts match the user's actual awards; customcert absent = 0,
+    no error.
+[ ] Streak reflects real activity (logstore); cached 6h per user.
+[ ] Category pills show the user's real enrolled-course categories; admin
+    category filter restricts them.
+[ ] Both Dark and Light block styles render with the same live data.
+[ ] Guest / logged-out = block renders nothing.
+[ ] Block config form: all help (?) buttons show text (no [[missing string]]).
+
+Deploy: upload -> Site admin > Notifications -> purge caches. No DB schema change.
+
+v1.0.2 (2026-07-03) — Search z-index fix.
+- Removed z-index:9999 from .cw2-search-area / .cwl-search-area. The search box
+  was creating a high stacking context, so it floated ON TOP of every other
+  site popup (notifications, user menu, modals, sidebar).
+- Results dropdown (portalled to <body> by JS) lowered from z-index:99999 to
+  1000 — above page content, below Moodle modals/popovers.
+Manual tests:
+[ ] Open the notifications popover / user menu while the welcome block is on
+    screen — the search box no longer pokes through on top of them.
+[ ] Type in the search box — results dropdown still appears above dashboard
+    content, correctly positioned under the input.
+[ ] Open any Moodle modal — the search box/results do not overlap it.
+
+v1.0.4 (2026-07-03) — Light colour fix, bigger fonts, new Hero style.
+- Light style: the block colour setting now drives the accent (tagline +
+  "Find courses" button) via --cwl-accent; previously light ignored the colour.
+- Light style: font sizes increased slightly across the board.
+- NEW block style "Hero banner (accent header)": pick it under the block's
+  config > Block style. Accent-coloured header with greeting + streak +
+  monthly-goal bar, a row of 4 stat chips, then the search strip. The colour
+  setting drives the header + button.
+Manual tests:
+[ ] Block config > Block style now lists Dark, Light, Hero banner.
+[ ] Choose Light + set a Background colour -> tagline + Find button take that
+    colour (bug fixed).
+[ ] Choose Hero + set a colour -> header band + button use it; white text stays
+    readable. Default (unset) = indigo.
+[ ] Hero: search box + category pills + results dropdown all work (shared hooks).
+[ ] Font sizes in Light noticeably larger but layout intact.
+
+v1.0.5 (2026-07-03) — Hero stat cards redesigned.
+- Bigger, centre-aligned numbers (1.85rem) + labels (13.5px) + icon badge.
+- Decorative concentric-circle SVG motif in each card corner (tinted per card).
+- Hover: card lifts with a soft shadow; motif scales/rotates.
+- First card ("Enrolled") is dark (navy) for contrast; other 3 stay light tints.
+Manual tests:
+[ ] Hero block: 4 stat cards — one dark + three light, centred text, icons.
+[ ] Hover a card: it lifts + shadow; corner circles scale. No layout shift.
+[ ] Delta pills (+5, +1) render on both dark and light cards.
+[ ] Narrow block width -> cards reflow to 2x2 (<=640px).

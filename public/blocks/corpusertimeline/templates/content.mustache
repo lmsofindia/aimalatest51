@@ -1,0 +1,55 @@
+{{!
+    @template block_corpusertimeline/content
+    @copyright 2025 EdzCorp
+}}
+<div class="cut-block" data-instanceid="{{instanceid}}">
+    <div class="cut-header">
+        <div class="cut-heading">
+            <h3 class="cut-title">{{title}}</h3>
+            <span class="cut-sub">{{sessioninfo}}</span>
+        </div>
+        <div class="cut-controls">
+            <div class="cut-period-btns">
+                <button class="cut-period-btn active" data-period="week">{{#str}}thisweek, block_corpusertimeline{{/str}}</button>
+                <button class="cut-period-btn" data-period="all">{{#str}}alltime, block_corpusertimeline{{/str}}</button>
+            </div>
+            <span class="cut-eventcount">· {{eventcount}}</span>
+        </div>
+    </div>
+
+    <div class="cut-feed" data-region="cut-feed">
+        {{#hasgroups}}
+        {{#groups}}
+        <div class="cut-day-group">
+            <div class="cut-day-label">{{daylabel}}</div>
+            {{#events}}
+            <div class="cut-event">
+                <div class="cut-event-line"></div>
+                <div class="cut-icon cut-icon--{{iconkey}}">{{{iconsvg}}}</div>
+                <div class="cut-event-body">
+                    <div class="cut-event-row">
+                        <span class="cut-event-label">{{label}}</span>
+                        <span class="cut-event-time">{{timestr}}</span>
+                    </div>
+                    {{#coursename}}<span class="cut-event-course">{{coursename}}</span>{{/coursename}}
+                    {{#ispassed}}<span class="cut-badge cut-badge--passed">{{#str}}passed, block_corpusertimeline{{/str}}</span>{{/ispassed}}
+                    {{#isbelow}}<span class="cut-badge cut-badge--below">{{#str}}belowthreshold, block_corpusertimeline{{/str}}</span>{{/isbelow}}
+                </div>
+            </div>
+            {{/events}}
+        </div>
+        {{/groups}}
+        {{/hasgroups}}
+        {{^hasgroups}}
+        <p class="cut-empty">{{#str}}noevents, block_corpusertimeline{{/str}}</p>
+        {{/hasgroups}}
+    </div>
+
+    {{#hasmore}}
+    <div class="cut-footer">
+        <button class="cut-loadmore" data-action="cut-loadmore" data-offset="15">
+            {{#str}}loadmore, block_corpusertimeline{{/str}}
+        </button>
+    </div>
+    {{/hasmore}}
+</div>

@@ -1,0 +1,99 @@
+mod_edztrackvideo — Manual test checklist
+==========================================
+
+SETUP
+-----
+[ ] Copy mod/edztrackvideo to MOODLE/mod/edztrackvideo
+[ ] Site admin > Notifications installs cleanly (both tables created)
+[ ] php admin/cli/purge_caches.php
+[ ] grunt amd --root=mod/edztrackvideo  (or confirm amd/build/*.js present)
+[ ] No PHP warnings in error log on install
+
+FORM / CRUD (per source)
+------------------------
+[ ] Add activity: source selector shows YouTube / Vimeo / Upload
+[ ] YouTube selected -> Video URL required; URL field shown, file picker hidden
+[ ] Vimeo selected   -> Video URL required
+[ ] Upload selected   -> filemanager shown, URL field hidden; required
+[ ] Speed: "Allow playback speed control" off by default; max_speed disabled until ticked
+[ ] Completion: "Enable percent-based completion" + threshold appear under Activity completion, threshold disabled until ticked and completion=Automatic
+[ ] Save YouTube activity -> videoid extracted from watch?v=, youtu.be/, embed/, shorts/
+[ ] Save Vimeo activity -> videoid (and hash if private) extracted from vimeo.com/123, player.vimeo.com/video/123, vimeo.com/123/abcdef
+[ ] Save Upload activity -> file stored in file area; view serves it
+[ ] Edit activity -> existing values reload correctly (source, url/file, speed, completion)
+[ ] Delete activity -> progress rows + uploaded file removed
+
+PLAYBACK (run for EACH source: youtube, vimeo, upload)
+------------------------------------------------------
+[ ] view.php renders player, watermark, custom controls; native chrome not clickable
+[ ] Play/pause button works; centered hover play works
+[ ] Mute/unmute + volume slider work
+[ ] Time label shows current / total
+[ ] Progress bar fills during playback; max-watched marker advances
+[ ] Captions toggle: YouTube/Vimeo best-effort; gracefully no-ops if unavailable
+[ ] Fullscreen enter/exit; controls remain visible in fullscreen
+[ ] Error state shown if URL invalid / file missing
+
+FORWARD-SEEK LOCK (no_forward_seek_first_view = ON, not yet complete)
+--------------------------------------------------------------------
+[ ] Forward click on progress bar past marker -> refused + toast, position pulled back
+[ ] Backward click -> allowed
+[ ] Keyboard ArrowRight/Up past marker -> blocked + toast; ArrowLeft/Down -> allowed
+[ ] LOCAL ONLY: dragging native (none shown) / programmatic seek ahead is hard-clamped (currentTime never exceeds marker+0.9)
+[ ] YT/VIMEO: forward seek detected within ~0.8s and pulled back
+[ ] Locked-ahead region of bar is visually greyed/hatched with lock glyph
+[ ] After reaching threshold -> lock releases, free seeking allowed, completion ring shows check
+
+LOCK DISABLED (no_forward_seek_first_view = OFF)
+-----------------------------------------------
+[ ] Forward seeking allowed immediately for all sources
+
+SPEED POLICY
+------------
+[ ] allow_speed OFF -> no speed control visible; rate stays 1.0
+[ ] allow_speed ON, max=1.5 -> selector shows up to 1.5; cannot exceed
+[ ] Selected rate applies to playback for the chosen source
+
+RESUME
+------
+[ ] Watch part way, leave, return -> Resume pill shows "Resume m:ss"
+[ ] Click Resume -> seeks ~2s before last position and plays
+[ ] Click Dismiss -> pill hidden; dismissed persisted; not shown again on reload
+[ ] Resume position survives reload (server-anchored)
+
+COMPLETION
+----------
+[ ] threshold=100 -> complete only after full watch
+[ ] threshold=80 -> complete at 80% maxwatched
+[ ] Activity completion report reflects state
+[ ] Course completion / restrictions can use it
+[ ] FEATURE_COMPLETION_TRACKS_VIEWS option also available
+
+PROGRESS PERSISTENCE
+--------------------
+[ ] Progress persists every ~8s during playback (network tab: update_progress)
+[ ] On tab hide / pagehide -> sendBeacon flush fires (position saved)
+[ ] maxwatched never decreases
+
+PRIVACY
+-------
+[ ] Privacy export includes edztrackvideo_progress rows for the user
+[ ] Privacy delete (user / context) removes rows
+[ ] Plugin appears in Site admin > Privacy registry
+
+BACKUP / RESTORE
+----------------
+[ ] Backup course with each source type
+[ ] Restore into new course: instance restored, settings intact
+[ ] Upload source: video file restored into new context and plays
+[ ] With userinfo: progress rows restored; without: not
+
+UPGRADE
+-------
+[ ] Fresh install at 2026062700 (v1 baseline; no upgrade steps yet)
+[ ] (Future) upgrade.php block required for any schema change
+
+AMD BUILD SYNC
+--------------
+[ ] After editing amd/src/*.js, rebuild amd/build/*.js (grunt amd) before deploy
+[ ] purge caches so new JS is served

@@ -1,0 +1,329 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+    @template local_trackmytime/performance
+
+    GemUI Performance & Achievements page template — Sprint 8.
+
+    Sections:
+     1. Study heatmap    — 26-week activity grid (gated by admin toggle)
+     2. Grade overview   — per-course grade rows with pass/fail badge
+     3. Badges earned    — badge image grid with issue date
+     4. Certificates     — rendered by Moodle core block
+
+    Context variables:
+    * heatmapweeks     {Array}   [{week, minutes, level (0-4), label}]
+    * showstudyheatmap {Bool}    Admin toggle
+    * grades           {Array}   [{coursename, grade, passed}]
+    * hasgrades        {Bool}
+    * badges           {Array}   [{name, imageurl, dateissued}]
+    * hasbadges        {Bool}
+    * userid           {Number}
+    * isownpage        {Bool}
+
+    @package local_trackmytime
+    @copyright 2026 EDZLMS
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div class="gemui-performance container-fluid py-4" data-userid="{{userid}}">
+
+    <div class="tmt-page-head">
+        <h1 class="gemui-performance__heading">
+            {{#str}}performance_title, local_trackmytime{{/str}}
+        </h1>
+        <a class="tmt-pdf-btn" href="{{pdfurl}}">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+            {{#str}}download_pdf, local_trackmytime{{/str}}
+        </a>
+    </div>
+
+    {{! ── Section 0: Time analytics ── }}
+    <section class="gemui-performance__section gem-card mb-4 tmt-analytics"
+             aria-labelledby="tmt-analytics-heading">
+        <h2 class="gemui-performance__section-title" id="tmt-analytics-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l2.5-7 4.5 14 2.5-7H21"/></svg>
+            {{#str}}time_analytics, local_trackmytime{{/str}}
+        </h2>
+
+        {{! Stat cards (4) + a larger XP card }}
+        <div class="tmt-analytics-top">
+            <div class="tmt-stats">
+                {{#stats}}
+                <div class="tmt-stat tmt-stat--{{tone}}">
+                    <span class="tmt-stat__wm" aria-hidden="true">{{{svg}}}</span>
+                    <span class="tmt-stat__value">{{value}}</span>
+                    <span class="tmt-stat__label">{{label}}</span>
+                </div>
+                {{/stats}}
+            </div>
+
+            {{#hasxp}}
+            <div class="tmt-xpcard">
+                <span class="tmt-xpcard__badge" aria-hidden="true">
+                    <svg viewBox="0 0 96 96" width="76" height="76">
+                        <defs>
+                            <linearGradient id="tmtxp" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0" stop-color="var(--bs-primary, #2f6bf2)"/>
+                                <stop offset="1" stop-color="#1747b5"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="48" cy="48" r="46" fill="url(#tmtxp)"/>
+                        <circle cx="48" cy="48" r="38" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="4 5"/>
+                        <text x="48" y="46" text-anchor="middle" font-size="34" font-weight="800" fill="#fff">{{xplevel}}</text>
+                        <text x="48" y="66" text-anchor="middle" font-size="11" letter-spacing="1.5" fill="#fff" fill-opacity="0.85">LEVEL</text>
+                    </svg>
+                </span>
+                <div class="tmt-xpcard__body">
+                    <span class="tmt-xpcard__points">{{xppoints}}</span>
+                    <span class="tmt-xpcard__unit">{{#str}}xp_points, local_trackmytime{{/str}}</span>
+                    <span class="tmt-xpcard__level">{{#str}}xp_level, local_trackmytime{{/str}} {{xplevel}}</span>
+                </div>
+            </div>
+            {{/hasxp}}
+        </div>
+
+        {{! ── Activity chart with period dropdown ── }}
+        <div class="tmt-chartcard">
+            <div class="tmt-chartcard__head">
+                <h3 class="tmt-chartcard__title">{{#str}}study_time, local_trackmytime{{/str}}</h3>
+                <label class="tmt-select-wrap">
+                    <span class="sr-only">{{#str}}chart_period, local_trackmytime{{/str}}</span>
+                    <select class="tmt-select custom-select" data-tmt-chart-select>
+                        <option value="weekly" selected>{{#str}}period_weekly, local_trackmytime{{/str}}</option>
+                        <option value="monthly">{{#str}}period_monthly, local_trackmytime{{/str}}</option>
+                        <option value="quarterly">{{#str}}period_quarterly, local_trackmytime{{/str}}</option>
+                    </select>
+                </label>
+            </div>
+
+            {{#hasactivitydata}}
+            {{! Weekly (default visible) }}
+            <div class="tmt-bars" data-tmt-chart="weekly" role="img" aria-label="{{#str}}weekly_activity, local_trackmytime{{/str}}">
+                {{#weekbars}}
+                <div class="tmt-bar" title="{{tip}}">
+                    <div class="tmt-bar__col"><div class="tmt-bar__fill" style="height:{{pct}}%"></div></div>
+                    <span class="tmt-bar__label">{{label}}</span>
+                </div>
+                {{/weekbars}}
+            </div>
+            {{! Monthly (hidden until selected) }}
+            <div class="tmt-bars" data-tmt-chart="monthly" hidden role="img" aria-label="{{#str}}monthly_activity, local_trackmytime{{/str}}">
+                {{#monthbars}}
+                <div class="tmt-bar" title="{{tip}}">
+                    <div class="tmt-bar__col"><div class="tmt-bar__fill" style="height:{{pct}}%"></div></div>
+                    <span class="tmt-bar__label">{{label}}</span>
+                </div>
+                {{/monthbars}}
+            </div>
+            {{! Quarterly (hidden until selected) }}
+            <div class="tmt-bars" data-tmt-chart="quarterly" hidden role="img" aria-label="{{#str}}quarterly_activity, local_trackmytime{{/str}}">
+                {{#quarterbars}}
+                <div class="tmt-bar" title="{{tip}}">
+                    <div class="tmt-bar__col"><div class="tmt-bar__fill" style="height:{{pct}}%"></div></div>
+                    <span class="tmt-bar__label">{{label}}</span>
+                </div>
+                {{/quarterbars}}
+            </div>
+            {{/hasactivitydata}}
+
+            {{^hasactivitydata}}
+            <p class="tmt-chart-empty text-muted">{{#str}}no_activity_yet, local_trackmytime{{/str}}</p>
+            {{/hasactivitydata}}
+        </div>
+    </section>
+
+    {{! ── Section 1: Study heatmap ── }}
+    {{#showstudyheatmap}}
+    <section class="gemui-performance__section gem-card mb-4"
+             aria-labelledby="gemui-heatmap-heading">
+
+        <h2 class="gemui-performance__section-title" id="gemui-heatmap-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg>
+            {{#str}}study_heatmap, local_trackmytime{{/str}}
+        </h2>
+
+        <div class="gemui-heatmap"
+             data-region="gemui-heatmap"
+             role="grid"
+             aria-label="{{#str}}study_heatmap, local_trackmytime{{/str}}">
+            {{#heatmapweeks}}
+                <div class="gemui-heatmap__cell"
+                     data-level="{{level}}"
+                     title="{{label}}: {{minutes}} min"
+                     aria-label="{{label}}: {{minutes}} minutes"
+                     role="gridcell"></div>
+            {{/heatmapweeks}}
+        </div>
+
+        {{! Legend }}
+        <div class="gemui-heatmap__legend" aria-hidden="true">
+            <span class="gemui-heatmap__legend-label">Less</span>
+            <div class="gemui-heatmap__cell" data-level="0"></div>
+            <div class="gemui-heatmap__cell" data-level="1"></div>
+            <div class="gemui-heatmap__cell" data-level="2"></div>
+            <div class="gemui-heatmap__cell" data-level="3"></div>
+            <div class="gemui-heatmap__cell" data-level="4"></div>
+            <span class="gemui-heatmap__legend-label">More</span>
+        </div>
+
+    </section>
+    {{/showstudyheatmap}}
+
+    {{! ── Section 1b: Recent activity (left) + course-time donut (right) ── }}
+    {{#hasrecent}}
+    <div class="tmt-two-col mb-4">
+    <section class="gemui-performance__section gem-card tmt-two-col__main" aria-labelledby="tmt-recent-heading">
+        <h2 class="gemui-performance__section-title" id="tmt-recent-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v4.5l3 2"/></svg>
+            {{#str}}recent_activity, local_trackmytime{{/str}}
+        </h2>
+        <ul class="tmt-timeline" data-tmt-paginate="6">
+            {{#recent}}
+            <li class="tmt-timeline__item">
+                <span class="tmt-timeline__icon" aria-hidden="true">{{{icon}}}</span>
+                <div class="tmt-timeline__body">
+                    <a class="tmt-timeline__name" href="{{url}}">{{name}}</a>
+                    <span class="tmt-timeline__meta">{{modname}} &middot; {{course}} &middot; {{when}}</span>
+                </div>
+                <span class="tmt-timeline__time">{{time}}</span>
+            </li>
+            {{/recent}}
+        </ul>
+    </section>
+
+    {{#hascoursetime}}
+    <aside class="gemui-performance__section gem-card tmt-two-col__side" aria-labelledby="tmt-coursetime-heading">
+        <h2 class="gemui-performance__section-title" id="tmt-coursetime-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 12V3M12 12l7.5 4.2"/></svg>
+            {{#str}}coursetime_title, local_trackmytime{{/str}}
+        </h2>
+        <div class="tmt-donut-wrap">
+            <div class="tmt-donut" style="background:{{donutgradient}}" role="img"
+                 aria-label="{{#str}}coursetime_title, local_trackmytime{{/str}}">
+                <div class="tmt-donut__hole"></div>
+            </div>
+        </div>
+        <ul class="tmt-legend">
+            {{#coursetime}}
+            <li class="tmt-legend__item">
+                <span class="tmt-legend__dot" style="background:{{color}}"></span>
+                <span class="tmt-legend__name">{{name}}</span>
+                <span class="tmt-legend__val">{{time}} &middot; {{pct}}%</span>
+            </li>
+            {{/coursetime}}
+        </ul>
+    </aside>
+    {{/hascoursetime}}
+    </div>
+    {{/hasrecent}}
+
+    {{! ── Section 2: Grade overview ── }}
+    <section class="gemui-performance__section gem-card mb-4"
+             aria-labelledby="gemui-grades-heading">
+
+        <h2 class="gemui-performance__section-title" id="gemui-grades-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.5" r="5"/><path d="M9 12.8 7.7 21l4.3-2.3L16.3 21 15 12.8"/></svg>
+            {{#str}}grade_overview, local_trackmytime{{/str}}
+        </h2>
+
+        {{#hasgrades}}
+        <table class="gemui-grades-table table table-hover"
+               aria-label="{{#str}}grade_overview, local_trackmytime{{/str}}">
+            <thead class="gemui-grades-table__head">
+                <tr>
+                    <th scope="col">Course</th>
+                    <th scope="col" class="text-end">Grade</th>
+                    <th scope="col" class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody data-tmt-paginate="8">
+                {{#grades}}
+                <tr class="gemui-grades-table__row">
+                    <td class="gemui-grades-table__course"><a href="{{gradeurl}}">{{coursename}}</a></td>
+                    <td class="gemui-grades-table__grade text-end">{{grade}}</td>
+                    <td class="text-center">
+                        {{#completed}}
+                            <span class="gem-pill gem-pill--done">Completed</span>
+                        {{/completed}}
+                        {{^completed}}
+                            {{#passed}}
+                                <span class="gem-pill gem-pill--done">Pass</span>
+                            {{/passed}}
+                            {{^passed}}
+                                <span class="gem-pill gem-pill--todo">In progress</span>
+                            {{/passed}}
+                        {{/completed}}
+                    </td>
+                </tr>
+                {{/grades}}
+            </tbody>
+        </table>
+        {{/hasgrades}}
+
+        {{^hasgrades}}
+        <p class="gemui-performance__empty text-muted">
+            {{#str}}no_data_yet, local_trackmytime{{/str}}
+        </p>
+        {{/hasgrades}}
+
+    </section>
+
+    {{! ── Section 3: Badges earned ── }}
+    <section class="gemui-performance__section gem-card mb-4"
+             aria-labelledby="gemui-badges-heading">
+
+        <h2 class="gemui-performance__section-title" id="gemui-badges-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.2l2.6 5.3 5.8.9-4.2 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8L3.6 9.4l5.8-.9z"/></svg>
+            {{#str}}badges_earned, local_trackmytime{{/str}}
+        </h2>
+
+        {{#hasbadges}}
+        <div class="gemui-badges-grid" role="list" data-tmt-paginate="12">
+            {{#badges}}
+            <div class="gemui-badge-tile" role="listitem">
+                <img src="{{imageurl}}"
+                     alt="{{name}}"
+                     class="gemui-badge-tile__img"
+                     loading="lazy">
+                <p class="gemui-badge-tile__name">{{name}}</p>
+                <time class="gemui-badge-tile__date">{{dateissued}}</time>
+            </div>
+            {{/badges}}
+        </div>
+        {{/hasbadges}}
+
+        {{^hasbadges}}
+        <p class="gemui-performance__empty text-muted">
+            {{#str}}no_badges, local_trackmytime{{/str}}
+        </p>
+        {{/hasbadges}}
+
+    </section>
+
+    {{! ── Section 4: Certificates ── }}
+    <section class="gemui-performance__section gem-card mb-4"
+             aria-labelledby="gemui-certs-heading">
+
+        <h2 class="gemui-performance__section-title" id="gemui-certs-heading"><svg class="tmt-sec-icon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.6 13.4 7.2 21l4.8-2.5L16.8 21l-1.4-7.6"/></svg>
+            {{#str}}certificates_wallet, local_trackmytime{{/str}}
+        </h2>
+
+        {{#hascerts}}
+        <div class="tmt-certs" data-tmt-paginate="8">
+            {{#certs}}
+            <a class="tmt-cert" href="{{viewurl}}" title="{{name}}">
+                <span class="tmt-cert__ribbon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6">
+                        <circle cx="12" cy="9" r="6"/><path d="M8.5 13.5 7 22l5-2.6L17 22l-1.5-8.5"/>
+                    </svg>
+                </span>
+                <span class="tmt-cert__name">{{name}}</span>
+                <span class="tmt-cert__meta">{{course}}</span>
+                <span class="tmt-cert__date">{{date}}</span>
+            </a>
+            {{/certs}}
+        </div>
+        {{/hascerts}}
+        {{^hascerts}}
+        <p class="gemui-performance__empty text-muted">
+            {{#str}}no_certificates, local_trackmytime{{/str}}
+        </p>
+        {{/hascerts}}
+
+    </section>
+
+</div>{{! /.gemui-performance }}

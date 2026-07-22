@@ -1,0 +1,137 @@
+/* block_corpusertimeline */
+.cut-block {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    font-family: inherit;
+}
+
+/* Header */
+.cut-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 1.25rem .75rem;
+    flex-wrap: wrap;
+}
+.cut-heading { display: flex; flex-direction: column; gap: .15rem; }
+.cut-title { font-size: 1.05rem; font-weight: 700; margin: 0; color: #1e293b; }
+.cut-sub { font-size: .78rem; color: #94a3b8; }
+.cut-controls { display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.cut-period-btns {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+}
+.cut-period-btn {
+    padding: .3rem .75rem;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    font-size: .78rem;
+    font-weight: 500;
+    color: #64748b;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+}
+.cut-period-btn.active { background: #fff; color: #1e293b; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.cut-eventcount { font-size: .78rem; color: #94a3b8; }
+
+/* Feed */
+.cut-feed { padding: 0 1.25rem; }
+.cut-day-group { margin-bottom: .5rem; }
+.cut-day-label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: #94a3b8;
+    padding: .75rem 0 .4rem;
+}
+
+/* Event row */
+.cut-event {
+    display: flex;
+    align-items: flex-start;
+    gap: .7rem;
+    padding: .5rem 0;
+    position: relative;
+}
+.cut-event:not(:last-child) .cut-event-line {
+    position: absolute;
+    left: 15px;
+    top: 34px;
+    bottom: -8px;
+    width: 2px;
+    background: #e2e8f0;
+}
+.cut-icon {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f5f9;
+    color: #64748b;
+    z-index: 1;
+}
+.cut-icon--login    { background: #ede9fe; color: #6366f1; }
+.cut-icon--quiz     { background: #fef9c3; color: #a16207; }
+.cut-icon--assign   { background: #fff7ed; color: #ea580c; }
+.cut-icon--view     { background: #f0f9ff; color: #0ea5e9; }
+.cut-icon--course   { background: #f0fdf4; color: #16a34a; }
+.cut-icon--forum    { background: #fdf4ff; color: #9333ea; }
+.cut-icon--complete { background: #dcfce7; color: #16a34a; }
+.cut-icon--badge    { background: #fff7ed; color: #f59e0b; }
+.cut-icon--scorm    { background: #f0f9ff; color: #0284c7; }
+.cut-icon--h5p      { background: #fdf4ff; color: #7c3aed; }
+.cut-icon--default  { background: #f1f5f9; color: #64748b; }
+
+/* Ensure inline SVGs inherit icon colour */
+.cut-icon svg { display: block; }
+
+.cut-event-body { flex: 1; min-width: 0; padding-top: .05rem; }
+.cut-event-row { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; }
+.cut-event-label { font-size: .875rem; font-weight: 600; color: #1e293b; }
+.cut-event-time { font-size: .75rem; color: #94a3b8; white-space: nowrap; flex-shrink: 0; }
+.cut-event-course {
+    display: block;
+    font-size: .78rem;
+    color: #64748b;
+    margin-top: .1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Badges */
+.cut-badge {
+    display: inline-block;
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .15rem .55rem;
+    border-radius: 20px;
+    margin-top: .25rem;
+}
+.cut-badge--passed { background: #dcfce7; color: #16a34a; }
+.cut-badge--below  { background: #fee2e2; color: #dc2626; }
+
+/* Footer */
+.cut-footer { padding: .75rem 1.25rem 1rem; text-align: center; }
+.cut-loadmore {
+    padding: .45rem 1.5rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 7px;
+    background: transparent;
+    color: #475569;
+    font-size: .82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+}
+.cut-loadmore:hover { border-color: #6366f1; color: #6366f1; }
+.cut-empty { padding: 1.5rem; text-align: center; color: #94a3b8; font-size: .875rem; margin: 0; }

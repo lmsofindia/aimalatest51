@@ -1,0 +1,102 @@
+{{!
+    @template mod_edztrackvideo/view
+
+    Locked-down multi-source video player.
+
+    Context variables:
+    * id          - instance id
+    * name        - activity name
+    * intro       - formatted intro html
+    * watermark   - watermark text
+    * sourcetype  - youtube | vimeo | upload
+    * is_youtube, is_vimeo, is_upload - booleans
+    * videoid     - youtube/vimeo id
+    * fileurl     - upload file url
+    * mimetype    - upload mimetype
+    * allow_speed - bool
+}}
+<div class="edztrackvideo-container" data-edztrackvideoid="{{id}}" data-sourcetype="{{sourcetype}}" data-videoid="{{videoid}}" role="region" aria-label="{{name}}">
+  <div id="edztrackvideo-player-{{id}}" class="edztrackvideo-player" aria-live="polite">
+
+    <div class="edztrackvideo-stage">
+      {{! Media: YouTube/Vimeo iframe holder OR native HTML5 video (upload/serverfile/directurl) }}
+      {{#is_filevideo}}
+        <video id="edztrackvideo-video-{{id}}" class="edztrackvideo-media edztrackvideo-video" playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture>
+          <source src="{{fileurl}}" type="{{mimetype}}">
+        </video>
+      {{/is_filevideo}}
+      {{^is_filevideo}}
+        <div id="edztrackvideo-media-{{id}}" class="edztrackvideo-media edztrackvideo-embed" data-videoid="{{videoid}}"></div>
+      {{/is_filevideo}}
+
+      {{! Overlays }}
+      <div class="edztrackvideo-overlay" aria-hidden="true">
+        <div class="edztrackvideo-watermark">{{watermark}}</div>
+        <button type="button" id="edz-bigplay-{{id}}" class="edztrackvideo-bigplay" aria-label="{{#str}}play, mod_edztrackvideo{{/str}}">
+          <span class="edz-bigplay-icon">&#9658;</span>
+        </button>
+        <div id="edztrackvideo-overlay-message-{{id}}" class="edztrackvideo-toast" style="display:none;"></div>
+        <div id="edztrackvideo-loading-{{id}}" class="edztrackvideo-loading"><span class="edz-spinner"></span></div>
+        <div id="edztrackvideo-error-{{id}}" class="edztrackvideo-error" style="display:none;">{{#str}}videoloaderror, mod_edztrackvideo{{/str}}</div>
+      </div>
+    </div>
+
+    {{! Controls }}
+    <div id="edztrackvideo-controls-{{id}}" class="edztrackvideo-controls" role="group" aria-label="Video controls">
+
+      <button type="button" id="edz-play-{{id}}" class="edz-btn edz-btn-play" aria-label="{{#str}}play, mod_edztrackvideo{{/str}}">
+        <span class="edz-ic-play">&#9658;</span><span class="edz-ic-pause" hidden>&#10073;&#10073;</span>
+      </button>
+
+      <div class="edz-volume">
+        <button type="button" id="edz-mute-{{id}}" class="edz-btn edz-btn-mute" aria-label="{{#str}}mute, mod_edztrackvideo{{/str}}">
+          <span class="edz-ic-vol">&#128266;</span><span class="edz-ic-muted" hidden>&#128263;</span>
+        </button>
+        <input id="edz-volume-{{id}}" class="edz-volrange" type="range" min="0" max="100" step="1" value="100" aria-label="Volume">
+      </div>
+
+      <span id="edz-time-{{id}}" class="edz-time" aria-live="off">00:00 / 00:00</span>
+
+      <div class="edz-progress-wrap" id="edz-progress-wrap-{{id}}" role="slider" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Seek" tabindex="0">
+        <div class="edz-progress-track">
+          <div class="edz-progress-buffer" id="edz-buffer-{{id}}"></div>
+          <div class="edz-progress-locked" id="edz-locked-{{id}}"><span class="edz-lock-glyph">&#128274;</span></div>
+          <div class="edz-progress-fill" id="edz-progress-{{id}}"></div>
+          <div class="edz-progress-marker" id="edz-marker-{{id}}" title="Furthest watched"></div>
+          <div class="edz-progress-handle" id="edz-handle-{{id}}" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="edz-right">
+        {{#is_embed}}
+        <button type="button" id="edz-cc-toggle-{{id}}" class="edz-btn edz-btn-cc" aria-pressed="false" aria-label="{{#str}}captions, mod_edztrackvideo{{/str}}">CC</button>
+        {{/is_embed}}
+
+        {{#allow_speed}}
+        <select id="edz-speed-{{id}}" class="edz-speed" aria-label="{{#str}}speed, mod_edztrackvideo{{/str}}"></select>
+        {{/allow_speed}}
+
+        {{! Completion ring }}
+        <span id="edz-ring-{{id}}" class="edz-ring" title="Watch progress" aria-hidden="true">
+          <svg viewBox="0 0 36 36" class="edz-ring-svg">
+            <circle class="edz-ring-bg" cx="18" cy="18" r="15.9155"></circle>
+            <circle class="edz-ring-fg" id="edz-ring-fg-{{id}}" cx="18" cy="18" r="15.9155" stroke-dasharray="0,100"></circle>
+          </svg>
+          <span class="edz-ring-check" id="edz-ring-check-{{id}}" hidden>&#10003;</span>
+        </span>
+
+        <button type="button" id="edz-full-{{id}}" class="edz-btn edz-btn-full" aria-label="{{#str}}fullscreen, mod_edztrackvideo{{/str}}">&#9974;</button>
+      </div>
+    </div>
+
+    {{! Resume pill (shown by JS) }}
+    <div class="edztrackvideo-resumebar" id="edz-resumebar-{{id}}" style="display:none;">
+      <button type="button" id="edz-resume-{{id}}" class="edz-pill edz-pill-resume">&#9658; <span id="edz-resume-label-{{id}}">{{#str}}resume, mod_edztrackvideo{{/str}}</span></button>
+      <button type="button" id="edz-dismiss-{{id}}" class="edz-pill edz-pill-dismiss">{{#str}}dismiss, mod_edztrackvideo{{/str}}</button>
+    </div>
+
+    <div class="edztrackvideo-info">
+      {{{intro}}}
+    </div>
+  </div>
+</div>

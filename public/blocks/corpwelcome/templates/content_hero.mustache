@@ -1,0 +1,93 @@
+{{!
+    @template block_corpwelcome/content_hero
+    Hero-banner welcome block: accent-coloured header (greeting + streak +
+    monthly-goal bar), a row of 4 stat chips, then the shared search strip.
+    Accent colour comes from the bgcolor block setting. Reuses the shared
+    search hooks so the corpwelcome AMD search works unchanged.
+
+    @copyright 2025 EdzCorp
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="cwh-wrap" data-instanceid="{{instanceid}}" style="--cwh-accent: {{bgcolor}};">
+
+    {{! ── Accent hero header ─────────────────────────────────────────────── }}
+    <div class="cwh-hero" style="background: {{bgcolor}};">
+        <div class="cwh-hero-top">
+            <p class="cwh-daylabel">{{daylabel}}</p>
+            {{#hasstreak}}
+            <div class="cwh-streak"><span class="cwh-streak-flame">🔥</span>{{streak}} <span class="cwh-streak-lbl">day streak</span></div>
+            {{/hasstreak}}
+        </div>
+
+        <div class="cwh-heading">Hey {{username}}, <span class="cwh-heading-accent">ready to level up?</span></div>
+
+        <div class="cwh-progress">
+            <div class="cwh-progress-labels">
+                <span>Monthly goal</span>
+                <span>{{goalPct}}%</span>
+            </div>
+            <div class="cwh-progress-track">
+                <div class="cwh-progress-fill" style="width:{{goalPct}}%"></div>
+            </div>
+            {{#goalremaining}}
+            <p class="cwh-progress-sub">{{goalremaining}} completion{{#goalremainingplural}}s{{/goalremainingplural}} to go this month</p>
+            {{/goalremaining}}
+            {{^goalremaining}}
+            <p class="cwh-progress-sub">Monthly goal reached! 🎉</p>
+            {{/goalremaining}}
+        </div>
+    </div>
+
+    {{! ── Stat cards row ────────────────────────────────────────────────── }}
+    <div class="cwh-stats">
+        <div class="cwh-stat cwh-stat--dark">
+            <svg class="cwh-stat-deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="84" cy="84" r="36"/><circle cx="84" cy="84" r="24"/><circle cx="84" cy="84" r="12"/></svg>
+            <span class="cwh-stat-ico" aria-hidden="true"><i class="fa-solid fa-book-open"></i></span>
+            <div class="cwh-stat-num">{{enrolledcount}}{{#hasnewenrolled}}<span class="cwh-delta">+{{newenrolled}}</span>{{/hasnewenrolled}}</div>
+            <div class="cwh-stat-lbl">Enrolled</div>
+        </div>
+        <div class="cwh-stat cwh-stat--green">
+            <svg class="cwh-stat-deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="84" cy="84" r="36"/><circle cx="84" cy="84" r="24"/><circle cx="84" cy="84" r="12"/></svg>
+            <span class="cwh-stat-ico" aria-hidden="true"><i class="fa-solid fa-circle-check"></i></span>
+            <div class="cwh-stat-num">{{completedcount}}{{#hasnewcompleted}}<span class="cwh-delta">+{{newcompleted}}</span>{{/hasnewcompleted}}</div>
+            <div class="cwh-stat-lbl">Completed</div>
+        </div>
+        <div class="cwh-stat cwh-stat--amber">
+            <svg class="cwh-stat-deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="84" cy="84" r="36"/><circle cx="84" cy="84" r="24"/><circle cx="84" cy="84" r="12"/></svg>
+            <span class="cwh-stat-ico" aria-hidden="true"><i class="fa-solid fa-certificate"></i></span>
+            <div class="cwh-stat-num">{{certcount}}{{#hasnewcerts}}<span class="cwh-delta">+{{newcerts}}</span>{{/hasnewcerts}}</div>
+            <div class="cwh-stat-lbl">Certificates</div>
+        </div>
+        <div class="cwh-stat cwh-stat--pink">
+            <svg class="cwh-stat-deco" viewBox="0 0 100 100" aria-hidden="true"><circle cx="84" cy="84" r="36"/><circle cx="84" cy="84" r="24"/><circle cx="84" cy="84" r="12"/></svg>
+            <span class="cwh-stat-ico" aria-hidden="true"><i class="fa-solid fa-medal"></i></span>
+            <div class="cwh-stat-num">{{badgecount}}{{#hasnewbadges}}<span class="cwh-delta">+{{newbadges}}</span>{{/hasnewbadges}}</div>
+            <div class="cwh-stat-lbl">Badges</div>
+        </div>
+    </div>
+
+    {{! ── Shared search strip (same hooks as other styles) ───────────────── }}
+    <div class="cwh-search-area">
+        <div class="cwh-search-row" data-region="cw-search-row">
+            <div class="cwh-search-box">
+                <svg class="cwh-search-ico" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" class="cwh-search-input" data-action="cw-search"
+                       placeholder="{{#str}}searchplaceholder, block_corpwelcome{{/str}}" autocomplete="off"/>
+            </div>
+            <button class="cwh-find-btn" data-action="cw-search-btn">Find courses</button>
+        </div>
+
+        <div class="cwh-pills">
+            <button class="cwh-pill cwh-pill--active" data-action="cw-cat" data-catid="0">All</button>
+            {{#categories}}
+            <button class="cwh-pill" data-action="cw-cat" data-catid="{{id}}" data-catname="{{name}}">{{name}}</button>
+            {{/categories}}
+        </div>
+
+        <div class="cwl-results" data-region="cw-results" hidden></div>
+    </div>
+
+</div>{{! /.cwh-wrap }}

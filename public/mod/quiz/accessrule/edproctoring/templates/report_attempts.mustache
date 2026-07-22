@@ -1,0 +1,79 @@
+{{!
+    Teacher report: list of all proctored attempts for a quiz.
+
+    @package   quizaccess_edproctoring
+    @copyright 2025 EDZLMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Context:
+        quizname       string
+        sessions       array of {
+            id, studentname, studentpicture, attemptno, starttime, duration,
+            trust_score, trust_band_class, trust_label,
+            critical_violations, warning_violations, total_violations,
+            status, detailurl
+        }
+        hasresults     bool
+}}
+<div class="edp-report-container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>{{#str}}reporttitle,quizaccess_edproctoring,{{quizname}}{{/str}}</h3>
+        <a href="?cmid={{cmid}}&export=csv" class="btn btn-sm btn-outline-secondary">
+            <span class="fa fa-download me-1"></span>{{#str}}exportcsv,quizaccess_edproctoring{{/str}}
+        </a>
+    </div>
+
+    {{#hasresults}}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover edp-attempts-table">
+            <thead class="thead-dark">
+                <tr>
+                    <th>{{#str}}student,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}attempt,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}starttime,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}duration,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}trustscore,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}violations,quizaccess_edproctoring{{/str}}</th>
+                    <th>{{#str}}status,quizaccess_edproctoring{{/str}}</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#sessions}}
+                <tr class="{{#highRisk}}table-danger{{/highRisk}}{{#review}}table-warning{{/review}}">
+                    <td>
+                        {{{studentpicture}}}
+                        {{studentname}}
+                    </td>
+                    <td>#{{attemptno}}</td>
+                    <td>{{starttime}}</td>
+                    <td>{{duration}}</td>
+                    <td class="{{trust_band_class}} fw-bold">
+                        {{trust_score}}% <small class="text-muted">({{trust_label}})</small>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger me-1">{{critical_violations}} critical</span>
+                        <span class="badge bg-warning text-dark me-1">{{warning_violations}} warn</span>
+                        <span class="text-muted">{{total_violations}} total</span>
+                    </td>
+                    <td>
+                        <span class="badge bg-{{statusbadge}}">{{status}}</span>
+                    </td>
+                    <td>
+                        <a href="{{detailurl}}" class="btn btn-sm btn-primary">
+                            {{#str}}viewdetail,quizaccess_edproctoring{{/str}}
+                        </a>
+                    </td>
+                </tr>
+                {{/sessions}}
+            </tbody>
+        </table>
+    </div>
+    {{/hasresults}}
+
+    {{^hasresults}}
+    <div class="alert alert-info">
+        {{#str}}noresults,quizaccess_edproctoring{{/str}}
+    </div>
+    {{/hasresults}}
+</div>

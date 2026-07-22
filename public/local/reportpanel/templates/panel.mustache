@@ -1,0 +1,63 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_reportpanel/panel
+
+    Report panel landing grid, split into "Manager reports" and "My reports".
+
+    Context variables required for this template:
+    * intro - short intro line under the heading
+    * fullmode - bool, whether the viewer sees all-user data
+    * hascards - bool
+    * managercards / selfcards - arrays of { key, title, desc, icon, url }
+    * hasmanager / hasself - bool
+}}
+<div class="reportpanel-wrap">
+    <p class="reportpanel-intro text-muted">
+        {{intro}}
+        {{#fullmode}}<span class="badge badge-primary reportpanel-modebadge">{{#str}}mode_full, local_reportpanel{{/str}}</span>{{/fullmode}}
+        {{^fullmode}}<span class="badge badge-secondary reportpanel-modebadge">{{#str}}mode_self, local_reportpanel{{/str}}</span>{{/fullmode}}
+    </p>
+
+    {{#hascards}}
+        {{#hasmanager}}
+        <h2 class="reportpanel-section-title h5 text-uppercase text-muted mt-2">{{#str}}group_manager, local_reportpanel{{/str}}</h2>
+        <div class="reportpanel-grid mb-4">
+            {{#managercards}}
+            <div class="reportpanel-card" data-card="{{key}}">
+                <div class="reportpanel-card-icon" aria-hidden="true"><i class="fa {{icon}}"></i></div>
+                <div class="reportpanel-card-body">
+                    <h3 class="reportpanel-card-title">{{title}}</h3>
+                    <p class="reportpanel-card-desc">{{desc}}</p>
+                </div>
+                <div class="reportpanel-card-action">
+                    <a class="btn btn-primary btn-block" href="{{url}}">{{#str}}open, local_reportpanel{{/str}}</a>
+                </div>
+            </div>
+            {{/managercards}}
+        </div>
+        {{/hasmanager}}
+
+        {{#hasself}}
+        <h2 class="reportpanel-section-title h5 text-uppercase text-muted mt-2">{{#str}}group_myreports, local_reportpanel{{/str}}</h2>
+        <div class="reportpanel-grid">
+            {{#selfcards}}
+            <div class="reportpanel-card" data-card="{{key}}">
+                <div class="reportpanel-card-icon" aria-hidden="true"><i class="fa {{icon}}"></i></div>
+                <div class="reportpanel-card-body">
+                    <h3 class="reportpanel-card-title">{{title}}</h3>
+                    <p class="reportpanel-card-desc">{{desc}}</p>
+                </div>
+                <div class="reportpanel-card-action">
+                    <a class="btn btn-primary btn-block" href="{{url}}">{{#str}}open, local_reportpanel{{/str}}</a>
+                </div>
+            </div>
+            {{/selfcards}}
+        </div>
+        {{/hasself}}
+    {{/hascards}}
+
+    {{^hascards}}
+    <div class="alert alert-info">{{#str}}nocards, local_reportpanel{{/str}}</div>
+    {{/hascards}}
+</div>

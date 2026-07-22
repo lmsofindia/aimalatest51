@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/trackmytime/db" VERSION="20260702" COMMENT="XMLDB file for local_trackmytime"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="trackmytime" COMMENT="Session-level time-on-task logs per user per course module">
+      <FIELDS>
+        <FIELD NAME="id"          TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="true"  COMMENT="Primary key"/>
+        <FIELD NAME="userid"      TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="FK to user.id"/>
+        <FIELD NAME="courseid"    TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="FK to course.id"/>
+        <FIELD NAME="cmid"        TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="FK to course_modules.id; null = course-level"/>
+        <FIELD NAME="timestart"   TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Unix timestamp when session began"/>
+        <FIELD NAME="timeend"     TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Unix timestamp when session ended"/>
+        <FIELD NAME="timespent"   TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" DEFAULT="0" COMMENT="Seconds spent in this session"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"  SEQUENCE="false" COMMENT="Unix timestamp of row creation"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_userid_courseid" UNIQUE="false" FIELDS="userid, courseid"/>
+        <INDEX NAME="idx_userid_timestart" UNIQUE="false" FIELDS="userid, timestart"/>
+        <INDEX NAME="idx_cmid" UNIQUE="false" FIELDS="cmid"/>
+      </INDEXES>
+    </TABLE>
+  </TABLES>
+</XMLDB>
