@@ -125,6 +125,30 @@ class core_renderer extends \theme_boost\output\core_renderer
         // Course thumbnail image (from the course overview files).
         $imageurl = $this->get_course_overview_image_url($course);
 
+        // Per-course vibrant palette (deterministic from the course id). Used for
+        // the header background, and — when the course has no image — for a
+        // generated tile so the media slot is never blank.
+        $headergradients = [
+            ['#4f46e5', '#7c3aed', '#db2777'], // indigo → violet → pink
+            ['#0891b2', '#2563eb', '#7c3aed'], // cyan → blue → violet
+            ['#0d9488', '#0891b2', '#2563eb'], // teal → cyan → blue
+            ['#ea580c', '#db2777', '#7c3aed'], // orange → pink → violet
+            ['#b45309', '#dc2626', '#db2777'], // amber → red → pink
+            ['#7c3aed', '#6366f1', '#0891b2'], // violet → indigo → cyan
+        ];
+        $tilegradients = [
+            ['#818cf8', '#f472b6'],
+            ['#22d3ee', '#818cf8'],
+            ['#34d399', '#22d3ee'],
+            ['#fb923c', '#f472b6'],
+            ['#fbbf24', '#fb7185'],
+            ['#a78bfa', '#22d3ee'],
+        ];
+        $gi       = (int) $course->id % 6;
+        $hg       = $headergradients[$gi];
+        $tg       = $tilegradients[$gi];
+        $headerbg = "linear-gradient(135deg, {$hg[0]} 0%, {$hg[1]} 55%, {$hg[2]} 100%)";
+
         // Course description — strip HTML, collapse whitespace, truncate.
         $description = '';
         if (!empty($course->summary)) {
@@ -150,6 +174,23 @@ class core_renderer extends \theme_boost\output\core_renderer
                 'class'   => 'edz-course-header-img',
                 'loading' => 'lazy',
             ]);
+        } else {
+            // No course image — render a vibrant generated tile carrying the
+            // course initial, so the media slot is filled and colourful.
+            $initial = \core_text::strtoupper(\core_text::substr(trim($course->fullname), 0, 1));
+            if ($initial === '') {
+                $initial = 'C';
+            }
+            $tilebg  = "linear-gradient(135deg, {$tg[0]}, {$tg[1]})";
+            $inner  .= html_writer::tag(
+                'div',
+                html_writer::tag('span', s($initial), ['class' => 'edz-course-header-gen__ch']),
+                [
+                    'class'       => 'edz-course-header-gen',
+                    'style'       => "background: {$tilebg};",
+                    'aria-hidden' => 'true',
+                ]
+            );
         }
 
         $bodycontent  = html_writer::tag('h2', $coursetitle, ['class' => 'edz-course-header-title']);
@@ -162,7 +203,7 @@ class core_renderer extends \theme_boost\output\core_renderer
         // is enabled for the course and the user is a real logged-in user.
         $inner .= $this->course_completion_donut($course);
 
-        return html_writer::div($inner, 'edz-course-header');
+        return html_writer::div($inner, 'edz-course-header', ['style' => "background: {$headerbg};"]);
     }
 
     /**

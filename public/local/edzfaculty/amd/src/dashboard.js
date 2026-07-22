@@ -373,6 +373,20 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
             wireStudents(root);
             renderChart(root);
             applyEngagement(root, 0);
+        },
+
+        /**
+         * Overview table: make rows clickable.
+         */
+        initOverview: function() {
+            document.querySelectorAll('.edzf-trow[data-href]').forEach(function(tr) {
+                tr.addEventListener('click', function(e) {
+                    if (e.target.closest('a')) {
+                        return;
+                    }
+                    window.location.href = tr.getAttribute('data-href');
+                });
+            });
         }
     };
 });

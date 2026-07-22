@@ -1,0 +1,51 @@
+{{!
+    This file is part of the local_edzfaculty plugin for Moodle.
+
+    Admin/manager "All Faculty" oversight table.
+
+    @template local_edzfaculty/overview
+}}
+<div class="edzf">
+    <p class="edzf-greet">{{#str}}overviewtitle, local_edzfaculty{{/str}}</p>
+
+    <div class="edzf-kpirow">
+        <div class="edzf-card edzf-kpi k-blue"><div class="edzf-kpi-l">{{#str}}sum_faculty, local_edzfaculty{{/str}}</div><div class="edzf-kpi-v">{{summary.faculty}}</div></div>
+        <div class="edzf-card edzf-kpi k-crit"><div class="edzf-kpi-l">{{#str}}sum_tograde, local_edzfaculty{{/str}}</div><div class="edzf-kpi-v">{{summary.tograde}}</div></div>
+        <div class="edzf-card edzf-kpi k-crit"><div class="edzf-kpi-l">{{#str}}sum_atrisk, local_edzfaculty{{/str}}</div><div class="edzf-kpi-v">{{summary.atrisk}}</div></div>
+    </div>
+
+    <section class="edzf-card">
+        <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}allfaculty, local_edzfaculty{{/str}}</h2></div>
+        <div class="edzf-card-b">
+            {{#hasrows}}
+            <table class="edzf-table">
+                <thead>
+                    <tr>
+                        <th>{{#str}}col_faculty, local_edzfaculty{{/str}}</th>
+                        <th class="num">{{labels.courses}}</th>
+                        <th class="num">{{labels.students}}</th>
+                        <th class="num">{{#str}}col_tograde, local_edzfaculty{{/str}}</th>
+                        <th class="num">{{#str}}col_unanswered, local_edzfaculty{{/str}}</th>
+                        <th class="num">{{#str}}col_atrisk, local_edzfaculty{{/str}}</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                    <tr class="edzf-trow" data-href="{{url}}">
+                        <td><span class="edzf-tav">{{initials}}</span> {{fullname}}</td>
+                        <td class="num">{{courses}}</td>
+                        <td class="num">{{students}}</td>
+                        <td class="num">{{tograde}}</td>
+                        <td class="num">{{unanswered}}</td>
+                        <td class="num">{{#hasatrisk}}<span class="edzf-risk">{{atrisk}}</span>{{/hasatrisk}}{{^hasatrisk}}{{atrisk}}{{/hasatrisk}}</td>
+                        <td><a class="edzf-btn sm ghost" href="{{url}}">{{#str}}view, local_edzfaculty{{/str}}</a></td>
+                    </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+            {{/hasrows}}
+            {{^hasrows}}<div class="edzf-empty">{{#str}}nofaculty, local_edzfaculty{{/str}}</div>{{/hasrows}}
+        </div>
+    </section>
+</div>

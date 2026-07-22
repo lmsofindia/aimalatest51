@@ -23,6 +23,19 @@ $string['edzfaculty:managesettings'] = 'Manage faculty dashboard settings';
 $string['noaccess'] = 'The Faculty Dashboard is for teaching staff. You are not teaching any courses.';
 $string['viewingas'] = 'Viewing the dashboard of {$a} (read-only).';
 
+// Admin / manager overview.
+$string['overviewtitle'] = 'Faculty Overview';
+$string['allfaculty'] = 'All faculty';
+$string['backtoall'] = 'All faculty';
+$string['col_faculty'] = 'Faculty';
+$string['col_tograde'] = 'To grade';
+$string['col_unanswered'] = 'Unanswered';
+$string['col_atrisk'] = 'At-risk';
+$string['sum_faculty'] = 'Teaching faculty';
+$string['sum_tograde'] = 'Total to grade';
+$string['sum_atrisk'] = 'Total at-risk';
+$string['nofaculty'] = 'No teaching faculty found.';
+
 // Settings — terminology.
 $string['terminology'] = 'Terminology';
 $string['terminology_desc'] = 'Wording used across the dashboard. Academic suits a college (Students / Sections / Semesters — AIMA). Corporate suits executive programs (Learners / Batches / Programs — GAIL).';

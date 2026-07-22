@@ -376,3 +376,5 @@ $string['fp_navbar_bg']          = 'Navbar background colour';
 $string['fp_navbar_bgdesc']      = 'Background colour of the contained homepage navbar. Default is a soft sage (#e9ede7).';
 $string['fp_navbar_text']        = 'Navbar text colour';
 $string['fp_navbar_textdesc']    = 'Colour of the homepage navbar logo, menu and text. Set a light colour if you choose a dark background. Default #1f2937.';
+$string['fp_navbar_height']      = 'Navbar height';
+$string['fp_navbar_heightdesc']  = 'Height of the homepage navbar. Increase this if your logo is tall — the logo is automatically capped to this height minus padding, so it always keeps top/bottom breathing room. Default 64px.';

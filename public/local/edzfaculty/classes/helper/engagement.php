@@ -23,7 +23,7 @@ class engagement {
     public static function for_course(int $courseid): array {
         global $DB;
         $row = $DB->get_record('local_edzfaculty_coursecache', ['courseid' => $courseid]);
-        return self::shape($row);
+        return self::shape($row ?: null);
     }
 
     /**
@@ -49,7 +49,7 @@ class engagement {
                   FROM {local_edzfaculty_coursecache}
                  WHERE courseid $insql";
         $row = $DB->get_record_sql($sql, $params);
-        return self::shape($row);
+        return self::shape($row ?: null);
     }
 
     /**

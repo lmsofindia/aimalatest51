@@ -1280,7 +1280,7 @@ body.pagelayout-frontpage {
         width: auto !important;
         max-width: none !important;
         margin: 0 calc(48px + (100vw - 100%)) 12px 48px !important;
-        min-height: 62px;
+        min-height: var(--edz-fp-navbar-height, 64px);
         height: auto !important;
         padding: 0.5rem 1.5rem !important;
         background: var(--edz-fp-navbar-bg, #e9ede7) !important;
@@ -1289,6 +1289,20 @@ body.pagelayout-frontpage {
         border-bottom: none !important;
         border-radius: 10px !important;
         box-shadow: 0 8px 24px rgba(17, 24, 39, 0.07) !important;
+    }
+
+    // Logo: cap its height to the bar height minus ~24px so there is always
+    // top/bottom breathing room, however tall the uploaded logo is. Scales up
+    // automatically when the admin raises the navbar height setting.
+    .navbar .navbar-brand {
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .navbar .navbar-brand img,
+    .navbar .navbar-brand .logo {
+        max-height: calc(var(--edz-fp-navbar-height, 64px) - 24px) !important;
+        width: auto !important;
+        object-fit: contain !important;
     }
 
     // Links: clean, flat, corporate — no pill/rounded backgrounds.

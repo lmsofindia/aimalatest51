@@ -156,6 +156,16 @@
 .edzf-nudge:focus { outline: 2px solid var(--edzf-brand-line); border-color: var(--edzf-brand); }
 .edzf-mbtns { display: flex; gap: .6rem; margin-top: 1rem; }
 
+/* Faculty overview table */
+.edzf-backlink { display: inline-block; margin-bottom: .8rem; color: var(--edzf-brand-dark); font-weight: 600; }
+.edzf-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+.edzf-table th { text-align: left; padding: .6rem .7rem; border-bottom: 2px solid var(--edzf-line); color: var(--edzf-ink2); font-size: .74rem; text-transform: uppercase; letter-spacing: .04em; }
+.edzf-table td { padding: .7rem; border-bottom: 1px solid var(--edzf-line); }
+.edzf-table th.num, .edzf-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.edzf-trow { cursor: pointer; }
+.edzf-trow:hover { background: var(--edzf-raised); }
+.edzf-tav { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--edzf-brand); color: #fff; font-weight: 800; font-size: .7rem; margin-right: .5rem; vertical-align: middle; }
+
 /* Responsive */
 @media (max-width: 1100px) {
     .edzf-two { grid-template-columns: 1fr; }

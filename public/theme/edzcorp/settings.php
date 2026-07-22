@@ -604,6 +604,28 @@ if ($ADMIN->fulltree) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
 
+    // Frontpage navbar height (px) — gives tall customer logos vertical breathing
+    // room. The logo is capped to this height minus padding so it never touches
+    // the top/bottom edges.
+    $setting = new admin_setting_configselect(
+        'theme_edzcorp/fp_navbar_height',
+        get_string('fp_navbar_height', 'theme_edzcorp'),
+        get_string('fp_navbar_heightdesc', 'theme_edzcorp'),
+        '64',
+        [
+            '56'  => '56px',
+            '64'  => '64px (default)',
+            '72'  => '72px',
+            '80'  => '80px',
+            '88'  => '88px',
+            '96'  => '96px',
+            '112' => '112px',
+            '128' => '128px',
+        ]
+    );
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
     // ── Top hero (first section) ──────────────────────────────────────────────
 
     $page->add(new admin_setting_heading(
