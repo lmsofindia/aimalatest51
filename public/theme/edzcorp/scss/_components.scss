@@ -1,0 +1,605 @@
+// =============================================================================
+// EdzCorp — _components.scss
+// Global component overrides: typography sizes, cards, buttons, forms,
+// tables, badges, alerts, nav tabs, modals, dropdowns, progress bars.
+//
+// All font sizes come from CSS vars (--edz-fs-*) defined in _variables.scss.
+// Border-radius uses --edz-border-radius-btn for interactive elements and
+// --edz-border-radius for containers/cards.
+// =============================================================================
+
+
+// ---- Typography — font families -------------------------------------------
+
+h1, h2, h3 {
+    font-family: var(--edz-font-heading);
+    font-weight: var(--edz-fw-semibold);
+    color: var(--edz-heading-color);
+    line-height: 1.3;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.01em;
+}
+
+h4, h5, h6 {
+    font-family: var(--edz-font-subheading);
+    font-weight: var(--edz-fw-semibold);
+    color: var(--edz-heading-color);
+    line-height: 1.4;
+    margin-bottom: 0.375rem;
+}
+
+body,
+p,
+span,
+.form-control,
+.form-select,
+label,
+.form-label,
+td, th,
+.nav-link,
+.btn {
+    font-family: var(--edz-font-body);
+}
+
+// ---- Typography — sizes (tight professional scale) ------------------------
+
+h1 { font-size: var(--edz-fs-h1); }
+h2 { font-size: var(--edz-fs-h2); }
+h3 { font-size: var(--edz-fs-h3); }
+h4 { font-size: var(--edz-fs-h4); }
+h5 { font-size: var(--edz-fs-h5); }
+h6 { font-size: var(--edz-fs-h6); }
+
+body,
+p {
+    font-size: var(--edz-fs-body);
+    color: var(--edz-text-color);
+    line-height: 1.65;
+}
+
+// Moodle's page header h1 — keep professional, not gigantic
+.page-header-headings h1,
+.page-header h1,
+h1.page-header,
+#page-header h1 {
+    font-size: var(--edz-fs-h2);   // 17 px — page titles are h2-weight
+    font-weight: var(--edz-fw-bold);
+    margin: 0;
+    line-height: 1.25;
+}
+
+small,
+.small,
+.text-small {
+    font-size: var(--edz-fs-small);
+}
+
+
+// ---- Cards ---------------------------------------------------------------
+
+.card {
+    border-radius: var(--edz-border-radius);
+    border: 1px solid var(--edz-border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 4px rgba(0, 0, 0, 0.04);
+    background: var(--edz-card-bg);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(0, 0, 0, 0.04);
+    }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--edz-border-color);
+        font-weight: var(--edz-fw-semibold);
+        font-size: var(--edz-fs-small);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--edz-text-muted);
+        padding: 0.875rem 1.25rem;
+    }
+
+    .card-title {
+        font-size: var(--edz-fs-h4);
+        font-weight: var(--edz-fw-semibold);
+        color: var(--edz-heading-color);
+    }
+
+    .card-footer {
+        background: transparent;
+        border-top: 1px solid var(--edz-border-color);
+        font-size: var(--edz-fs-small);
+    }
+
+    .card-body { font-size: var(--edz-fs-body); }
+}
+
+
+// ---- Buttons -------------------------------------------------------------
+// All buttons get consistent border-radius and refined hover/focus states.
+
+.btn {
+    border-radius: var(--edz-border-radius-btn) !important;
+    font-family: var(--edz-font-body);
+    font-weight: var(--edz-fw-semibold);
+    font-size: var(--edz-fs-body);
+    padding: 0.5rem 1.125rem;
+    transition: all 0.18s ease;
+    letter-spacing: 0.01em;
+    border-width: 1.5px;
+
+    &:focus,
+    &:focus-visible {
+        box-shadow: var(--edz-focus-ring);
+        outline: none;
+    }
+}
+
+.btn-primary {
+    &:hover { filter: brightness(1.07); box-shadow: 0 2px 8px rgba(99, 102, 241, 0.28); }
+}
+
+.btn-secondary {
+    &:hover { filter: brightness(0.96); }
+}
+
+.btn-outline-primary {
+    &:hover { box-shadow: 0 2px 8px rgba(99, 102, 241, 0.18); }
+}
+
+.btn-sm {
+    padding: 0.3rem 0.75rem;
+    font-size: var(--edz-fs-small);
+    border-radius: var(--edz-border-radius-sm) !important;
+}
+
+.btn-lg {
+    padding: 0.625rem 1.5rem;
+    font-size: var(--edz-fs-h4);
+}
+
+// Moodle's icon-only button variant
+.btn.icon-no-margin {
+    border-radius: var(--edz-border-radius-sm) !important;
+}
+
+
+// ---- Forms ---------------------------------------------------------------
+
+.form-control,
+.form-select {
+    border-radius: var(--edz-border-radius-sm);
+    border-color: var(--edz-border-color);
+    background-color: var(--edz-card-bg);
+    color: var(--edz-text-color);
+    font-size: var(--edz-fs-body);
+    font-family: var(--edz-font-body);
+    transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    padding: 0.5rem 0.75rem;
+
+    &:focus {
+        box-shadow: var(--edz-focus-ring);
+        border-color: var(--bs-primary);
+        background-color: var(--edz-card-bg);
+        color: var(--edz-text-color);
+        outline: none;
+    }
+
+    &::placeholder { color: var(--edz-text-muted); opacity: 0.7; }
+}
+
+// Selects keep Bootstrap's caret background image (appearance: none) —
+// reserve right-hand space so text never overlaps the chevron (BS5 default).
+.form-select,
+select.form-control {
+    padding-right: 2.25rem;
+}
+
+.form-label {
+    font-size: var(--edz-fs-small);
+    font-weight: var(--edz-fw-semibold);
+    color: var(--edz-text-color);
+    margin-bottom: 0.375rem;
+}
+
+.form-text {
+    color: var(--edz-text-muted);
+    font-size: var(--edz-fs-small);
+}
+
+.input-group .btn { border-radius: var(--edz-border-radius-sm); }
+
+
+// ---- Tables --------------------------------------------------------------
+
+.table {
+    font-size: var(--edz-fs-body);
+    color: var(--edz-text-color);
+
+    thead th {
+        font-size: var(--edz-fs-small);
+        font-weight: var(--edz-fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--edz-text-muted);
+        border-bottom-width: 1px;
+        background: var(--edz-page-bg);
+        padding: 0.625rem 0.875rem;
+        white-space: nowrap;
+    }
+
+    tbody td {
+        padding: 0.625rem 0.875rem;
+        vertical-align: middle;
+        border-color: var(--edz-border-color);
+    }
+
+    tbody tr {
+        transition: background 0.12s ease;
+        &:hover td { background: var(--edz-hover-bg); }
+    }
+
+    &.table-bordered {
+        border-color: var(--edz-border-color);
+        td, th { border-color: var(--edz-border-color); }
+    }
+
+    // Admin generaltable
+    &.generaltable { border-radius: var(--edz-border-radius); overflow: hidden; }
+}
+
+
+// ---- Badges --------------------------------------------------------------
+// Use --edz-fs-small (13 px) and consistent border-radius.
+
+.badge {
+    font-family: var(--edz-font-body);
+    font-weight: var(--edz-fw-semibold);
+    font-size: var(--edz-fs-small);
+    padding: 0.28em 0.625em;
+    border-radius: var(--edz-border-radius-sm);
+    letter-spacing: 0.02em;
+    line-height: 1.4;
+}
+
+
+// ---- Alerts --------------------------------------------------------------
+
+.alert {
+    border-radius: var(--edz-border-radius);
+    border: none;
+    font-size: var(--edz-fs-body);
+    padding: 0.875rem 1.125rem;
+    border-left: 4px solid transparent;
+
+    &.alert-info    { border-left-color: var(--bs-info); }
+    &.alert-success { border-left-color: var(--bs-success); }
+    &.alert-warning { border-left-color: var(--bs-warning); }
+    &.alert-danger  { border-left-color: var(--bs-danger); }
+}
+
+
+// ---- Modals --------------------------------------------------------------
+
+.modal-content {
+    border-radius: var(--edz-border-radius-lg);
+    border: none;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.16), 0 4px 16px rgba(0, 0, 0, 0.08);
+    background: var(--edz-card-bg);
+    color: var(--edz-text-color);
+}
+
+.modal-header,
+.modal-footer { border-color: var(--edz-border-color); }
+
+.modal-title {
+    font-weight: var(--edz-fw-bold);
+    font-size: var(--edz-fs-h4);
+}
+
+
+// ---- Dropdowns -----------------------------------------------------------
+
+.dropdown-menu {
+    border-radius: var(--edz-border-radius);
+    border: 1px solid var(--edz-border-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10), 0 2px 6px rgba(0, 0, 0, 0.05);
+    font-size: var(--edz-fs-body);
+    padding: 0.375rem;
+    background: var(--edz-card-bg);
+
+    .dropdown-item {
+        border-radius: var(--edz-border-radius-sm);
+        padding: 0.45rem 0.75rem;
+        color: var(--edz-text-color);
+        font-size: var(--edz-fs-body);
+        transition: background 0.12s ease;
+
+        &:hover,
+        &:focus { background: var(--edz-hover-bg); color: var(--edz-text-color); }
+
+        &:active { background: var(--bs-primary); color: #fff; }
+    }
+
+    .dropdown-header {
+        font-size: var(--edz-fs-small);
+        font-weight: var(--edz-fw-bold);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--edz-text-muted);
+        padding: 0.5rem 0.75rem 0.25rem;
+    }
+
+    .dropdown-divider { border-color: var(--edz-border-color); margin: 0.25rem 0.5rem; }
+}
+
+
+// ---- Secondary navigation — pill-style nav-links ───────────────────────────
+// Scoped to .secondary-navigation only so Moodle's other tab components
+// (quiz, forum, admin, etc.) are completely unaffected.
+// Individual links become pills; the .nav-tabs container keeps its default
+// Bootstrap underline behaviour (border-bottom reset only so it doesn't look odd).
+
+.secondary-navigation {
+    .nav-tabs {
+        border-bottom: none;
+        gap: 2px;
+        flex-wrap: nowrap;
+        padding: 0;
+        background: transparent;
+    }
+
+    .nav-tabs .nav-link,
+    .moremenu .nav-link {
+        border: none;
+        border-radius: 20px;           // full-pill shape
+        font-size: var(--edz-fs-small, 0.8125rem);
+        font-weight: var(--edz-fw-medium, 500);
+        color: var(--edz-text-muted, #6b7280);
+        padding: 0.3rem 0.9rem;
+        line-height: 1.5;
+        white-space: nowrap;
+        background: transparent;
+        margin-bottom: 0;
+        transition: color 0.15s ease, background 0.15s ease;
+
+        &:hover {
+            color: var(--edz-text-color, #1e1e2d);
+            background: var(--edz-hover-bg, #f3f4f6);
+            text-decoration: none;
+        }
+
+        &.active,
+        &[aria-current="page"] {
+            color: var(--edz-accent, #6366f1);
+            background: rgba(99, 102, 241, 0.10);
+            font-weight: var(--edz-fw-semibold, 600);
+            // No border — flat pill (removed the outline per design).
+        }
+    }
+}
+
+// Crisp fixed-height more-menu (secondary nav overflow) — 40px pills.
+.moremenu {
+    height: 40px;
+    align-items: center;
+}
+.moremenu .nav-link {
+    height: 40px;
+    display: flex;
+    align-items: center;
+}
+
+
+[data-edz-theme="dark"] .secondary-navigation {
+    .nav-tabs .nav-link,
+    .moremenu .nav-link {
+        color: rgba(255, 255, 255, 0.5);
+
+        &:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        &.active,
+        &[aria-current="page"] {
+            background: rgba(99, 102, 241, 0.18);
+            color: #a5b4fc;
+        }
+    }
+}
+
+// Secondary navigation wrapper (Moodle 5 .secondary-navigation)
+// overflow-x:auto would create a clipping stacking context and hide the moremenu
+// dropdown. Use a scroll-wrapper child instead so the dropdown can escape.
+.secondary-navigation {
+    margin-bottom: 1.25rem;
+    // Do NOT set overflow-x here — it clips the absolutely-positioned moremenu dropdown.
+    // Scrolling is handled by the inner nav-tabs flex row.
+    overflow: visible;
+    position: relative;
+
+    .nav-tabs {
+        min-width: unset;
+        // overflow intentionally NOT set here — overflow-x:auto clips the moremenu
+        // dropdown. The JS portal in navbar.mustache handles dropdown positioning.
+    }
+
+    // Moremenu "More ▸" dropdown — must float above everything
+    [data-region="moremenu"],
+    .dropdownmoremenu {
+        position: relative;  // establishes its own stacking context
+
+        .dropdown-menu {
+            z-index: 1080 !important;  // above navbar (1030) and page content
+            position: absolute !important;
+        }
+    }
+}
+
+
+// ---- Breadcrumbs ---------------------------------------------------------
+
+.breadcrumb {
+    font-size: var(--edz-fs-small);
+    margin-bottom: 0;
+    background: transparent;
+    padding: 0;
+
+    .breadcrumb-item {
+        color: var(--edz-text-muted);
+
+        a {
+            color: var(--edz-breadcrumb-link, #2563eb);
+            text-decoration: none;
+            &:hover { color: var(--edz-breadcrumb-link, #2563eb); text-decoration: underline; }
+        }
+
+        &.active { color: var(--edz-text-color); font-weight: var(--edz-fw-medium); }
+
+        & + .breadcrumb-item::before { color: var(--edz-text-muted); }
+    }
+}
+
+
+// ---- Progress bars -------------------------------------------------------
+
+.progress {
+    height: 6px;
+    border-radius: 4px;
+    background: var(--edz-border-color);
+    overflow: hidden;
+
+    .progress-bar {
+        border-radius: 4px;
+        transition: width 0.5s ease;
+        background: linear-gradient(90deg, var(--bs-primary) 0%, #818cf8 100%);
+    }
+}
+
+
+// ---- List groups ---------------------------------------------------------
+
+.list-group-item {
+    font-size: var(--edz-fs-body);
+    border-color: var(--edz-border-color);
+    background-color: var(--edz-card-bg);
+    color: var(--edz-text-color);
+    padding: 0.625rem 1rem;
+    transition: background 0.12s ease;
+
+    &:first-child { border-radius: var(--edz-border-radius) var(--edz-border-radius) 0 0; }
+    &:last-child  { border-radius: 0 0 var(--edz-border-radius) var(--edz-border-radius); }
+
+    &:hover { background: var(--edz-hover-bg); }
+
+    &.active {
+        background: var(--bs-primary);
+        border-color: var(--bs-primary);
+        color: #fff;
+    }
+}
+
+
+// ---- Moodle-specific overrides -------------------------------------------
+
+// Activity completion icons.
+.completioncheckbox { font-size: 1rem; }
+
+// Page-level notifications.
+#page-notifications .alert { margin-bottom: 1rem; }
+
+// Course card tiles (Moodle's own grid).
+.dashboard-card,
+.course-info-container {
+    border-radius: var(--edz-border-radius);
+    border: 1px solid var(--edz-border-color);
+    background: var(--edz-card-bg);
+    overflow: hidden;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+    &:hover {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.10);
+        transform: translateY(-2px);
+    }
+}
+
+// Dashboard card footer text
+.course-info-container .dashboard-card-footer { font-size: var(--edz-fs-small); }
+
+// Admin tables
+#adminsettings .generaltable { font-size: var(--edz-fs-body); }
+
+// Moodle form elements in admin
+#adminsettings .form-setting {
+    font-size: var(--edz-fs-body);
+    .defaultinfo { font-size: var(--edz-fs-small); color: var(--edz-text-muted); }
+}
+
+// Moodle's "pill" nav (used in some activity pages)
+.nav-pills .nav-link {
+    border-radius: var(--edz-border-radius-btn);
+    font-size: var(--edz-fs-body);
+    font-weight: var(--edz-fw-medium);
+    color: var(--edz-text-muted);
+    padding: 0.45rem 0.875rem;
+    transition: all 0.15s ease;
+
+    &.active,
+    &:hover { color: var(--bs-primary); }
+
+    &.active {
+        background: rgba(99, 102, 241, 0.1);
+        font-weight: var(--edz-fw-semibold);
+    }
+}
+
+// Moodle notices / box
+.generalbox,
+.box {
+    border-radius: var(--edz-border-radius);
+    font-size: var(--edz-fs-body);
+    border: 1px solid var(--edz-border-color);
+    background: var(--edz-card-bg);
+    padding: 1.25rem;
+}
+
+// Pagination
+.pagination {
+    .page-link {
+        border-color: var(--edz-border-color);
+        color: var(--edz-text-color);
+        font-size: var(--edz-fs-body);
+        border-radius: var(--edz-border-radius-sm);
+        margin: 0 2px;
+        transition: all 0.15s ease;
+
+        &:hover {
+            background: var(--edz-hover-bg);
+            border-color: var(--bs-primary);
+            color: var(--bs-primary);
+        }
+    }
+
+    .page-item.active .page-link {
+        background: var(--bs-primary);
+        border-color: var(--bs-primary);
+    }
+}
+
+// ---- Moodle dynamic button catch-all — ensure border-radius always applies -----
+// Moodle generates buttons with many variant classes; this covers all of them.
+[class*="btn-"]:not([class*="btn-group"]) {
+    border-radius: var(--edz-border-radius-btn) !important;
+}
+
+// Specific Moodle overrides that Bootstrap or core theme may stomp
+.btn,
+a.btn,
+button.btn,
+input[type="submit"],
+input[type="button"],
+input[type="reset"] {
+    border-radius: var(--edz-border-radius-btn) !important;
+}

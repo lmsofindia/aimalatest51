@@ -1,0 +1,190 @@
+{{!
+    EdzCorp sidebar navigation partial.
+
+    Context variables (provided by theme_edzcorp\util\sidebar::get_context):
+        homeurl        (string) URL for the logo link.
+        sitename       (string) Site short name.
+        sidebarlogourl (string) URL of the sidebar logo (may be empty).
+        navgroups      (array)  Groups — each has: grouplabel, items[].
+                                Each item: key, label, icon, url, isactive.
+        isloggedin     (bool)   Real logged-in user (not guest).
+        useravatar     (string) User profile picture URL.
+        fullname       (string) User's full name.
+        userrole       (string) User's primary role label.
+        profileurl     (string) URL to the user's profile page.
+        logouturl      (string) URL to log out (includes sesskey).
+}}
+
+{{! ===================================================================== }}
+{{! Sidebar nav panel                                                      }}
+{{! ===================================================================== }}
+<nav class="edzcorp-sidenav"
+     id="edzcorp-sidenav"
+     role="navigation"
+     aria-label="{{#str}}mainnavigation, theme_edzcorp{{/str}}">
+
+    {{! ---- Header: logo + desktop collapse toggle ---- }}
+    <div class="sidenav-header">
+        <a href="{{{homeurl}}}" class="sidenav-logo-link" aria-label="{{sitename}}">
+            {{#sidebarlogourl}}
+                <img src="{{{sidebarlogourl}}}"
+                     alt="{{sitename}}"
+                     class="sidenav-logo-img"
+                     loading="lazy">
+            {{/sidebarlogourl}}
+            {{^sidebarlogourl}}
+                <span class="sidenav-logo-text">{{sitename}}</span>
+            {{/sidebarlogourl}}
+        </a>
+
+        <button class="sidenav-toggle-btn"
+                id="sidenav-toggle-btn"
+                type="button"
+                aria-label="{{#str}}togglesidebar, theme_edzcorp{{/str}}"
+                aria-expanded="true"
+                aria-controls="edzcorp-sidenav">
+            <i class="fa fa-bars" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    {{! ---- Scrollable nav groups ---- }}
+    <div class="sidenav-scrollable" role="list">
+
+        {{! ---- Course index toggle — only on course / activity pages ----
+             Rendered when Boost provided a course index drawer for this page.
+             Carries Boost's own data-toggler attributes so theme_boost's
+             drawers AMD module opens/closes the drawer — no custom JS. ---- }}
+        {{#courseindex}}
+        <div class="sidenav-group sidenav-group-courseindex">
+            <span class="sidenav-group-label" aria-hidden="true">{{#str}}navgroupcourse, theme_edzcorp{{/str}}</span>
+            <ul class="sidenav-nav" role="list">
+                <li class="sidenav-item sidenav-item-courseindex" role="listitem">
+                    <button type="button"
+                            class="sidenav-link sidenav-courseindex-toggle"
+                            data-toggler="drawers"
+                            data-action="toggle"
+                            data-target="theme_boost-drawers-courseindex"
+                            aria-controls="theme_boost-drawers-courseindex"
+                            aria-expanded="{{#courseindexopen}}true{{/courseindexopen}}{{^courseindexopen}}false{{/courseindexopen}}"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            data-bs-title="{{#str}}navcourseindex, theme_edzcorp{{/str}}">
+                        <span class="sidenav-icon" aria-hidden="true">
+                            <i class="fa fa-list-ul"></i>
+                        </span>
+                        <span class="sidenav-label">{{#str}}navcourseindex, theme_edzcorp{{/str}}</span>
+                    </button>
+                </li>
+            </ul>
+        </div>
+        {{/courseindex}}
+
+        {{#navgroups}}
+        <div class="sidenav-group">
+
+            {{! Group label — hidden when sidebar is collapsed ---- }}
+            <span class="sidenav-group-label" aria-hidden="true">{{grouplabel}}</span>
+
+            <ul class="sidenav-nav" role="list">
+                {{#items}}
+                <li class="sidenav-item{{#isactive}} active{{/isactive}}" role="listitem">
+                    <a href="{{{url}}}"
+                       class="sidenav-link"
+                       data-key="{{key}}"
+                       {{#isactive}}aria-current="page"{{/isactive}}
+                       data-bs-toggle="tooltip"
+                       data-bs-placement="right"
+                       data-bs-title="{{label}}">
+                        <span class="sidenav-icon" aria-hidden="true">
+                            <i class="fa {{icon}}"></i>
+                        </span>
+                        <span class="sidenav-label">{{label}}</span>
+                    </a>
+                </li>
+                {{/items}}
+            </ul>
+
+        </div>
+        {{/navgroups}}
+
+    </div>{{! .sidenav-scrollable }}
+
+    {{! ---- Footer: user profile + dropdown ---- }}
+    {{#isloggedin}}
+    <div class="sidenav-footer">
+
+        {{! Clickable user strip — expands Profile / Logout ---- }}
+        <button class="sidenav-user-btn"
+                id="edz-user-menu-btn"
+                type="button"
+                aria-expanded="false"
+                aria-controls="edz-user-dropdown"
+                aria-label="{{fullname}}">
+            {{#useravatar}}
+                <img src="{{{useravatar}}}"
+                     alt="{{fullname}}"
+                     class="sidenav-avatar"
+                     loading="lazy">
+            {{/useravatar}}
+            {{^useravatar}}
+                <span class="sidenav-avatar sidenav-avatar-initials" aria-hidden="true">
+                    {{! Show first letter of fullname as fallback }}
+                </span>
+            {{/useravatar}}
+
+            <div class="sidenav-user-info sidenav-label">
+                <span class="sidenav-username">{{fullname}}</span>
+                {{#userrole}}
+                    <span class="sidenav-userrole">{{userrole}}</span>
+                {{/userrole}}
+            </div>
+
+            <i class="fa fa-chevron-up sidenav-chevron sidenav-label" aria-hidden="true"></i>
+        </button>
+
+        {{! Expandable user actions dropdown ---- }}
+        <div class="sidenav-user-dropdown"
+             id="edz-user-dropdown"
+             role="menu"
+             aria-hidden="true">
+
+            <a href="{{{profileurl}}}"
+               class="sidenav-user-action"
+               role="menuitem">
+                <span class="sidenav-icon" aria-hidden="true">
+                    <i class="fa fa-user"></i>
+                </span>
+                <span class="sidenav-label">{{#str}}navprofile, theme_edzcorp{{/str}}</span>
+            </a>
+
+            <a href="{{{logouturl}}}"
+               class="sidenav-user-action"
+               role="menuitem">
+                <span class="sidenav-icon" aria-hidden="true">
+                    <i class="fa fa-right-from-bracket"></i>
+                </span>
+                <span class="sidenav-label">{{#str}}navlogout, theme_edzcorp{{/str}}</span>
+            </a>
+
+        </div>{{! #edz-user-dropdown }}
+
+    </div>{{! .sidenav-footer }}
+    {{/isloggedin}}
+
+</nav>{{! #edzcorp-sidenav }}
+
+{{! ===================================================================== }}
+{{! Mobile hamburger — visible on ≤992 px; sits OUTSIDE the sidebar so    }}
+{{! it is reachable even when the sidebar is off-screen.                  }}
+{{! ===================================================================== }}
+<button id="edz-mobile-nav-btn"
+        class="edz-mobile-nav-btn d-print-none"
+        type="button"
+        aria-label="{{#str}}togglemobilemenu, theme_edzcorp{{/str}}"
+        aria-expanded="false"
+        aria-controls="edzcorp-sidenav">
+    <i class="fa fa-bars" aria-hidden="true"></i>
+</button>
+
+{{! Semi-transparent overlay — tapping it on mobile closes the sidebar. }}
+<div id="edz-sidenav-overlay" class="edz-sidenav-overlay" aria-hidden="true"></div>

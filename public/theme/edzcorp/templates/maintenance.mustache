@@ -1,0 +1,26 @@
+{{!
+    EdzCorp — maintenance template.
+    Must have zero navigation links and no blocks (Moodle requirement).
+}}
+{{{output.doctype}}}
+<html {{{output.htmlattributes}}}>
+<head>
+    <title>{{{pagetitle}}}</title>
+    {{{output.standard_head_html}}}
+</head>
+<body {{{bodyattributes}}}>
+{{{output.standard_top_of_body_html}}}
+
+<div class="edz-maintenance-wrapper">
+    <div class="edz-maintenance-inner" id="maincontent">
+        <div class="edz-maintenance-brand">
+            <span class="edz-maintenance-sitename">{{sitename}}</span>
+        </div>
+        {{{maincontent}}}
+    </div>
+</div>
+
+{{{output.standard_after_main_region_html}}}
+{{{output.standard_end_of_body_html}}}
+</body>
+</html>

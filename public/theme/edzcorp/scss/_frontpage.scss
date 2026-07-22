@@ -1,0 +1,1217 @@
+// =============================================================================
+// EdzCorp — Frontpage Sections
+// 4-section enterprise homepage layout:
+//   1. Employee spotlight  — organic blob bg + large photo + big bold quote
+//   2. Hero                — grid/net background + headline + CTAs + stats
+//   3. Popular topics      — category pill chips
+//   4. Recently launched   — 2-col accent-border course cards
+// =============================================================================
+
+// ── Shared page wrapper reset ────────────────────────────────────────────────
+.edz-frontpage-page {
+    #page-content {
+        padding-left: 0;
+        padding-right: 0;
+    }
+}
+
+.edz-frontpage-main-content {
+    padding: 1.5rem 2rem;
+}
+
+// =============================================================================
+// SECTION 1 — EMPLOYEE SPOTLIGHT  (Variation C — gradient showcase)
+// Purple gradient card, translucent badge pill, white headline, light copy,
+// topic pills, floating photo with soft white halo on the right.
+// fp_spotlight_bg setting (when set) still overrides the gradient inline.
+// =============================================================================
+
+.edz-spotlight {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    min-height: 380px;
+    overflow: hidden;          // clip decorative circles
+    background: linear-gradient(125deg, #6d5ce0 0%, #7b67e8 45%, #9a86f2 100%);
+
+    // Full-bleed: escape the centred .main-inner cap and span the viewport.
+    width: 100vw;
+    margin: 0 0 0 calc(50% - 50vw);
+    border-radius: 0;
+    box-shadow: none;
+
+    // Keep the CONTENT aligned with the rest of the page: pad the sides so
+    // the inner grid is centred to a 1280px line on wide screens.
+    padding: 0 24px;
+    @media (min-width: 1328px) {
+        padding: 0 calc((100vw - 1280px) / 2);
+    }
+
+    // Big soft decorative circles (like the demo-section design).
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.07);
+        pointer-events: none;
+    }
+    &::before { width: 420px; height: 420px; top: -180px; left: -140px; }
+    &::after  { width: 520px; height: 520px; bottom: -260px; right: -120px;
+                background: rgba(190, 120, 220, 0.18); }
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// Avoid a stray horizontal scrollbar from the 100vw full-bleed trick.
+.edz-frontpage-page {
+    overflow-x: hidden;
+}
+
+// ── LEFT — text content panel ─────────────────────────────────────────────────
+.edz-spotlight__left {
+    position: relative;
+    z-index: 2;
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 0;
+
+    @media (max-width: 900px) {
+        padding: 30px 24px;
+    }
+}
+
+// Section label — translucent badge pill (coral text, like "Product Demos")
+.edz-spotlight__label {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 168, 138, 0.55);
+    background: rgba(255, 255, 255, 0.08);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #ffb39b;
+    margin-bottom: 22px;
+}
+
+// Big bold headline — accent word wrapped in <span class="edz-spotlight__accent">
+.edz-spotlight__headline {
+    font-size: 44px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin: 0 0 18px;
+
+    @media (max-width: 1100px) { font-size: 36px; }
+    @media (max-width: 768px)  { font-size: 28px; }
+}
+
+[data-edz-theme="dark"] .edz-spotlight__headline {
+    color: #ffffff;
+}
+
+.edz-spotlight__accent {
+    color: #ddd3ff;
+}
+
+// Description copy — light on the gradient
+.edz-spotlight__quote {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.88);
+    line-height: 1.7;
+    margin: 0 0 26px;
+    font-style: normal;
+    border: none;
+    padding: 0;
+    max-width: 460px;
+
+    @media (max-width: 768px) { font-size: 14px; }
+}
+
+[data-edz-theme="dark"] .edz-spotlight__quote {
+    color: rgba(255, 255, 255, 0.88);
+}
+
+// Topic pills row — translucent rounded pills (Roleplay / LMS / Proctoring …)
+.edz-spotlight__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.edz-spotlight__chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 26px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.13);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: background 0.18s ease, transform 0.18s ease;
+
+    &:hover,
+    &:focus {
+        background: rgba(255, 255, 255, 0.24);
+        color: #ffffff;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) { padding: 8px 20px; font-size: 13px; }
+}
+
+
+// ── RIGHT — floating photo with soft halo ─────────────────────────────────────
+.edz-spotlight__right {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    overflow: visible;
+    padding: 24px 20px;
+    min-height: 340px;
+
+    @media (max-width: 900px) {
+        min-height: 280px;
+        padding: 4px 16px 32px;
+    }
+}
+
+// Ambient dots — white translucent on the gradient
+.edz-spotlight__dot {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.10);
+    pointer-events: none;
+
+    &--lg { width: 90px; height: 90px; top: 8%;  right: 6%; }
+    &--sm { width: 48px; height: 48px; bottom: 16%; right: 20%; }
+    &--xs { width: 26px; height: 26px; top: 28%; left: 10%; }
+}
+
+[data-edz-theme="dark"] {
+    .edz-spotlight__dot { background: rgba(255, 255, 255, 0.10); }
+}
+
+// Blob wrap — positions blobs relative to the photo centre
+.edz-spotlight__blob-wrap {
+    position: relative;
+    width: 230px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
+}
+
+// Soft halo blobs — white translucent on the gradient background
+.edz-spotlight__blob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    pointer-events: none;
+    z-index: 1;
+
+    &--1 {
+        width: 250px;
+        height: 280px;
+        background: rgba(255, 255, 255, 0.14);
+        border-radius: 62% 38% 46% 54% / 55% 42% 58% 45%;
+        transform: translate(-50%, -50%);
+        animation: edz-blob-a 9s ease-in-out infinite alternate;
+    }
+
+    &--2 {
+        width: 200px;
+        height: 230px;
+        background: rgba(255, 255, 255, 0.10);
+        border-radius: 45% 55% 38% 62% / 48% 36% 64% 52%;
+        transform: translate(-50%, -52%);
+        animation: edz-blob-b 12s ease-in-out infinite alternate;
+    }
+
+    &--3 {
+        width: 160px;
+        height: 180px;
+        background: rgba(255, 255, 255, 0.08);
+        border-radius: 55% 45% 60% 40% / 40% 60% 40% 60%;
+        transform: translate(-48%, -48%);
+        animation: edz-blob-c 7s ease-in-out infinite alternate;
+    }
+}
+
+@keyframes edz-blob-a {
+    0%   { border-radius: 62% 38% 46% 54% / 55% 42% 58% 45%; transform: translate(-50%,-50%) scale(1);    }
+    100% { border-radius: 48% 52% 60% 40% / 42% 58% 44% 56%; transform: translate(-50%,-50%) scale(1.04); }
+}
+@keyframes edz-blob-b {
+    0%   { border-radius: 45% 55% 38% 62% / 48% 36% 64% 52%; transform: translate(-50%,-52%) scale(1);    }
+    100% { border-radius: 58% 42% 50% 50% / 55% 45% 55% 45%; transform: translate(-50%,-52%) scale(1.03); }
+}
+@keyframes edz-blob-c {
+    0%   { border-radius: 55% 45% 60% 40% / 40% 60% 40% 60%; transform: translate(-48%,-48%) scale(1);    }
+    100% { border-radius: 40% 60% 44% 56% / 58% 42% 56% 44%; transform: translate(-48%,-48%) scale(1.05); }
+}
+
+// The photo — floating card, centred
+.edz-spotlight__photo {
+    width: 180px;
+    height: 240px;
+    border-radius: 16px;
+    position: relative;
+    z-index: 5;
+    overflow: hidden;
+    box-shadow:
+        0 20px 56px rgba(40, 25, 110, 0.45),
+        0  4px 16px rgba(0, 0, 0, 0.18);
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: top center;
+        display: block;
+    }
+}
+
+// Initials fallback when no photo uploaded
+.edz-spotlight__initials-block {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(160deg, rgba(255,255,255,0.30) 0%, rgba(255,255,255,0.12) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: -1px;
+}
+
+// =============================================================================
+// SECTION 2 — HERO
+// Grid/net background with gradient blobs + centred headline + CTAs + stats
+// =============================================================================
+
+.edz-hero {
+    position: relative;
+    overflow: hidden;
+    padding: 64px 48px 56px;
+    text-align: center;
+    background: #ffffff;
+    border-top: none;
+    border-radius: 20px;
+    margin: 1.25rem 1rem 0;
+
+    @media (max-width: 768px) {
+        padding: 44px 20px 40px;
+    }
+}
+
+// ── Grid/net overlay (the "dot-grid" background from the reference) ──────────
+.edz-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(99, 102, 241, 0.065) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99, 102, 241, 0.065) 1px, transparent 1px);
+    background-size: 36px 36px;
+    pointer-events: none;
+    z-index: 0;
+}
+
+// ── Soft radial gradient blobs in corners ────────────────────────────────────
+.edz-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 45% 50% at 8% 30%,  rgba(99, 102, 241, 0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 45% at 92% 70%, rgba(139, 92, 246, 0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 35% 40% at 50% 100%, rgba(167, 139, 250, 0.06) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+// All direct hero children sit above pseudo-elements
+.edz-hero > * {
+    position: relative;
+    z-index: 1;
+}
+
+[data-edz-theme="dark"] .edz-hero {
+    background: #0f172a;
+    border-top-color: transparent;
+
+    &::before {
+        background-image:
+            linear-gradient(rgba(99, 102, 241, 0.12) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(99, 102, 241, 0.12) 1px, transparent 1px);
+    }
+
+    &::after {
+        background:
+            radial-gradient(ellipse 45% 50% at 8% 30%,  rgba(99, 102, 241, 0.15) 0%, transparent 70%),
+            radial-gradient(ellipse 40% 45% at 92% 70%, rgba(139, 92, 246, 0.12) 0%, transparent 70%);
+    }
+}
+
+.edz-hero__eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--edz-accent, #6366f1);
+    margin-bottom: 16px;
+}
+
+.edz-hero__headline {
+    font-size: 38px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.15;
+    margin-bottom: 14px;
+    letter-spacing: -0.6px;
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+
+    @media (max-width: 768px) {
+        font-size: 26px;
+    }
+}
+
+[data-edz-theme="dark"] .edz-hero__headline {
+    color: #f1f5f9;
+}
+
+// Highlighted keyword in headline — add <mark class="edz-mark"> in settings if desired
+.edz-mark {
+    background: var(--edz-accent, #6366f1);
+    color: #fff;
+    padding: 0 6px 2px;
+    border-radius: 4px;
+    font-style: normal;
+}
+
+.edz-hero__sub {
+    font-size: 16px;
+    color: #64748b;
+    margin-bottom: 36px;
+    line-height: 1.7;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+[data-edz-theme="dark"] .edz-hero__sub {
+    color: #94a3b8;
+}
+
+.edz-hero__btns {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 44px;
+    flex-wrap: wrap;
+}
+
+.edz-hero__btn-fill {
+    background: var(--edz-accent, #6366f1);
+    color: #ffffff !important;
+    border: none;
+    padding: 14px 32px;
+    border-radius: var(--edz-border-radius, 0.625rem);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.30);
+
+    &:hover,
+    &:focus {
+        background: #4f46e5;
+        color: #ffffff !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(99, 102, 241, 0.40);
+    }
+}
+
+.edz-hero__btn-out {
+    background: #ffffff;
+    color: var(--edz-accent, #6366f1) !important;
+    border: 2px solid var(--edz-accent, #6366f1);
+    padding: 14px 32px;
+    border-radius: var(--edz-border-radius, 0.625rem);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s ease, transform 0.1s ease;
+
+    &:hover,
+    &:focus {
+        background: #ede9fe;
+        color: #4f46e5 !important;
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+}
+
+[data-edz-theme="dark"] .edz-hero__btn-out {
+    background: transparent;
+    color: #a5b4fc !important;
+    border-color: #6366f1;
+
+    &:hover {
+        background: rgba(99, 102, 241, 0.15);
+        color: #c7d2fe !important;
+    }
+}
+
+// Stats row
+.edz-hero__stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+    padding-top: 32px;
+    gap: 0;
+}
+
+[data-edz-theme="dark"] .edz-hero__stats {
+    border-top-color: rgba(255, 255, 255, 0.07);
+}
+
+.edz-hero__stat {
+    padding: 0 36px;
+    border-right: 1px solid #e5e7eb;
+    text-align: center;
+
+    &:last-child {
+        border-right: none;
+    }
+
+    @media (max-width: 576px) {
+        padding: 10px 20px;
+        border-right: none;
+        border-bottom: 1px solid #e5e7eb;
+        width: 50%;
+
+        &:nth-child(2) { border-right: 1px solid #e5e7eb; }
+        &:last-child, &:nth-last-child(2):nth-child(odd) { border-bottom: none; }
+    }
+}
+
+[data-edz-theme="dark"] .edz-hero__stat {
+    border-right-color: rgba(255, 255, 255, 0.1);
+}
+
+.edz-hero__stat-num {
+    font-size: 28px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+}
+
+[data-edz-theme="dark"] .edz-hero__stat-num {
+    color: #f1f5f9;
+}
+
+.edz-hero__stat-label {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+[data-edz-theme="dark"] .edz-hero__stat-label {
+    color: #94a3b8;
+}
+
+// =============================================================================
+// SECTION 2B — PHILOSOPHY  ("Why we built it differently")
+// Dark full-bleed band. Centred intro, then 3 columns with hairline dividers.
+// =============================================================================
+
+.edz-philosophy {
+    position: relative;
+    background: #0b0f1d;
+    color: #cbd5e1;
+
+    // Full-bleed: escape the centred .main-inner cap (same trick as spotlight).
+    width: 100vw;
+    margin: 1.5rem 0 0 calc(50% - 50vw);
+    padding: 72px 24px 64px;
+
+    @media (min-width: 1328px) {
+        padding-left: calc((100vw - 1280px) / 2);
+        padding-right: calc((100vw - 1280px) / 2);
+    }
+
+    @media (max-width: 768px) {
+        padding-top: 48px;
+        padding-bottom: 44px;
+    }
+}
+
+// ── Centred intro ─────────────────────────────────────────────────────────────
+.edz-philosophy__intro {
+    text-align: center;
+    max-width: 760px;
+    margin: 0 auto 56px;
+
+    @media (max-width: 768px) { margin-bottom: 36px; }
+}
+
+.edz-philosophy__eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #e8896a;
+    margin: 0 0 18px;
+}
+
+.edz-philosophy__headline {
+    font-size: 48px;
+    font-weight: 800;
+    color: #ffffff;
+    letter-spacing: -1.2px;
+    line-height: 1.08;
+    margin: 0 0 22px;
+
+    em {
+        font-family: Georgia, "Times New Roman", serif;
+        font-style: italic;
+        font-weight: 600;
+        color: #e8896a;
+        letter-spacing: -0.5px;
+    }
+
+    @media (max-width: 1100px) { font-size: 38px; }
+    @media (max-width: 768px)  { font-size: 30px; }
+}
+
+.edz-philosophy__sub {
+    font-size: 18px;
+    line-height: 1.65;
+    color: #8e99ad;
+    margin: 0;
+
+    @media (max-width: 768px) { font-size: 15px; }
+}
+
+// ── Three columns with hairline dividers ─────────────────────────────────────
+.edz-philosophy__cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.edz-philosophy__col {
+    padding: 16px 40px;
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
+
+    &:first-child { border-left: none; padding-left: 0; }
+    &:last-child  { padding-right: 0; }
+
+    @media (max-width: 900px) {
+        border-left: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.09);
+        padding: 28px 0;
+
+        &:first-child { border-top: none; padding-top: 0; }
+    }
+}
+
+// Icon tile — rounded square with per-topic tint
+.edz-philosophy__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 40px;
+
+    @media (max-width: 900px) { margin-bottom: 20px; }
+
+    &--roleplay {
+        background: rgba(232, 137, 106, 0.12);
+        color: #e8896a;
+    }
+    &--lms {
+        background: rgba(124, 108, 240, 0.14);
+        color: #8b7af0;
+    }
+    &--proctoring {
+        background: rgba(52, 199, 123, 0.12);
+        color: #34c77b;
+    }
+}
+
+.edz-philosophy__kicker {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e8896a;
+    margin: 0 0 14px;
+}
+
+.edz-philosophy__title {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ffffff;
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+    margin: 0 0 18px;
+}
+
+// Short coral underline
+.edz-philosophy__rule {
+    display: block;
+    width: 44px;
+    height: 2px;
+    background: #e8896a;
+    margin: 0 0 22px;
+}
+
+.edz-philosophy__body {
+    font-size: 15px;
+    line-height: 1.8;
+    color: #8e99ad;
+    margin: 0;
+}
+
+
+// =============================================================================
+// SECTION 3 — POPULAR TOPICS (category pills)
+// =============================================================================
+
+.edz-topics {
+    background: #1a1a2e;
+
+    // Full-bleed band (same breakout as spotlight/philosophy).
+    width: 100vw;
+    margin: 0 0 0 calc(50% - 50vw);
+    border-radius: 0;
+    padding: 52px 24px;
+
+    @media (min-width: 1328px) {
+        padding-left: calc((100vw - 1280px) / 2);
+        padding-right: calc((100vw - 1280px) / 2);
+    }
+
+    @media (max-width: 768px) {
+        padding: 32px 20px;
+    }
+}
+
+[data-edz-theme="dark"] .edz-topics {
+    background: #0d0d1f;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.edz-topics__heading {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.45);
+    margin-bottom: 18px;
+}
+
+.edz-topics__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.edz-topic-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 24px;
+    padding: 10px 18px;
+    text-decoration: none;
+    transition: border-color 0.15s ease, background 0.15s ease, transform 0.12s ease;
+
+    &:hover,
+    &:focus {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(99, 102, 241, 0.6);
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+}
+
+[data-edz-theme="dark"] .edz-topic-pill {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.12);
+
+    &:hover {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.15);
+    }
+}
+
+.edz-topic-pill__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.edz-topic-pill__name {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.88);
+}
+
+[data-edz-theme="dark"] .edz-topic-pill__name {
+    color: #e2e8f0;
+}
+
+.edz-topic-pill__count {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.40);
+    margin-left: 2px;
+}
+
+// =============================================================================
+// SECTION 4 — RECENTLY LAUNCHED COURSES
+// Full-bleed light band. 3-col grid of media cards: course image (or one of
+// five gradient fallbacks), category tag, name, summary, teacher, meta row.
+// =============================================================================
+
+.edz-fp-courses {
+    // Contained like the other sections (no full-bleed band, no background).
+    max-width: 1240px;
+    margin: 3.5rem auto;
+    padding: 0 1.5rem;
+
+    @media (max-width: 768px) { margin: 2.5rem auto; }
+}
+
+.edz-fp-courses__heading {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 22px;
+}
+
+.edz-fp-courses__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+
+    @media (max-width: 1200px) { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 900px)  { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 560px)  { grid-template-columns: 1fr; }
+}
+
+.edz-fp-course-card {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    border: 1px solid #e7e9f2;
+    border-radius: 16px;
+    overflow: hidden;
+    text-decoration: none;
+    box-shadow: 0 1px 4px rgba(15, 23, 42, 0.05);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+
+    &:hover,
+    &:focus {
+        box-shadow: 0 14px 36px rgba(99, 102, 241, 0.16);
+        transform: translateY(-4px);
+        text-decoration: none;
+    }
+}
+
+[data-edz-theme="dark"] .edz-fp-course-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.10);
+}
+
+// ── Media area: course image or gradient fallback ────────────────────────────
+.edz-fp-course-card__media {
+    position: relative;
+    height: 150px;
+    flex-shrink: 0;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    // Gradient fallbacks — cycled per card from lib.php (gradclass g0…g4).
+    &--g0 { background: linear-gradient(135deg, #6366f1 0%, #a78bfa 100%); }
+    &--g1 { background: linear-gradient(135deg, #0ea5e9 0%, #6ee7b7 100%); }
+    &--g2 { background: linear-gradient(135deg, #f97316 0%, #fbbf24 100%); }
+    &--g3 { background: linear-gradient(135deg, #ec4899 0%, #f9a8d4 100%); }
+    &--g4 { background: linear-gradient(135deg, #14b8a6 0%, #67e8f9 100%); }
+}
+
+// Category tag — floats on the media area
+.edz-fp-course-card__tag {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    background: rgba(255, 255, 255, 0.92);
+    color: #4338ca;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+// ── Card body ─────────────────────────────────────────────────────────────────
+.edz-fp-course-card__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 18px 20px 16px;
+}
+
+.edz-fp-course-card__name {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1e293b;
+    line-height: 1.4;
+    letter-spacing: -0.2px;
+    margin: 0 0 8px;
+}
+
+[data-edz-theme="dark"] .edz-fp-course-card__name {
+    color: #e2e8f0;
+}
+
+.edz-fp-course-card__desc {
+    font-size: 13px;
+    color: #64748b;
+    line-height: 1.65;
+    margin: 0 0 14px;
+}
+
+[data-edz-theme="dark"] .edz-fp-course-card__desc {
+    color: #94a3b8;
+}
+
+.edz-fp-course-card__teacher {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 14px;
+
+    i {
+        color: var(--edz-accent, #6366f1);
+        font-size: 13px;
+    }
+}
+
+[data-edz-theme="dark"] .edz-fp-course-card__teacher {
+    color: #cbd5e1;
+}
+
+// Footer row — pinned to the card bottom
+.edz-fp-course-card__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid #eef0f6;
+}
+
+[data-edz-theme="dark"] .edz-fp-course-card__footer {
+    border-top-color: rgba(255, 255, 255, 0.08);
+}
+
+.edz-fp-course-card__meta {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.edz-fp-course-card__enroll {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--edz-accent, #6366f1);
+    white-space: nowrap;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Frontpage — Skills section (configurable): heading + features + media
+   ═══════════════════════════════════════════════════════════════════════════ */
+.edz-skills {
+    max-width: 1200px;
+    margin: 3.5rem auto;
+    padding: 0 1.5rem;
+}
+
+/* Top: big heading (left) + lead paragraph (right) */
+.edz-skills__head {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 2.5rem;
+    align-items: start;
+    margin-bottom: 2.5rem;
+
+    @media (max-width: 900px) { grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+}
+.edz-skills__title {
+    font-size: clamp(1.8rem, 3.4vw, 2.9rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--edz-heading-color, #111827);
+    margin: 0;
+}
+.edz-skills__lead {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--edz-text-muted, #6b7280);
+    margin: 0.4rem 0 0;
+}
+
+/* Body: features (left) + media (right) */
+.edz-skills__body {
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 2.5rem;
+    align-items: center;
+
+    @media (max-width: 900px) { grid-template-columns: 1fr; gap: 1.75rem; }
+}
+
+/* Feature list with dotted connector */
+.edz-skills__features { display: flex; flex-direction: column; gap: 1.5rem; }
+.edz-skills__feature { display: flex; align-items: flex-start; gap: 1rem; position: relative; }
+.edz-skills__feature:not(:last-child) .edz-skills__feature-ico::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 6px);
+    height: calc(1.5rem + 4px);
+    border-left: 2px dotted var(--edz-border-color, #d1d5db);
+    transform: translateX(-50%);
+}
+.edz-skills__feature-ico {
+    position: relative;
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: var(--edz-hover-bg, #f3f4f6);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: var(--edz-heading-color, #111827);
+    font-size: 1.1rem;
+}
+.edz-skills__feature-title { font-size: 1.15rem; font-weight: 700; color: var(--edz-heading-color, #111827); }
+.edz-skills__feature-desc  { font-size: 0.95rem; line-height: 1.5; color: var(--edz-text-muted, #6b7280); margin-top: 2px; }
+
+/* Media */
+.edz-skills__media { position: relative; }
+.edz-skills__media-btn {
+    display: block; width: 100%; padding: 0; border: none; background: transparent;
+    cursor: pointer; position: relative; border-radius: 22px; overflow: hidden;
+}
+.edz-skills__media-btn--noimg {
+    aspect-ratio: 16 / 10;
+    background: linear-gradient(135deg, #1f2937, #111827);
+}
+.edz-skills__img { width: 100%; height: auto; display: block; border-radius: 22px; object-fit: cover; }
+.edz-skills__play {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 76px; height: 76px; border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    display: inline-flex; align-items: center; justify-content: center;
+    color: #111827; font-size: 1.4rem; padding-left: 4px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+    transition: transform 0.18s ease, background 0.18s ease;
+}
+.edz-skills__media-btn:hover .edz-skills__play { transform: translate(-50%, -50%) scale(1.08); background: #fff; }
+
+/* Lightbox */
+.edz-skills-lb {
+    position: fixed; inset: 0; z-index: 4000;
+    display: flex; align-items: center; justify-content: center; padding: 2rem;
+}
+.edz-skills-lb[hidden] { display: none; }
+.edz-skills-lb__backdrop { position: absolute; inset: 0; background: rgba(2, 6, 23, 0.82); }
+.edz-skills-lb__inner {
+    position: relative; z-index: 1; width: min(1000px, 92vw);
+    aspect-ratio: 16 / 9; background: #000; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+}
+.edz-skills-lb__frame { width: 100%; height: 100%; }
+.edz-skills-lb__frame iframe,
+.edz-skills-lb__frame video { width: 100%; height: 100%; border: 0; display: block; }
+.edz-skills-lb__close {
+    position: absolute; top: -14px; right: -14px; z-index: 2;
+    width: 40px; height: 40px; border-radius: 50%; border: none; cursor: pointer;
+    background: #fff; color: #111827; font-size: 1rem;
+    display: inline-flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+    @media (max-width: 640px) { top: 8px; right: 8px; }
+}
+body.edz-skills-lb-open { overflow: hidden; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Employee spotlight — redesigned, switchable (card / panel), full-bleed photo
+   ═══════════════════════════════════════════════════════════════════════════ */
+.edz-spot {
+    max-width: 1180px;
+    margin: 3.5rem auto;
+    display: grid;
+    grid-template-columns: minmax(280px, 42%) 1fr;
+    min-height: 380px;
+    border-radius: 22px;
+    overflow: hidden;
+
+    @media (max-width: 860px) { grid-template-columns: 1fr; }
+}
+.edz-spot__photo { position: relative; }
+.edz-spot__img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.edz-spot__body {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 2.5rem 2.75rem;
+
+    @media (max-width: 860px) { padding: 2rem 1.75rem; }
+}
+.edz-spot__label {
+    display: inline-block; align-self: flex-start;
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+}
+.edz-spot__stars { color: #f5a623; font-size: 1.15rem; letter-spacing: 3px; margin: 0.4rem 0 0.75rem; }
+.edz-spot__quote { font-size: clamp(1.1rem, 1.6vw, 1.35rem); line-height: 1.5; font-weight: 500; margin: 0 0 1.25rem; }
+.edz-spot__name { display: block; font-weight: 700; font-size: 1.1rem; }
+.edz-spot__role { font-size: 0.92rem; }
+
+/* Mobile stack: give the photo a real height */
+@media (max-width: 860px) {
+    .edz-spot__photo { min-height: 300px; }
+}
+
+/* ── Style: Testimonial card (light) ── */
+.edz-spot--card {
+    background: var(--edz-card-bg, #ffffff);
+    border: 1px solid var(--edz-border-color, #e5e7eb);
+    box-shadow: 0 12px 34px rgba(17, 24, 39, 0.07);
+}
+.edz-spot--card .edz-spot__label { background: rgba(99, 102, 241, 0.10); color: var(--edz-accent, #6366f1); }
+.edz-spot--card .edz-spot__quote { color: var(--edz-heading-color, #111827); }
+.edz-spot--card .edz-spot__name  { color: var(--edz-heading-color, #111827); }
+.edz-spot--card .edz-spot__role  { color: var(--edz-text-muted, #6b7280); }
+
+/* ── Style: Accent panel (dark, premium) ── */
+.edz-spot--panel { background: #1e1b4b; }
+.edz-spot--panel .edz-spot__body { color: #fff; }
+.edz-spot--panel .edz-spot__label { background: rgba(255, 255, 255, 0.14); color: #ffffff; }
+.edz-spot--panel .edz-spot__quote { color: #eef2ff; }
+.edz-spot--panel .edz-spot__name  { color: #ffffff; }
+.edz-spot--panel .edz-spot__role  { color: rgba(255, 255, 255, 0.65); }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Frontpage — Top hero (first section): left text + arch illustration + stats
+   ═══════════════════════════════════════════════════════════════════════════ */
+.edz-top {
+    display: grid;
+    grid-template-columns: 1fr 1.05fr 0.82fr;
+    gap: 2.75rem;
+    align-items: center;
+    max-width: 1240px;
+    margin: 2.5rem auto 3.5rem;
+    padding: 0 1.5rem;
+
+    @media (max-width: 1040px) { grid-template-columns: 1fr; gap: 2rem; }
+}
+
+/* Left */
+.edz-top__eyebrow { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 700; color: var(--edz-accent, #3b82f6); margin: 0 0 0.75rem; }
+.edz-top__rocket { font-size: 1.05rem; }
+.edz-top__heading { font-size: clamp(2.3rem, 4.6vw, 3.6rem); font-weight: 800; line-height: 1.05; letter-spacing: -0.02em; color: var(--edz-heading-color, #111827); margin: 0 0 1.1rem; }
+.edz-top__subtext { font-size: 1.05rem; line-height: 1.6; color: var(--edz-text-muted, #6b7280); max-width: 26rem; margin: 0 0 1.75rem; }
+.edz-top__cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--edz-accent, #3b82f6); color: #fff; font-weight: 600; font-size: 1rem;
+    padding: 0.9rem 2.1rem; border-radius: 12px; text-decoration: none;
+    box-shadow: 0 10px 24px rgba(59, 130, 246, 0.32); transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.edz-top__cta:hover { transform: translateY(-2px); box-shadow: 0 14px 30px rgba(59, 130, 246, 0.4); color: #fff; text-decoration: none; }
+.edz-top__qlink { display: inline-flex; align-items: center; gap: 8px; margin-top: 1.25rem; color: var(--edz-text-muted, #6b7280); text-decoration: underline; font-size: 0.95rem; }
+.edz-top__qdot { width: 9px; height: 9px; border-radius: 50%; background: #22c55e; flex-shrink: 0; }
+
+/* Centre illustration + badge */
+.edz-top__center { position: relative; display: flex; justify-content: center; }
+.edz-top__illus {
+    position: relative; width: 100%; max-width: 420px; aspect-ratio: 5 / 7;
+    border-radius: 220px 220px 22px 22px; overflow: hidden;
+    box-shadow: 0 34px 70px rgba(30, 27, 75, 0.28);
+}
+.edz-top__illus-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.edz-top__badge {
+    position: absolute; top: -6px; right: 4px; width: 98px; height: 98px; border-radius: 50%;
+    background: #eef0f4; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.16);
+}
+.edz-top__badge-link { position: absolute; inset: 0; border-radius: 50%; z-index: 3; }
+.edz-top__badge-svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: edz-top-spin 18s linear infinite; }
+.edz-top__badge-text { font-size: 8.5px; font-weight: 700; letter-spacing: 0.5px; fill: #374151; text-transform: uppercase; }
+.edz-top__badge-ico { position: relative; z-index: 1; width: 34px; height: 34px; border-radius: 50%; background: #111827; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+@keyframes edz-top-spin { to { transform: rotate(360deg); } }
+
+/* Right — stats + people */
+.edz-top__stats { display: flex; flex-direction: column; }
+.edz-top__stat { padding: 1.15rem 0; }
+.edz-top__stat:not(:first-child) { border-top: 1px solid var(--edz-border-color, #e5e7eb); }
+.edz-top__stat-num { font-size: 1.7rem; font-weight: 800; color: var(--edz-heading-color, #111827); line-height: 1.1; }
+.edz-top__stat-label { font-size: 0.95rem; color: var(--edz-text-muted, #6b7280); margin-top: 3px; }
+.edz-top__people { display: flex; align-items: center; gap: 0.85rem; margin-top: 1.25rem; }
+.edz-top__avatars { display: flex; }
+.edz-top__avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 0.9rem; margin-left: -12px; }
+.edz-top__avatar--1 { background: #60a5fa; margin-left: 0; }
+.edz-top__avatar--2 { background: #a78bfa; }
+.edz-top__avatar--3 { background: #f472b6; }
+.edz-top__people-text { font-size: 0.95rem; font-weight: 600; color: var(--edz-heading-color, #111827); display: flex; align-items: center; gap: 7px; max-width: 160px; line-height: 1.3; }
+.edz-top__spark { color: var(--edz-accent, #3b82f6); font-size: 1.05rem; }

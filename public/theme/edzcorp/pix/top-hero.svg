@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 760" role="img" aria-label="Learning platform">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#1e3a8a"/><stop offset="0.55" stop-color="#1e1b6b"/><stop offset="1" stop-color="#0f0b3d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#d97706"/>
+    </linearGradient>
+    <linearGradient id="grn" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#34d399"/><stop offset="1" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="560" height="760" fill="url(#bg)"/>
+  <g opacity="0.9">
+    <circle cx="430" cy="120" r="6" fill="#c7d2fe"/><circle cx="470" cy="180" r="4" fill="#a5b4fc"/><circle cx="120" cy="90" r="5" fill="#c7d2fe"/>
+  </g>
+  <path d="M40 470 q120 -140 250 -60 q120 70 250 -20 l0 370 l-500 0 z" fill="#111a4d" opacity="0.7"/>
+  <g>
+    <path d="M60 520 q60 -70 150 -40 q-40 60 -150 60 z" fill="url(#grn)"/>
+    <path d="M470 430 q70 30 60 130 q-70 -20 -60 -130 z" fill="url(#grn)" opacity="0.9"/>
+    <path d="M120 640 q80 -60 200 -30 q-60 70 -200 60 z" fill="url(#gold)"/>
+  </g>
+  <g transform="translate(250 250)">
+    <ellipse cx="30" cy="70" rx="55" ry="90" fill="#312e81"/>
+    <circle cx="30" cy="-10" r="42" fill="#fde68a"/>
+    <path d="M-12 -12 q42 -34 84 0 q-42 22 -84 0 z" fill="#f59e0b"/>
+    <path d="M-25 40 q55 30 110 0 l-8 120 l-94 0 z" fill="#1e1b4b"/>
+  </g>
+  <path d="M330 470 q60 -30 120 10 q-20 34 -70 24 q-40 -8 -50 -34 z" fill="url(#gold)"/>
+  <g fill="#7c3aed" opacity="0.55"><circle cx="90" cy="380" r="70"/><circle cx="500" cy="300" r="90"/></g>
+</svg>

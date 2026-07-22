@@ -1,0 +1,108 @@
+{{!
+    EdzCorp page footer partial.
+    Built by theme_edzcorp_get_footer_context() in lib.php.
+    Output order: <footer> content, then standard_end_of_body_html.
+    standard_after_main_region_html is called in the parent template AFTER #page-wrapper closes.
+    NOTE: never put triple-stache inside a Mustache comment — the closing brace
+    sequence terminates the comment early and leaks text into the page.
+}}
+
+<footer class="edzcorp-footer-wrap d-print-none" role="contentinfo">
+    <div class="edzcorp-footer-inner">
+
+        {{! ── Social icons + App badges (top row, hidden when both empty) ─── }}
+        {{#hassocialorapps}}
+        <div class="edzcorp-footer-top">
+
+            {{#hassocials}}
+            <div class="edzcorp-footer-social">
+                {{#footerfacebook}}
+                <a href="{{{footerfacebook}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-social-link edzcorp-social-fb" aria-label="Facebook">
+                    <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+                </a>
+                {{/footerfacebook}}
+                {{#footerinstagram}}
+                <a href="{{{footerinstagram}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-social-link edzcorp-social-ig" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+                </a>
+                {{/footerinstagram}}
+                {{#footerlinkedin}}
+                <a href="{{{footerlinkedin}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-social-link edzcorp-social-li" aria-label="LinkedIn">
+                    <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
+                </a>
+                {{/footerlinkedin}}
+                {{#footeryoutube}}
+                <a href="{{{footeryoutube}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-social-link edzcorp-social-yt" aria-label="YouTube">
+                    <i class="fa-brands fa-youtube" aria-hidden="true"></i>
+                </a>
+                {{/footeryoutube}}
+                {{#footertwitter}}
+                <a href="{{{footertwitter}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-social-link edzcorp-social-tw" aria-label="X (Twitter)">
+                    <i class="fa-brands fa-x-twitter" aria-hidden="true"></i>
+                </a>
+                {{/footertwitter}}
+            </div>
+            {{/hassocials}}
+
+            {{#hasapplinks}}
+            <div class="edzcorp-footer-apps">
+                {{#footerappstore}}
+                <a href="{{{footerappstore}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-app-badge" aria-label="Download on the App Store">
+                    <span class="edzcorp-app-badge-icon">
+                        <i class="fa-brands fa-apple" aria-hidden="true"></i>
+                    </span>
+                    <span class="edzcorp-app-badge-text">
+                        <span class="edzcorp-app-badge-sub">Download on the</span>
+                        <span class="edzcorp-app-badge-main">App Store</span>
+                    </span>
+                </a>
+                {{/footerappstore}}
+                {{#footergoogleplay}}
+                <a href="{{{footergoogleplay}}}" target="_blank" rel="noopener noreferrer"
+                   class="edzcorp-footer-app-badge" aria-label="Get it on Google Play">
+                    <span class="edzcorp-app-badge-icon">
+                        <i class="fa-brands fa-google-play" aria-hidden="true"></i>
+                    </span>
+                    <span class="edzcorp-app-badge-text">
+                        <span class="edzcorp-app-badge-sub">Get it on</span>
+                        <span class="edzcorp-app-badge-main">Google Play</span>
+                    </span>
+                </a>
+                {{/footergoogleplay}}
+            </div>
+            {{/hasapplinks}}
+
+        </div>{{! .edzcorp-footer-top }}
+        {{/hassocialorapps}}
+
+        {{! ── Bottom bar: copyright + Moodle links ──────────────────────── }}
+        <div class="edzcorp-footer-bar">
+
+            <div class="edzcorp-footer-copyright">
+                {{#footercopyright}}
+                {{{ footercopyright }}}
+                {{/footercopyright}}
+                {{^footercopyright}}
+                &copy; {{currentyear}} EdzCorp. All rights reserved.
+                {{/footercopyright}}
+                {{#footertext}}
+                <span class="edzcorp-footer-sep" aria-hidden="true">&nbsp;·&nbsp;</span>
+                <span class="edzcorp-footer-tagline">{{{ footertext }}}</span>
+                {{/footertext}}
+            </div>
+
+            <div class="edzcorp-footer-moodle">
+                {{{ output.standard_footer_html }}}
+            </div>
+
+        </div>{{! .edzcorp-footer-bar }}
+
+    </div>{{! .edzcorp-footer-inner }}
+</footer>
+

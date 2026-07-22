@@ -1,0 +1,159 @@
+{{!
+    EdzCorp — columns2 template.
+    Wraps Boost's drawer system inside our custom sidebar shell.
+    Used by: standard, mycourses, mydashboard, admin, report, frontpage, etc.
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+{{!
+    Early-init inline script — runs synchronously before the first paint.
+    Restores the sidebar collapsed state and dark-mode from localStorage so
+    the page renders in the correct state immediately, eliminating the
+    "blink/jump" caused by waiting for AMD modules to load.
+    Also adds 'edz-no-trans' to suppress CSS transitions during state restore;
+    sidebar.js removes it once init() completes.
+}}
+<script>
+(function () {
+    try {
+        if (localStorage.getItem('edzcorp_sidenav_collapsed') === '1') {
+            document.body.classList.add('sidenav-collapsed');
+        }
+        var t = localStorage.getItem('edzcorp_theme');
+        if (t === 'dark') {
+            /* dark mode temporarily disabled — re-enable when dark theme is ready */ void 0;
+        } else if (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            /* dark mode temporarily disabled — re-enable when dark theme is ready */ void 0;
+        }
+    } catch (e) { /* localStorage unavailable in private browsing on some browsers */ }
+    document.body.classList.add('edz-no-trans');
+}());
+</script>
+{{> core/local/toast/wrapper}}
+{{{ output.standard_top_of_body_html }}}
+
+{{! =====================================================================
+    EdzCorp custom left sidebar (app navigation)
+    The sidebar is position:fixed — it does NOT participate in the Boost
+    drawer system. It is toggled purely by our own sidebar.js AMD module.
+    ===================================================================== }}
+{{> theme_edzcorp/partials/sidenav}}
+
+{{! =====================================================================
+    Page wrapper — offset from the sidebar via CSS margin-left.
+    Must carry id="page-wrapper" so Boost's JS can find it.
+    ===================================================================== }}
+<div id="page-wrapper" class="d-print-block edzcorp-page-wrapper">
+
+
+    {{! Boost's primary navbar (user menu, primary nav, lang, notifications) }}
+    {{> theme_edzcorp/partials/navbar }}
+
+    {{! Block drawer — right side, uses Boost's native drawer component }}
+    {{#hasblocks}}
+        {{< theme_boost/drawer }}
+            {{$id}}theme_boost-drawers-blocks{{/id}}
+            {{$drawerclasses}}drawer drawer-right{{#blockdraweropen}} show{{/blockdraweropen}}{{/drawerclasses}}
+            {{$drawercontent}}
+                <div class="d-print-none">
+                    {{{ addblockbutton }}}
+                    {{{ sidepreblocks }}}
+                </div>
+            {{/drawercontent}}
+            {{$drawerpreferencename}}drawer-open-block{{/drawerpreferencename}}
+            {{$forceopen}}{{#forceblockdraweropen}}1{{/forceblockdraweropen}}{{/forceopen}}
+            {{$drawerstate}}show-drawer-right{{/drawerstate}}
+            {{$tooltipplacement}}left{{/tooltipplacement}}
+            {{$drawercloseonresize}}1{{/drawercloseonresize}}
+            {{$closebuttontext}}{{#str}}closeblockdrawer, core{{/str}}{{/closebuttontext}}
+        {{/ theme_boost/drawer}}
+    {{/hasblocks}}
+
+    <div id="page" data-region="mainpage" data-usertour="scroller"
+         class="drawers {{#blockdraweropen}}show-drawer-right{{/blockdraweropen}} drag-container">
+        <div id="topofscroll" class="main-inner">
+
+            {{! Block drawer toggle button (top-right of content area) }}
+            {{#hasblocks}}
+            <div class="drawer-toggles d-flex">
+                <div class="drawer-toggler drawer-right-toggle ms-auto d-print-none">
+                    <button class="btn icon-no-margin"
+                            data-toggler="drawers"
+                            data-action="toggle"
+                            data-target="theme_boost-drawers-blocks"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="right"
+                            title="{{#str}}opendrawerblocks, core{{/str}}">
+                        <span class="visually-hidden">{{#str}}opendrawerblocks, core{{/str}}</span>
+                        <span class="dir-rtl-hide">{{#pix}}t/blocks_drawer, core{{/pix}}</span>
+                        <span class="dir-ltr-hide">{{#pix}}t/blocks_drawer_rtl, core{{/pix}}</span>
+                    </button>
+                </div>
+            </div>
+            {{/hasblocks}}
+
+            {{! Page header — breadcrumb, page title, and (if present) secondary
+                navigation rendered side-by-side by core_renderer::full_header() }}
+            {{{ output.full_header }}}
+
+            {{#secondarymoremenu}}
+            <div class="secondary-navigation d-print-none">
+                {{> core/moremenu}}
+            </div>
+            {{/secondarymoremenu}}
+
+            <div id="page-content" class="pb-3 d-print-block">
+                <div id="region-main-box">
+                    {{#hasregionmainsettingsmenu}}
+                    <div id="region-main-settings-menu" class="d-print-none">
+                        <div>{{{ regionmainsettingsmenu }}}</div>
+                    </div>
+                    {{/hasregionmainsettingsmenu}}
+                    <div id="region-main">
+                        {{#hasregionmainsettingsmenu}}
+                        <div class="region_main_settings_menu_proxy"></div>
+                        {{/hasregionmainsettingsmenu}}
+                        {{{ output.course_content_header }}}
+                        {{#headercontent}}
+                            {{> core/activity_header }}
+                        {{/headercontent}}
+                        {{#overflow}}
+                        <div class="container-fluid tertiary-navigation">
+                            <div class="navitem">{{> core/url_select}}</div>
+                        </div>
+                        {{/overflow}}
+                        {{{ output.main_content }}}
+                        {{{ output.activity_navigation }}}
+                        {{{ output.course_content_footer }}}
+                    </div>
+                </div>
+            </div>
+
+        </div>{{! #topofscroll }}
+
+        {{! Footer lives INSIDE #page — #page is the scroll container in
+            Boost 5.x, so the footer scrolls naturally with the content. }}
+        {{> theme_edzcorp/partials/footer }}
+
+    </div>{{! #page }}
+
+</div>{{! #page-wrapper }}
+
+{{{ output.standard_after_main_region_html }}}
+
+{{{ output.standard_end_of_body_html }}}
+
+</body>
+</html>
+{{#js}}
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader', 'theme_boost/drawer', 'theme_edzcorp/sidebar', 'theme_edzcorp/theme'],
+    function(Loader, Drawer, Sidebar, Theme) {
+        Drawer.init();
+        Sidebar.init();
+        Theme.init();
+        M.util.js_complete('theme_boost/loader');
+    }
+);
+{{/js}}

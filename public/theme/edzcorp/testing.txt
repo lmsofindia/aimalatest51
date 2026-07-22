@@ -1,0 +1,177 @@
+
+=== v1.4.2 — Sidebar: new Learning menu items (2026-07-03) ===
+[ ] As a LEARNER (student): sidebar > Learning shows Performance, Onboarding, Course catalogue.
+    - Performance links to /local/trackmytime/pages/performance.php
+    - Onboarding links to /local/edzonboard/myonboarding.php
+[ ] Course catalogue (/local/coursecatalogue/) appears for ALL users, including guests/logged-out.
+[ ] Manage team (/local/edzteams/) appears ONLY for users with local/edzteams:viewteam
+    (managers/admins); confirm it is HIDDEN for a plain student.
+[ ] Active-highlight: visiting each new page marks the correct sidebar item active.
+[ ] Icons render (fa-chart-simple, fa-rocket, fa-book-open, fa-users-gear).
+[ ] Purge caches after deploy: php admin/cli/purge_caches.php (theme SCSS + lang cached).
+
+=== v1.4.2 — Login: fix password show/hide (eye) toggle (2026-07-03) ===
+[ ] Login page: the eye toggle sits as a small grey icon INSIDE the right edge
+    of the Password field — NOT a full-width orange bar below it.
+[ ] Clicking the eye reveals/hides the password (core JS still wired).
+[ ] Field text is not obscured; input has right padding so text clears the icon.
+[ ] Cookies notice / guest-access buttons still render full-width (unchanged).
+[ ] Works regardless of the admin's secondary colour setting.
+
+=== v1.4.3 — Course-index drawer beside sidebar + sidebar toggle (2026-07-03) ===
+[ ] Open a COURSE page and an ACTIVITY (mod) page (e.g. quiz view).
+[ ] Sidebar shows a "This course" > "Course index" button ONLY on those pages
+    (not on dashboard, my courses, admin, etc.).
+[ ] Clicking it opens the course-index drawer to the RIGHT of the sidebar,
+    fully visible (no longer hidden behind the sidebar). Clicking again closes it.
+[ ] In-drawer close (X) and the drawer content/scroll all work.
+[ ] Collapse the sidebar (72px) with the drawer open — drawer re-docks to the
+    narrow width, still fully visible.
+[ ] Open state: the sidebar "Course index" button shows the active accent while
+    the drawer is open (aria-expanded=true).
+[ ] Boost's duplicate in-content index toggle is HIDDEN on desktop (>=993px),
+    VISIBLE on mobile (<=992px).
+[ ] Mobile (<=992px): sidebar is off-canvas; course-index drawer overlays at
+    left:0 as normal; the in-content toggle opens it.
+[ ] Block drawer (right side) still opens/closes normally — unaffected.
+[ ] User's open/closed preference is remembered across pages (Boost default).
+[ ] Purge caches after deploy (compiled SCSS is cached).
+
+=== v1.4.4 — Notifications popover padding/alignment (2026-07-03) ===
+[ ] Open notifications bell: timestamp now left-aligns with the notification
+    title (previously indented ~16px further right).
+[ ] "View full notification" sits bottom-right on the timestamp baseline,
+    ~16px from the panel edge (was misaligned via core's absolute top-right).
+[ ] Long relative times (e.g. "2 days 22 hours ago") do not slide under the
+    "View full notification" link.
+[ ] Unread rows still show the left accent stripe; hover states intact.
+[ ] Dark mode popover unchanged/correct.
+[ ] Verified live on Moodle 5.x DOM: a.context-link > .content-item-body >
+    .notification-message; .content-item-footer > .timestamp; sibling a.view-more.
+
+=== v1.4.5 — Course-index active/hover + sticky footer (2026-07-03) ===
+[ ] Course index: the ACTIVE (current) activity shows the brand-blue bar with
+    WHITE, readable text (was dark text on blue = invisible).
+[ ] Hover on any course-index item shows a full-width row highlight matching the
+    active bar (no more narrow clipped pill around the text).
+[ ] Footer sits at the viewport bottom on SHORT pages (e.g. mod/url/view.php).
+[ ] Footer sits at content end with NO extra gap on TALL pages (e.g.
+    calendar/view.php?view=month) — verify no full-screen empty gap regressed.
+[ ] Check both expanded and collapsed sidebar; dark mode course index still readable.
+
+=== v1.4.9 — Frontpage: real stats + spotlight hidden until configured (2026-07-03) ===
+[ ] Frontpage stat tiles now show REAL site numbers by default (Learners = users,
+    Courses = visible courses, Skill areas = categories, Enrolments) instead of
+    the old demo 99k+/200+. Overriding any tile via Theme settings > Frontpage
+    (fp_stat*_num / fp_stat*_label) still wins.
+[ ] Employee spotlight section is HIDDEN when no name/quote/photo is configured
+    (no more placeholder "Sara Chen"). Set fp_emp_name or fp_emp_quote -> it
+    reappears with the real content.
+[ ] Hero copy, buttons, topics (real categories) and courses (real/recent or
+    admin-listed IDs) all still render from settings/data.
+[ ] Purge caches after deploy.
+
+=== Blocks: reach-the-edges padding (2026-07-03) ===
+[ ] corpwelcome + corpusercmplchart blocks: the block colour/gradient now
+    reaches the block edges (no white card padding around them).
+
+=== v1.5.0 — Nav-header titles + moremenu height + sidebar labels (2026-07-03) ===
+[ ] .moremenu and .moremenu .nav-link are 40px tall (crisp secondary-nav pills).
+[ ] Nav-header (left of navbar) shows the right label per page:
+    - /course/view.php?id=N        -> course full name (already)
+    - /local/trackmytime/pages/performance.php -> Achievement
+    - /local/edzonboard/myonboarding.php       -> Onboarding Journey
+    - /local/coursecatalogue/                  -> Catalogue
+    - /local/edzteams/                         -> Team
+    - /local/edzrisebuilder/select.php         -> Build Scorm
+    - /local/edzcoursegen/select.php           -> AI Course Builder
+    - /local/reportpanel/index.php             -> Analytics
+    - /calendar/view.php?view=month            -> Calendar (already)
+[ ] Sidebar: "Course catalogue" -> "Catalogue"; "Course Generator" -> "AI Course Builder".
+[ ] Purge caches after deploy (lang + SCSS cached).
+
+=== v1.5.1 — Dashboard/course polish batch (2026-07-03) ===
+[ ] #1 Dashboard: the big "Dashboard" heading is gone (navbar shows it), BUT the
+    admin "Customise this page"/"Reset" buttons still appear on the default
+    dashboard (they live in a sibling container, not hidden).
+[ ] #2 Block-drawer open toggle ("<") is a rounded 12px button with a hover
+    lift + accent border/shadow.
+[ ] #3 Dashboard course cards: no stray divider line under the title/category.
+[ ] #4 Course page sections: no white notches at the 4 corners (section-item
+    radius now matches the section card).
+[ ] #5 Secondary-nav active tab has NO border (flat pill).
+[ ] #6 Turn-editing icon tooltip now appears BELOW the icon (was cut off on top).
+[ ] #7 New setting: Course index drawer background colour (default #eee) under
+    theme colour settings; drives the left course-index drawer.
+[ ] Purge caches after deploy (SCSS + lang cached).
+
+=== v1.5.2 — Collapsed dropdown labels + /course/ redirect hook (2026-07-03) ===
+[ ] #1 Collapse the sidebar, click the profile strip -> the flyout shows the
+    "My profile" and "Log out" text labels (were blank in collapsed mode).
+[ ] #2 Visit /course/ or /course/index.php (no params) -> redirected to
+    /local/coursecatalogue/. Category browsing (?categoryid=) and /course/view.php,
+    /course/management.php etc. are NOT redirected. (after_config hook)
+[ ] Deploy: bump version at Notifications so db/hooks.php registers; purge caches.
+
+=== v1.5.5 — Frontpage: 4 courses/row + configurable Skills section (2026-07-03) ===
+[ ] "Recently launched" now shows 4 course cards per row (3/2/1 as it narrows).
+[ ] New Skills section (Theme settings > Frontpage > Skills section):
+    - Set a Section title -> section appears right after the hero. Blank = hidden.
+    - Lead paragraph shows top-right; 3 features (icon + title + desc) with a
+      dotted connector down the left; image on the right.
+    - Set an image + a YouTube URL -> clicking the image opens the video in a
+      lightbox (Esc / backdrop / X closes it). Direct .mp4 links play in <video>.
+    - Image only (no video link) -> just shows the image, no play button.
+    - Feature icons are Font Awesome names (fa-user-tie etc); clearing a feature
+      title hides that feature.
+[ ] Purge caches after deploy (SCSS + lang + settings cached).
+
+=== v1.5.7 — Spotlight redesign (switchable) + frontpage defaults (2026-07-03) ===
+[ ] Frontpage settings now ship with defaults: Skills section shows out of the
+    box (title/lead/features), a bundled poster (pix/skills-default.svg), and a
+    sample video link (replace with your own).
+[ ] Employee spotlight: new setting "Spotlight style" (Testimonial card / Accent
+    panel). Photo now FILLS its whole panel (object-fit cover); quotation mark
+    removed; STAR RATING now renders (was missing before).
+[ ] Switch style card <-> panel -> layout/colour changes (light card vs dark
+    premium panel). Both keep the full-bleed photo.
+[ ] No photo uploaded -> the bundled avatar (pix/spotlight-avatar.svg) fills the
+    panel, so it's never blank.
+[ ] Spotlight still hides until name/quote/photo is set (set the employee fields
+    to show it; replace the placeholder "Sara Chen" with a real person).
+[ ] Rating select (1-5) reflects in the stars.
+[ ] Purge caches after deploy (SCSS + lang + settings cached).
+
+=== v1.5.8 — Frontpage TOP HERO first section (2026-07-03) ===
+[ ] New first section (Theme settings > Frontpage > Top hero): eyebrow, big
+    heading, subtext, Get Started button, "Have a question?" link on the left;
+    arch illustration + rotating "Learn more about service" badge in the centre;
+    three stats (hairline separated) + avatar row on the right.
+[ ] Ships POPULATED by default (heading/subtext/stats/illustration) even before
+    saving settings; bundled illustration pix/top-hero.svg used until you upload.
+[ ] Get Started button: shows "Log in" -> /login for visitors, "Dashboard" ->
+    /my for signed-in users. A custom Button label overrides the text (URL stays
+    auto). Verify both logged-out and logged-in.
+[ ] Badge text rotates around the circle; optional badge link works.
+[ ] Responsive: 3 columns collapse to 1 on narrow screens.
+[ ] NOTE: this is ADDED above the existing generic hero (SECTION 2). If it feels
+    duplicate, we can hide/remove the old hero — tell me.
+[ ] Purge caches after deploy.
+
+=== v1.5.9 — Per-section enable/disable toggles (2026-07-03) ===
+[ ] Theme settings > Frontpage now has an "Enable — <section>" checkbox for each
+    section: Top hero, Employee spotlight, Hero, Skills, Philosophy, Popular
+    topics, Recently launched. All default ON.
+[ ] Untick a section -> it disappears from the homepage; re-tick -> returns.
+[ ] Content-gated sections still respect content (e.g. topics only show if there
+    are categories AND the toggle is on).
+[ ] Purge caches after deploy.
+
+=== v1.6.4 — Navbar wide-screen align + text colour + sidebar tweaks (2026-07-04) ===
+[ ] Frontpage navbar now capped at 1280px like the content, so on WIDE monitors
+    its right edge lines up with the content (not overrunning it).
+[ ] New setting: Frontpage navbar > Navbar text colour (default #1f2937) — set a
+    light colour when using a dark navbar background so text stays visible.
+[ ] Sidebar: "Site administration" renamed to "Admin Settings"; "My courses"
+    removed; "Performance" moved from Learning into the Analytics group.
+[ ] Hard-refresh the frontpage after deploy (CSS cached).

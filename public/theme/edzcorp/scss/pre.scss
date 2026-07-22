@@ -1,0 +1,45 @@
+// =============================================================================
+// EdzCorp — pre.scss
+// Loaded BEFORE Boost's SCSS so these override Bootstrap/Boost variables.
+// Keep only variable declarations here; no selectors.
+// =============================================================================
+
+// ---- Bootstrap 5 colour overrides ----
+// These are injected from PHP settings first (primarycolor, secondarycolor).
+// The values here act as compile-time fallbacks when no setting is saved.
+
+$primary:   #6366f1 !default;
+$secondary: #8b5cf6 !default;
+$success:   #22c55e !default;
+$info:      #38bdf8 !default;
+$warning:   #f59e0b !default;
+$danger:    #ef4444 !default;
+
+// ---- Typography ----
+$font-family-sans-serif: 'Instrument Sans', 'Segoe UI', system-ui, -apple-system, sans-serif !default;
+$font-size-base:         0.875rem !default;  // 14 px — body base
+$line-height-base:       1.6 !default;
+$headings-font-weight:   600 !default;
+
+// ---- Border radius ----
+// These override Bootstrap's compiled defaults. Remove !default so our values
+// always win even if Boost's pre.scss sets $border-radius first.
+$border-radius:    0.625rem;   // base (10 px) — clearly rounded
+$border-radius-lg: 0.875rem;   // panels, cards
+$border-radius-sm: 0.425rem;   // small elements
+
+// Explicit Bootstrap button-radius vars (Bootstrap 5 has these as separate vars)
+$btn-border-radius:    0.625rem;
+$btn-border-radius-sm: 0.425rem;
+$btn-border-radius-lg: 0.875rem;
+
+// ---- Shadows ----
+$box-shadow:    0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04) !default;
+$box-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06) !default;
+$box-shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.10), 0 2px 4px rgba(0, 0, 0, 0.06) !default;
+
+// ---- Transitions ----
+$transition-base: all 0.2s ease-in-out !default;
+
+// ---- Navbar (Bootstrap) — we replace it with ours so suppress the default ----
+$navbar-padding-y: 0 !default;

@@ -1,0 +1,139 @@
+// =============================================================================
+// EdzCorp — _darkmode.scss
+// Dark mode styles. Activated by JS adding [data-edz-theme="dark"] to <html>.
+// The preference is persisted to localStorage by the theme AMD module.
+// =============================================================================
+
+// ---- Dark mode icon state -----------------------------------------------
+// Default (light): moon visible, sun hidden.
+// Dark mode: sun visible, moon hidden.
+
+.edz-icon-moon { display: block; }
+.edz-icon-sun  { display: none; }
+
+
+// ---- Dark theme CSS overrides --------------------------------------------
+// CSS custom property declarations MUST come before nested rules.
+// scssphp can be strict about property declarations following nested rules
+// within the same block — putting all declarations first avoids this.
+
+[data-edz-theme="dark"] {
+
+    // ---- CSS custom properties (dark values) — declared FIRST ----
+    --edz-page-bg:       #0e0e1a;
+    --edz-card-bg:       #181828;
+    --edz-navbar-bg:     #181828;
+    --edz-navbar-border: rgba(255, 255, 255, 0.07);
+    --edz-navbar-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    --edz-footer-bg:     #181828;
+    --edz-footer-border: rgba(255, 255, 255, 0.07);
+    --edz-border-color:  rgba(255, 255, 255, 0.08);
+    --edz-text-color:    #dde1ec;
+    --edz-heading-color: #f0f2fa;
+    --edz-text-muted:    rgba(255, 255, 255, 0.45);
+    --edz-hover-bg:      rgba(255, 255, 255, 0.06);
+    --edz-focus-ring:    0 0 0 3px rgba(99, 102, 241, 0.35);
+
+    // ---- Regular declarations — ALSO before nested rules ----
+    color-scheme: dark;
+
+    // ---- Show sun icon, hide moon ---- (nested rules come LAST)
+    .edz-icon-moon { display: none; }
+    .edz-icon-sun  { display: block; }
+
+    // ---- Body ----
+    body { background-color: var(--edz-page-bg); color: var(--edz-text-color); }
+
+    // ---- Cards and blocks ----
+    .card,
+    .block,
+    .dashboard-card,
+    .course-info-container {
+        background: var(--edz-card-bg);
+        border-color: var(--edz-border-color);
+        color: var(--edz-text-color);
+    }
+
+    // ---- Forms ----
+    .form-control,
+    .form-select {
+        background-color: #23233a;
+        border-color: var(--edz-border-color);
+        color: var(--edz-text-color);
+
+        &:focus {
+            background-color: #23233a;
+            color: var(--edz-text-color);
+        }
+    }
+
+    // ---- Tables ----
+    .table {
+        color: var(--edz-text-color);
+        --bs-table-bg: var(--edz-card-bg);
+        --bs-table-border-color: var(--edz-border-color);
+        --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+        --bs-table-hover-bg: var(--edz-hover-bg);
+
+        thead th { background: #13131f; }
+    }
+
+    // ---- Modals ----
+    .modal-content {
+        background-color: var(--edz-card-bg);
+        color: var(--edz-text-color);
+        border-color: var(--edz-border-color);
+    }
+    .modal-header, .modal-footer { border-color: var(--edz-border-color); }
+
+    // ---- Dropdowns ----
+    .dropdown-menu {
+        background-color: #1f1f32;
+        border-color: var(--edz-border-color);
+        color: var(--edz-text-color);
+
+        .dropdown-item {
+            color: var(--edz-text-color);
+            &:hover, &:focus { background-color: var(--edz-hover-bg); }
+        }
+        .dropdown-divider { border-color: var(--edz-border-color); }
+    }
+
+    // ---- Alerts ----
+    .alert-info    { background: #1e2d3d; color: #93c5fd; }
+    .alert-success { background: #14291a; color: #86efac; }
+    .alert-warning { background: #2d2210; color: #fcd34d; }
+    .alert-danger  { background: #2d1313; color: #fca5a5; }
+
+    // ---- Breadcrumb ----
+    .breadcrumb-item { color: var(--edz-text-muted); }
+    .breadcrumb-item.active { color: var(--edz-text-color); }
+    .breadcrumb-item + .breadcrumb-item::before { color: var(--edz-text-muted); }
+
+    // ---- Course index ----
+    .edz-course-index {
+        background: var(--edz-card-bg);
+        border-color: var(--edz-border-color);
+    }
+
+    // ---- Login card ----
+    .edz-login-card { background: var(--edz-card-bg); }
+
+    // ---- Moodle's own UI elements ----
+    #page-admin-index .generalbox { background: var(--edz-card-bg); }
+
+    .list-group-item {
+        background-color: var(--edz-card-bg);
+        border-color: var(--edz-border-color);
+        color: var(--edz-text-color);
+    }
+
+    // Secondary nav (Moodle 4+ activity navigation).
+    .secondary-navigation .nav-tabs .nav-link {
+        color: var(--edz-text-muted);
+        &.active { color: var(--bs-primary); }
+    }
+
+    // Boost's own drawer, if any Boost component is still used.
+    #nav-drawer { background: var(--edz-sidebar-bg); }
+}

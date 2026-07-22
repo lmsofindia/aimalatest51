@@ -1,0 +1,339 @@
+{{!
+    EdzCorp top navigation bar partial.
+    Used on all inner pages (columns1, columns2, course).
+    Frontpage uses theme_boost/navbar instead (to keep primary nav links there).
+
+    Context variables provided by layout PHP files:
+        output              (obj)    Core renderer — output.page_title, output.navbar_plugin_output
+        usermenu            (html)   Pre-rendered user-menu HTML string.
+        navbar              (html)   Moodle breadcrumb HTML (unused on most pages).
+        primarymoremenu     (obj)    Passed through but not shown here — menus live in sidenav.
+}}
+<header class="edzcorp-navbar" id="edzcorp-navbar" role="banner">
+
+    {{! ---- Far-left: mobile hamburger ---- }}
+    <button class="navbar-mobile-toggle"
+            id="navbar-mobile-toggle"
+            type="button"
+            aria-label="{{#str}}togglemobilemenu, theme_edzcorp{{/str}}"
+            aria-controls="edzcorp-sidenav"
+            aria-expanded="false">
+        <i class="fa fa-bars" aria-hidden="true"></i>
+    </button>
+
+    {{! ---- Page title (course name / activity name / page label) ---- }}
+    {{! Direct render — section tags on renderer methods are unreliable in LightnCandy }}
+    <span class="navbar-page-title">{{{ output.page_title }}}</span>
+
+    {{! ---- Centre: global search ---- }}
+    <div class="navbar-search-wrap" id="edz-navbar-search-wrap">
+        <div class="navbar-search-box" id="edz-navbar-search-box">
+            <i class="fa fa-magnifying-glass navbar-search-icon" aria-hidden="true"></i>
+            <input class="navbar-search-input"
+                   id="edz-navbar-search-input"
+                   type="search"
+                   autocomplete="off"
+                   placeholder="{{#str}}searchcourses, core{{/str}}"
+                   aria-label="{{#str}}searchcourses, core{{/str}}"
+                   aria-haspopup="listbox"
+                   aria-expanded="false"
+                   aria-controls="edz-search-results">
+            <span class="navbar-search-spinner" id="edz-search-spinner" aria-hidden="true"></span>
+        </div>
+        <div class="navbar-search-results" id="edz-search-results" role="listbox" aria-label="Search results" hidden></div>
+    </div>
+
+    {{! ---- Right: plugin outputs (notifications, messages) + user menu ---- }}
+    <div class="navbar-right">
+
+        {{! Moodle plugin navbar outputs — notification bell, message icon, etc. }}
+        <div class="navbar-plugin-output">
+            {{{ output.navbar_plugin_output }}}
+        </div>
+
+        {{! ---- Edit mode toggle (Turn editing on/off) ---- }}
+        {{! Rendered only when the current user has editing capability. }}
+        {{#editmodebutton}}
+        <div class="navbar-editmode">
+            {{{ editmodebutton }}}
+        </div>
+        {{/editmodebutton}}
+
+        {{! Dark mode toggle }}
+        <button class="navbar-action-btn edz-darkmode-toggle"
+                id="edz-darkmode-toggle"
+                type="button"
+                aria-label="{{#str}}toggledarkmode, theme_edzcorp{{/str}}"
+                title="{{#str}}toggledarkmode, theme_edzcorp{{/str}}">
+            <i class="fa fa-moon edz-icon-moon" aria-hidden="true"></i>
+            <i class="fa fa-sun  edz-icon-sun"  aria-hidden="true"></i>
+        </button>
+
+        {{! User account menu }}
+        <div class="navbar-usermenu">
+            {{{usermenu}}}
+        </div>
+
+    </div>
+
+</header>
+
+{{! ================================================================
+    SEARCH — inline AMD-backed script
+    Uses core/ajax → core_course_search_courses webservice.
+    Results rendered as a pretty card dropdown.
+    ================================================================ }}
+<script>
+(function () {
+    'use strict';
+
+    var input    = document.getElementById('edz-navbar-search-input');
+    var results  = document.getElementById('edz-search-results');
+    var spinner  = document.getElementById('edz-search-spinner');
+    var wrap     = document.getElementById('edz-navbar-search-wrap');
+    var debounce, lastQuery = '';
+
+    if (!input) return;
+
+    /* ── icons by module type ── */
+    var modIcons = {
+        quiz:       'fa-circle-question',
+        forum:      'fa-comments',
+        assign:     'fa-file-lines',
+        resource:   'fa-file',
+        folder:     'fa-folder',
+        url:        'fa-link',
+        page:       'fa-file-alt',
+        lesson:     'fa-book-open',
+        scorm:      'fa-cube',
+        choice:     'fa-check-to-slot',
+        survey:     'fa-chart-bar',
+        glossary:   'fa-spell-check',
+        wiki:       'fa-pen-to-square',
+        workshop:   'fa-people-group',
+        chat:       'fa-message',
+        data:       'fa-database',
+        lti:        'fa-external-link',
+    };
+
+    function courseIcon(course) {
+        if (course.courseimage) {
+            return '<img src="' + escHtml(course.courseimage) + '" alt="" class="edz-sr-thumb">';
+        }
+        return '<span class="edz-sr-icon-fallback"><i class="fa fa-graduation-cap" aria-hidden="true"></i></span>';
+    }
+
+    function escHtml(s) {
+        return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderResults(data, query) {
+        var courses = (data && data.courses) ? data.courses : [];
+        var html = '';
+
+        if (!courses.length) {
+            html = '<div class="edz-sr-empty"><i class="fa fa-magnifying-glass" aria-hidden="true"></i>'
+                 + '<span>No courses found for <strong>' + escHtml(query) + '</strong></span></div>';
+        } else {
+            html += '<ul class="edz-sr-list" role="listbox">';
+            courses.forEach(function (c) {
+                var url = M.cfg.wwwroot + '/course/view.php?id=' + c.id;
+                html += '<li class="edz-sr-item" role="option">'
+                      + '<a href="' + url + '" class="edz-sr-link" tabindex="-1">'
+                      + '<span class="edz-sr-thumb-wrap">' + courseIcon(c) + '</span>'
+                      + '<span class="edz-sr-body">'
+                      + '<span class="edz-sr-name">' + escHtml(c.fullname) + '</span>'
+                      + '<span class="edz-sr-cat">' + escHtml(c.categoryname || '') + '</span>'
+                      + '</span>'
+                      + '<i class="fa fa-arrow-right edz-sr-arrow" aria-hidden="true"></i>'
+                      + '</a>'
+                      + '</li>';
+            });
+            html += '</ul>';
+            html += '<div class="edz-sr-footer">'
+                  + '<a href="' + M.cfg.wwwroot + '/course/search.php?search=' + encodeURIComponent(query) + '" class="edz-sr-viewall">'
+                  + '<i class="fa fa-magnifying-glass" aria-hidden="true"></i>'
+                  + 'View all results for <strong>' + escHtml(query) + '</strong>'
+                  + '<i class="fa fa-arrow-right" aria-hidden="true"></i>'
+                  + '</a></div>';
+        }
+
+        results.innerHTML = html;
+        results.hidden = false;
+        input.setAttribute('aria-expanded', 'true');
+        wrap.classList.add('edz-search-open');
+
+        /* make result links keyboard-navigable */
+        var links = results.querySelectorAll('.edz-sr-link, .edz-sr-viewall');
+        links.forEach(function (l) { l.removeAttribute('tabindex'); });
+    }
+
+    function clearResults() {
+        results.hidden = true;
+        results.innerHTML = '';
+        input.setAttribute('aria-expanded', 'false');
+        wrap.classList.remove('edz-search-open');
+        lastQuery = '';   // reset so same query can be re-searched after dismiss
+    }
+
+    function doSearch(query) {
+        if (!query || query.length < 2) { clearResults(); return; }
+        if (query === lastQuery) return;
+        lastQuery = query;
+        spinner.style.display = 'block';
+
+        require(['core/ajax'], function (Ajax) {
+            Ajax.call([{
+                methodname : 'core_course_search_courses',
+                args       : {
+                    criterianame    : 'search',
+                    criteriavalue   : query,
+                    page            : 0,
+                    perpage         : 7,
+                    requiredcapabilities : [],
+                    limittoenrolled : false
+                },
+                done : function (data) {
+                    spinner.style.display = 'none';
+                    renderResults(data, query);
+                },
+                fail : function () {
+                    spinner.style.display = 'none';
+                    renderResults(null, query);
+                }
+            }]);
+        });
+    }
+
+    input.addEventListener('input', function () {
+        clearTimeout(debounce);
+        var q = input.value.trim();
+        debounce = setTimeout(function () { doSearch(q); }, 280);
+    });
+
+    input.addEventListener('focus', function () {
+        wrap.classList.add('edz-search-focused');
+        if (input.value.trim().length >= 2) {
+            results.hidden = false;
+            wrap.classList.add('edz-search-open');
+        }
+    });
+
+    input.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') { clearResults(); input.blur(); return; }
+        if (e.key === 'ArrowDown') {
+            var first = results.querySelector('.edz-sr-link, .edz-sr-viewall');
+            if (first) { e.preventDefault(); first.focus(); }
+        }
+    });
+
+    /* arrow-key navigation inside results */
+    results.addEventListener('keydown', function (e) {
+        var items = Array.from(results.querySelectorAll('.edz-sr-link, .edz-sr-viewall'));
+        var idx = items.indexOf(document.activeElement);
+        if (e.key === 'ArrowDown' && idx < items.length - 1) { e.preventDefault(); items[idx + 1].focus(); }
+        if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (idx > 0) items[idx - 1].focus(); else input.focus();
+        }
+        if (e.key === 'Escape') { clearResults(); input.focus(); }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) {
+            clearResults();
+            wrap.classList.remove('edz-search-focused');
+        }
+    });
+}());
+</script>
+
+{{! ================================================================
+    MOREMENU DROPDOWN PORTAL FIX
+    The secondary-navigation .nav-tabs has overflow-x:auto which clips
+    any absolutely-positioned child (the "More ▸" dropdown).
+    On show, we convert the dropdown to position:fixed and calculate
+    its coords from the toggle button's bounding rect — bypassing all
+    overflow clipping entirely.
+    ================================================================ }}
+<script>
+(function () {
+    'use strict';
+
+    function fixMoreMenu(toggleEl, menuEl) {
+        var rect = toggleEl.getBoundingClientRect();
+        menuEl.style.cssText = [
+            'position: fixed !important',
+            'top: ' + (rect.bottom + 4) + 'px !important',
+            'left: ' + rect.left + 'px !important',
+            'min-width: 180px',
+            'z-index: 9100 !important',
+            'display: block !important',
+        ].join('; ');
+    }
+
+    function resetMoreMenu(menuEl) {
+        menuEl.style.cssText = '';
+    }
+
+    function attachToNav(nav) {
+        // Bootstrap 5 — listen for dropdown events
+        nav.addEventListener('show.bs.dropdown', function (e) {
+            var toggle = e.relatedTarget;
+            if (!toggle) return;
+            var item = toggle.closest('[data-region="morebutton"], .dropdownmoremenu');
+            if (!item) return;
+            var menu = item.querySelector('.dropdown-menu');
+            if (!menu) return;
+            // Defer so Bootstrap finishes its own positioning first
+            requestAnimationFrame(function () { fixMoreMenu(toggle, menu); });
+        });
+
+        nav.addEventListener('hide.bs.dropdown', function (e) {
+            var toggle = e.relatedTarget;
+            if (!toggle) return;
+            var item = toggle.closest('[data-region="morebutton"], .dropdownmoremenu');
+            if (!item) return;
+            var menu = item.querySelector('.dropdown-menu');
+            if (menu) resetMoreMenu(menu);
+        });
+
+        // Reposition on window resize / scroll
+        window.addEventListener('resize', function () {
+            var open = nav.querySelector('[data-region="morebutton"] .dropdown-menu.show, .dropdownmoremenu .dropdown-menu.show');
+            if (!open) return;
+            var toggle = open.closest('[data-region="morebutton"], .dropdownmoremenu')
+                             ?.querySelector('[data-bs-toggle="dropdown"]');
+            if (toggle) fixMoreMenu(toggle, open);
+        }, { passive: true });
+    }
+
+    function init() {
+        document.querySelectorAll('.secondary-navigation').forEach(attachToNav);
+    }
+
+    // Run after Moodle's AMD modules have loaded
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+    // Also watch for dynamically added secondary navs (some pages inject them late)
+    if (window.MutationObserver) {
+        var mo = new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+                m.addedNodes.forEach(function (n) {
+                    if (n.nodeType !== 1) return;
+                    if (n.classList && n.classList.contains('secondary-navigation')) {
+                        attachToNav(n);
+                    }
+                    var inner = n.querySelectorAll && n.querySelectorAll('.secondary-navigation');
+                    if (inner) inner.forEach(attachToNav);
+                });
+            });
+        });
+        mo.observe(document.body, { childList: true, subtree: true });
+    }
+}());
+</script>

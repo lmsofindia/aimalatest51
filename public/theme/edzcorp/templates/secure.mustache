@@ -1,0 +1,33 @@
+{{!
+    EdzCorp — secure layout template (SafeBrowser / securewindow).
+    No navigation bar; just content and optional blocks.
+}}
+{{{output.doctype}}}
+<html {{{output.htmlattributes}}}>
+<head>
+    <title>{{{pagetitle}}}</title>
+    {{{output.standard_head_html}}}
+</head>
+<body {{{bodyattributes}}}>
+{{{output.standard_top_of_body_html}}}
+
+<div class="edz-secure-wrapper">
+    <div class="edz-secure-header">
+        <span class="edz-secure-sitename">{{sitename}}</span>
+    </div>
+    <div class="edz-secure-content-area" id="maincontent">
+        <div class="edz-main-col">
+            {{{maincontent}}}
+        </div>
+        {{#hasblocks}}
+        <aside class="edz-side-post">
+            {{{blockshtml}}}
+        </aside>
+        {{/hasblocks}}
+    </div>
+</div>
+
+{{{output.standard_after_main_region_html}}}
+{{{output.standard_end_of_body_html}}}
+</body>
+</html>
