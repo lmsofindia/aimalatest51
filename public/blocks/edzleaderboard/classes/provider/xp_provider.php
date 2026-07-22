@@ -65,13 +65,15 @@ class xp_provider {
         }
 
         // userpic fields give us everything fullname() and user_picture need.
-        // get_sql args: (tablealias, leadingcomma=true, fieldprefix, idalias,
-        // usecustomfields=false). leadingcomma MUST be true so ->selects starts
-        // with ", u.id, ..." and slots cleanly after our x.* columns.
+        // The leading-comma behaviour of get_sql() varies between Moodle builds,
+        // so we NORMALISE: strip any leading comma/space, then prepend exactly
+        // one comma ourselves. This avoids both "x.lvl u.id" (missing comma) and
+        // "x.lvl ,, u.id" (double comma).
         $userfieldsapi = \core_user\fields::for_userpic();
-        $ufields = $userfieldsapi->get_sql('u', true, '', '', false)->selects;
+        $ufields = $userfieldsapi->get_sql('u', false, '', '', false)->selects;
+        $ufields = ltrim(trim($ufields), ',');
 
-        $sql = "SELECT x.userid, x.xp, x.lvl {$ufields}
+        $sql = "SELECT x.userid, x.xp, x.lvl, {$ufields}
                   FROM {block_xp} x
                   JOIN {user} u ON u.id = x.userid
                  WHERE x.courseid = :courseid
