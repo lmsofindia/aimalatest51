@@ -117,6 +117,14 @@ function theme_edzcorp_get_main_scss_content(theme_config $theme): string {
         $cssVars[] = "    --edz-fp-navbar-text: {$settings->fp_navbar_text}";
     }
 
+    // Frontpage navbar height (px) — controls the bar min-height and the logo cap.
+    if (!empty($settings->fp_navbar_height)) {
+        $h = (int) $settings->fp_navbar_height;
+        if ($h >= 48 && $h <= 200) {
+            $cssVars[] = "    --edz-fp-navbar-height: {$h}px";
+        }
+    }
+
     // Text colours.
     if (!empty($settings->textcolor)) {
         $cssVars[] = "    --edz-text-color: {$settings->textcolor}";
