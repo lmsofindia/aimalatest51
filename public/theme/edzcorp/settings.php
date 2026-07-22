@@ -1031,6 +1031,61 @@ if ($ADMIN->fulltree) {
     );
     $page->add($setting);
 
+    // Topics source — which categories feed the section.
+    $setting = new admin_setting_configselect(
+        'theme_edzcorp/fp_topics_source',
+        get_string('fp_topics_source', 'theme_edzcorp'),
+        get_string('fp_topics_sourcedesc', 'theme_edzcorp'),
+        'alltop',
+        [
+            'alltop'   => get_string('fp_topics_source_alltop', 'theme_edzcorp'),
+            'all'      => get_string('fp_topics_source_all', 'theme_edzcorp'),
+            'specific' => get_string('fp_topics_source_specific', 'theme_edzcorp'),
+        ]
+    );
+    $page->add($setting);
+
+    // Specific category — only used when source = "specific".
+    $catoptions = [0 => get_string('fp_topics_specific_none', 'theme_edzcorp')];
+    if (!during_initial_install()) {
+        try {
+            $catoptions += \core_course_category::make_categories_list();
+        } catch (\Throwable $e) {
+            // Category tree not ready (e.g. mid-upgrade) — keep the placeholder only.
+        }
+    }
+    $setting = new admin_setting_configselect(
+        'theme_edzcorp/fp_topics_specific',
+        get_string('fp_topics_specific', 'theme_edzcorp'),
+        get_string('fp_topics_specificdesc', 'theme_edzcorp'),
+        0,
+        $catoptions
+    );
+    $page->add($setting);
+
+    // Display style — pill buttons (default) or icon cards.
+    $setting = new admin_setting_configselect(
+        'theme_edzcorp/fp_topics_style',
+        get_string('fp_topics_style', 'theme_edzcorp'),
+        get_string('fp_topics_styledesc', 'theme_edzcorp'),
+        'buttons',
+        [
+            'buttons' => get_string('fp_topics_style_buttons', 'theme_edzcorp'),
+            'cards'   => get_string('fp_topics_style_cards', 'theme_edzcorp'),
+        ]
+    );
+    $page->add($setting);
+
+    // Cards per row — only used when style = "cards".
+    $setting = new admin_setting_configselect(
+        'theme_edzcorp/fp_topics_percard',
+        get_string('fp_topics_percard', 'theme_edzcorp'),
+        get_string('fp_topics_percarddesc', 'theme_edzcorp'),
+        '6',
+        ['6' => '6', '8' => '8']
+    );
+    $page->add($setting);
+
     // Recently launched section heading.
     $setting = new admin_setting_configtext(
         'theme_edzcorp/fp_courses_heading',

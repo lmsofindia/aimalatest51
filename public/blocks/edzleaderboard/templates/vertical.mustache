@@ -1,0 +1,89 @@
+{{!
+    EdzLeaderboard — vertical layout.
+
+    Top 3 on a podium, then the remaining ranks as a list. When the current
+    user is outside the shown list, their own standing is appended.
+
+    Context: p1, p2, p3 (row or null), rest[] , hasrest, showmyrow, myrow.
+    Row keys: rank, name, xpformatted, levellabel, haspic, picurl, initials,
+              coloridx, medalclass, isme, profileurl.
+
+    @package    block_edzleaderboard
+    @copyright  2026 EdzCorp
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="edzlb edzlb--vertical">
+
+    <div class="edzlb-podium">
+        {{#p2}}
+        <a href="{{profileurl}}" class="edzlb-pod edzlb-pod--2{{#isme}} edzlb-pod--me{{/isme}}">
+            <div class="edzlb-pod__ava">
+                {{> block_edzleaderboard/avatar}}
+                <span class="edzlb-pod__medal {{medalclass}}">{{rank}}</span>
+            </div>
+            <div class="edzlb-pod__name">{{name}}</div>
+            <div class="edzlb-pod__pts">{{xpformatted}} {{#str}}pointssuffix, block_edzleaderboard{{/str}}</div>
+            <div class="edzlb-pod__stand edzlb-pod__stand--2">{{rank}}</div>
+        </a>
+        {{/p2}}
+
+        {{#p1}}
+        <a href="{{profileurl}}" class="edzlb-pod edzlb-pod--1{{#isme}} edzlb-pod--me{{/isme}}">
+            <div class="edzlb-pod__crown" aria-hidden="true">&#128081;</div>
+            <div class="edzlb-pod__ava">
+                {{> block_edzleaderboard/avatar}}
+                <span class="edzlb-pod__medal {{medalclass}}">{{rank}}</span>
+            </div>
+            <div class="edzlb-pod__name">{{name}}</div>
+            <div class="edzlb-pod__pts">{{xpformatted}} {{#str}}pointssuffix, block_edzleaderboard{{/str}}</div>
+            <div class="edzlb-pod__stand edzlb-pod__stand--1">{{rank}}</div>
+        </a>
+        {{/p1}}
+
+        {{#p3}}
+        <a href="{{profileurl}}" class="edzlb-pod edzlb-pod--3{{#isme}} edzlb-pod--me{{/isme}}">
+            <div class="edzlb-pod__ava">
+                {{> block_edzleaderboard/avatar}}
+                <span class="edzlb-pod__medal {{medalclass}}">{{rank}}</span>
+            </div>
+            <div class="edzlb-pod__name">{{name}}</div>
+            <div class="edzlb-pod__pts">{{xpformatted}} {{#str}}pointssuffix, block_edzleaderboard{{/str}}</div>
+            <div class="edzlb-pod__stand edzlb-pod__stand--3">{{rank}}</div>
+        </a>
+        {{/p3}}
+    </div>
+
+    {{#hasrest}}
+    <div class="edzlb-rows">
+        {{#rest}}
+        <a href="{{profileurl}}" class="edzlb-row{{#isme}} edzlb-row--me{{/isme}}">
+            <span class="edzlb-row__rank">{{rank}}</span>
+            {{> block_edzleaderboard/avatar}}
+            <span class="edzlb-row__who">
+                <span class="edzlb-row__name">{{name}}{{#isme}} <span class="edzlb-you">{{#str}}youlabel, block_edzleaderboard{{/str}}</span>{{/isme}}</span>
+                <span class="edzlb-row__sub">{{levellabel}}</span>
+            </span>
+            <span class="edzlb-row__pts">{{xpformatted}}<small> {{#str}}pointssuffix, block_edzleaderboard{{/str}}</small></span>
+        </a>
+        {{/rest}}
+    </div>
+    {{/hasrest}}
+
+    {{#showmyrow}}
+    <div class="edzlb-yourrank">{{#str}}yourrank, block_edzleaderboard{{/str}}</div>
+    <div class="edzlb-rows edzlb-rows--me">
+        {{#myrow}}
+        <a href="{{profileurl}}" class="edzlb-row edzlb-row--me">
+            <span class="edzlb-row__rank">{{rank}}</span>
+            {{> block_edzleaderboard/avatar}}
+            <span class="edzlb-row__who">
+                <span class="edzlb-row__name">{{name}} <span class="edzlb-you">{{#str}}youlabel, block_edzleaderboard{{/str}}</span></span>
+                <span class="edzlb-row__sub">{{levellabel}}</span>
+            </span>
+            <span class="edzlb-row__pts">{{xpformatted}}<small> {{#str}}pointssuffix, block_edzleaderboard{{/str}}</small></span>
+        </a>
+        {{/myrow}}
+    </div>
+    {{/showmyrow}}
+
+</div>

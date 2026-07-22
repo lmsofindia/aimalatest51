@@ -588,38 +588,74 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     }
 
     // =========================================================================
-    // 3. POPULAR TOPICS (top-level course categories)
+    // 3. POPULAR TOPICS (course categories)
+    //    Source (fp_topics_source): 'alltop'   = direct top-level categories,
+    //                               'all'      = every category (flattened),
+    //                               'specific' = one chosen category as a tile.
+    //    Style  (fp_topics_style):  'buttons'  = pill chips (default),
+    //                               'cards'    = icon cards (6 or 8 per row).
     // =========================================================================
 
     $topics_heading = !empty($s->fp_topics_heading)
         ? clean_param($s->fp_topics_heading, PARAM_TEXT)
         : 'Popular topics to learn';
 
+    $topics_source = !empty($s->fp_topics_source) ? clean_param($s->fp_topics_source, PARAM_ALPHA) : 'alltop';
+    if (!in_array($topics_source, ['alltop', 'all', 'specific'], true)) {
+        $topics_source = 'alltop';
+    }
+    $topics_is_cards    = (isset($s->fp_topics_style) && (string)$s->fp_topics_style === 'cards');
+    $topics_percard     = (isset($s->fp_topics_percard) && (string)$s->fp_topics_percard === '8') ? 8 : 6;
+    $topics_specific_id = !empty($s->fp_topics_specific) ? (int)$s->fp_topics_specific : 0;
+
     // Colour palette — cycles through if there are many categories.
     $topic_colors = ['#7c3aed', '#0891b2', '#059669', '#d97706', '#dc2626',
                      '#db2777', '#6366f1', '#ea580c', '#0d9488'];
+    // Curated Font Awesome icons for the card style — cycles alongside colours.
+    $topic_icons = ['fa-chart-line', 'fa-code', 'fa-palette', 'fa-briefcase',
+                    'fa-flask', 'fa-gears', 'fa-book-open', 'fa-globe',
+                    'fa-lightbulb', 'fa-chart-pie', 'fa-microchip', 'fa-heart-pulse'];
 
     $fp_topics  = [];
     $color_idx  = 0;
 
-    try {
-        // get_children() on the root gives all direct top-level categories.
-        $root     = \core_course_category::get(0);
-        $children = $root->get_children();
+    // Append one category as a topic entry (respects hidden-category capability).
+    $add_topic = function (\core_course_category $cat)
+            use (&$fp_topics, &$color_idx, $topic_colors, $topic_icons) {
+        if (!$cat->visible
+                && !has_capability('moodle/category:viewhiddencategories', \context_system::instance())) {
+            return;
+        }
+        $course_count = $cat->get_courses_count(['recursive' => true]);
+        $count_str    = $course_count . ' ' . ($course_count === 1 ? 'course' : 'courses');
+        $fp_topics[]  = [
+            'name'  => $cat->get_formatted_name(),
+            'url'   => (string)(new \moodle_url('/course/index.php', ['categoryid' => $cat->id])),
+            'count' => $count_str,
+            'color' => $topic_colors[$color_idx % count($topic_colors)],
+            'icon'  => $topic_icons[$color_idx % count($topic_icons)],
+        ];
+        $color_idx++;
+    };
 
-        foreach ($children as $cat) {
-            if (!$cat->visible && !has_capability('moodle/category:viewhiddencategories', \context_system::instance())) {
-                continue;
+    try {
+        if ($topics_source === 'specific' && $topics_specific_id > 0) {
+            // One chosen category shown as a single featured tile.
+            $cat = \core_course_category::get($topics_specific_id, IGNORE_MISSING);
+            if ($cat) {
+                $add_topic($cat);
             }
-            $course_count = $cat->get_courses_count(['recursive' => true]);
-            $count_str    = $course_count . ' ' . ($course_count === 1 ? 'course' : 'courses');
-            $fp_topics[]  = [
-                'name'  => $cat->get_formatted_name(),
-                'url'   => (string)(new \moodle_url('/course/index.php', ['categoryid' => $cat->id])),
-                'count' => $count_str,
-                'color' => $topic_colors[$color_idx % count($topic_colors)],
-            ];
-            $color_idx++;
+        } else if ($topics_source === 'all') {
+            // Every category the user can see (top-level + sub-categories).
+            foreach (\core_course_category::get_all() as $cat) {
+                $add_topic($cat);
+            }
+        } else {
+            // Default 'alltop' — direct children of the root (top-level categories).
+            $root = \core_course_category::get(0);
+            foreach ($root->get_children() as $cat) {
+                $add_topic($cat);
+            }
         }
     } catch (\Exception $e) {
         // Fail silently — topics section will be hidden via {{#fp_has_topics}}.
@@ -818,9 +854,11 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_skills_video_isfile'   => $skills_video_file,
 
         // Topics.
-        'fp_topics_heading' => $topics_heading,
-        'fp_topics'         => $fp_topics,
-        'fp_has_topics'     => (!empty($fp_topics) && $en('fp_topics_enable')),
+        'fp_topics_heading'    => $topics_heading,
+        'fp_topics'            => $fp_topics,
+        'fp_has_topics'        => (!empty($fp_topics) && $en('fp_topics_enable')),
+        'fp_topics_is_cards'   => $topics_is_cards,
+        'fp_topics_grid_class' => 'edz-topics-cards--' . $topics_percard,
 
         // Courses.
         'fp_courses_heading' => $courses_heading,
