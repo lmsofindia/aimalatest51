@@ -14,7 +14,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_edzfaculty';
-$plugin->version   = 2026071804;      // YYYYMMDDXX.
+$plugin->version   = 2026071805;      // YYYYMMDDXX.
 $plugin->requires  = 2024100700;      // Moodle 4.5+ baseline (installs on 5.0+).
-$plugin->maturity  = MATURITY_ALPHA;  // Phase 3: admin All-Faculty overview + picker.
-$plugin->release   = '0.3.0';
+$plugin->maturity  = MATURITY_ALPHA;  // Phase 3.1: overviewaccess setting (admin vs manager).
+$plugin->release   = '0.3.1';

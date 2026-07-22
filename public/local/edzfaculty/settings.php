@@ -27,6 +27,18 @@ if ($hassiteconfig) {
         ]
     ));
 
+    // Who gets the admin "All Faculty" overview (and cross-teacher access).
+    $settings->add(new admin_setting_configselect(
+        'local_edzfaculty/overviewaccess',
+        get_string('overviewaccess', 'local_edzfaculty'),
+        get_string('overviewaccess_desc', 'local_edzfaculty'),
+        'manager',
+        [
+            'admin'   => get_string('oa_admin', 'local_edzfaculty'),
+            'manager' => get_string('oa_manager', 'local_edzfaculty'),
+        ]
+    ));
+
     // At-risk thresholds.
     $settings->add(new admin_setting_heading('local_edzfaculty/atriskhdr',
         get_string('atriskhdr', 'local_edzfaculty'), ''));

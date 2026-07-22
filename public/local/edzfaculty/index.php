@@ -18,7 +18,7 @@ require_login();
 
 $teacherid = optional_param('teacherid', 0, PARAM_INT);
 $context   = \context_system::instance();
-$viewall   = \local_edzfaculty\helper\access::can_view_all();
+$viewall   = \local_edzfaculty\helper\access::is_admin_viewer();
 
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('mydashboard');
@@ -44,7 +44,11 @@ if (!$teacherid) {
     $teacherid = $USER->id;
 }
 if ($teacherid != $USER->id) {
-    require_capability('local/edzfaculty:viewall', $context);
+    // Cross-teacher access is governed by the overviewaccess setting, not the
+    // raw viewall capability (faculty may hold Manager site-wide).
+    if (!$viewall) {
+        throw new \required_capability_exception($context, 'local/edzfaculty:viewall', 'nopermissions', '');
+    }
 } else if (!\local_edzfaculty\helper\access::is_teacher() && !$viewall) {
     \local_edzfaculty\helper\access::require_teacher();
 }

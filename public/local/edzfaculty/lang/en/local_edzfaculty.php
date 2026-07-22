@@ -36,6 +36,12 @@ $string['sum_tograde'] = 'Total to grade';
 $string['sum_atrisk'] = 'Total at-risk';
 $string['nofaculty'] = 'No teaching faculty found.';
 
+// Settings — overview access.
+$string['overviewaccess'] = 'Faculty Overview access';
+$string['overviewaccess_desc'] = 'Who sees the admin "All Faculty" overview and can open another teacher\'s dashboard. Choose "Site admins only" when faculty also hold the Manager role site-wide, so they land on their own teacher dashboard.';
+$string['oa_admin'] = 'Site admins only';
+$string['oa_manager'] = 'Admins and managers';
+
 // Settings — terminology.
 $string['terminology'] = 'Terminology';
 $string['terminology_desc'] = 'Wording used across the dashboard. Academic suits a college (Students / Sections / Semesters — AIMA). Corporate suits executive programs (Learners / Batches / Programs — GAIL).';

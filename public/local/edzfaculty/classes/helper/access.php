@@ -38,7 +38,7 @@ class access {
     }
 
     /**
-     * Can this user view other teachers' dashboards?
+     * Does this user hold the raw "view all" capability (manager archetype)?
      *
      * @param int $userid 0 = current user
      * @return bool
@@ -50,12 +50,30 @@ class access {
     }
 
     /**
+     * Is this user treated as an admin viewer — sees the "All Faculty" overview
+     * and may open other teachers' dashboards? Governed by the overviewaccess
+     * setting so sites where faculty also hold Manager can restrict it to admins.
+     *
+     * @param int $userid 0 = current user
+     * @return bool
+     */
+    public static function is_admin_viewer(int $userid = 0): bool {
+        global $USER;
+        $userid = $userid ?: $USER->id;
+        $mode = get_config('local_edzfaculty', 'overviewaccess') ?: 'manager';
+        if ($mode === 'admin') {
+            return is_siteadmin($userid);
+        }
+        return self::can_view_all($userid);
+    }
+
+    /**
      * Throw unless the current user may see the faculty dashboard.
      *
      * @return void
      */
     public static function require_teacher(): void {
-        if (!self::is_teacher() && !self::can_view_all()) {
+        if (!self::is_teacher() && !self::is_admin_viewer()) {
             throw new \required_capability_exception(
                 \context_system::instance(), 'local/edzfaculty:view', 'nopermissions', '');
         }
