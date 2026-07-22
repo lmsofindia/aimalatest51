@@ -108,9 +108,12 @@ if (method_exists($OUTPUT, 'edit_mode_link')) {
 // (Moodle 5.x sometimes returns empty on incourse/activity pages).
 if (empty($editmodebutton) && $PAGE->user_allowed_editing()) {
     $editingon  = $PAGE->user_is_editing();
-    $editurl    = new moodle_url('/course/view.php', [
-        'id'      => $PAGE->course->id,
-        'edit'    => ($editingon ? 'off' : 'on'),
+    // Toggle edit mode via core's /editmode.php (works on every page type and
+    // redirects back to the current page). See columns2.php for the full note.
+    $editurl = new moodle_url('/editmode.php', [
+        'setmode' => $editingon ? 0 : 1,
+        'context' => $PAGE->context->id,
+        'pageurl' => $PAGE->url->out_as_local_url(false),
         'sesskey' => sesskey(),
     ]);
     $tooltiplabel   = $editingon ? get_string('turneditingoff', 'core') : get_string('turneditingon', 'core');

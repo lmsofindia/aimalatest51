@@ -43,13 +43,8 @@ $THEME->haseditswitch = true;
 // Use the built-in Moodle course index (shown in side-pre on course pages).
 $THEME->usescourseindex = true;
 
-// Where the "Add a block" button appears.
-// CUSTOM (not FLATNAV): with FLATNAV, core puts "Add a block" into Boost's flat
-// navigation drawer — which this theme replaces with its own fixed sidebar, so
-// the button was orphaned and never appeared in edit mode. In CUSTOM mode
-// addblockbutton() returns the button HTML and each layout renders it itself
-// (inside the block drawer, via {{{addblockbutton}}}).
-$THEME->addblockposition = BLOCK_ADDBLOCK_POSITION_CUSTOM;
+// Where the "Add a block" button appears (FLATNAV — same as Boost).
+$THEME->addblockposition = BLOCK_ADDBLOCK_POSITION_FLATNAV;
 
 // Disable legacy dock (not needed with sidebar design).
 $THEME->enable_dock = false;
