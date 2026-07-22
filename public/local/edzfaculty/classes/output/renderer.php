@@ -25,4 +25,16 @@ class renderer extends \plugin_renderer_base {
         $this->page->requires->js_call_amd('local_edzfaculty/dashboard', 'init');
         return $this->render_from_template('local_edzfaculty/dashboard', $data);
     }
+
+    /**
+     * Render the "All Faculty" overview.
+     *
+     * @param renderable\overview $overview
+     * @return string
+     */
+    public function render_overview(renderable\overview $overview): string {
+        $data = $overview->export_for_template($this);
+        $this->page->requires->js_call_amd('local_edzfaculty/dashboard', 'initOverview');
+        return $this->render_from_template('local_edzfaculty/overview', $data);
+    }
 }

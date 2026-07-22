@@ -34,7 +34,7 @@ class refresh_cache extends external_api {
         global $USER;
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('local/edzfaculty:view', $context);
+        \local_edzfaculty\helper\access::require_teacher();
 
         $throttle = (int)(get_config('local_edzfaculty', 'refreshthrottle') ?: 30);
         $last     = (int)get_user_preferences('local_edzfaculty_lastrefresh', 0);

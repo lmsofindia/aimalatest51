@@ -46,7 +46,7 @@ class send_nudge extends external_api {
 
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('local/edzfaculty:view', $context);
+        \local_edzfaculty\helper\access::require_teacher();
 
         // The teacher must teach this course.
         $teaching = courses::teaching_courses($USER->id);

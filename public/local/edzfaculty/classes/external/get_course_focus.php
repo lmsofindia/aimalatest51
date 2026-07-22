@@ -38,7 +38,7 @@ class get_course_focus extends external_api {
         $params = self::validate_parameters(self::execute_parameters(), ['courseid' => $courseid]);
         $context = \context_system::instance();
         self::validate_context($context);
-        require_capability('local/edzfaculty:view', $context);
+        \local_edzfaculty\helper\access::require_teacher();
 
         $helper = new dashboard_helper($USER->id);
         $model  = $helper->get_dashboard();
