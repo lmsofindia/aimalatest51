@@ -1,0 +1,70 @@
+{{!
+    @template block_corpusercmplchart/content
+    Multi-ring gauge, dark theme — v2 design
+    @copyright 2025 EdzCorp
+}}
+<div class="cucc2-block" data-instanceid="{{instanceid}}" style="--cucc-grad1: {{gradcolor1}}; --cucc-grad2: {{gradcolor2}}; --cucc-grad-angle: {{gradangle}};">
+
+    {{#hascourses}}
+    <div class="cucc2-header">
+        <div>
+            <h3 class="cucc2-title">Your completion ✨</h3>
+        </div>
+        <span class="cucc2-course-count">{{total}} COURSES</span>
+    </div>
+
+    <div class="cucc2-body">
+        {{! Left: multi-ring canvas gauge }}
+        <div class="cucc2-gauge-wrap">
+            <canvas class="cucc2-canvas" data-region="cucc-canvas" width="220" height="220"></canvas>
+            <div class="cucc2-center-overlay" data-region="cucc-overlay">
+                <span class="cucc2-center-pct" data-region="cucc-pct">{{avgpct}}<span class="cucc2-pct-sym">%</span></span>
+                <span class="cucc2-center-lbl">OVERALL</span>
+            </div>
+        </div>
+
+        {{! Right: metric rows }}
+        <div class="cucc2-metrics">
+            <div class="cucc2-metric">
+                <div class="cucc2-metric-top">
+                    <span class="cucc2-metric-label">Courses</span>
+                    <span class="cucc2-metric-pct cucc2-pct--pink">{{avgpct}}%</span>
+                </div>
+                <div class="cucc2-bar-track">
+                    <div class="cucc2-bar cucc2-bar--pink" style="width:{{avgpct}}%"></div>
+                </div>
+            </div>
+            <div class="cucc2-metric">
+                <div class="cucc2-metric-top">
+                    <span class="cucc2-metric-label">Quizzes</span>
+                    <span class="cucc2-metric-pct cucc2-pct--blue">{{quizpct}}%</span>
+                </div>
+                <div class="cucc2-bar-track">
+                    <div class="cucc2-bar cucc2-bar--blue" style="width:{{quizpct}}%"></div>
+                </div>
+            </div>
+            <div class="cucc2-metric">
+                <div class="cucc2-metric-top">
+                    <span class="cucc2-metric-label">Modules</span>
+                    <span class="cucc2-metric-pct cucc2-pct--teal">{{modpct}}%</span>
+                </div>
+                <div class="cucc2-bar-track">
+                    <div class="cucc2-bar cucc2-bar--teal" style="width:{{modpct}}%"></div>
+                </div>
+            </div>
+            <a href="{{detailsurl}}" class="cucc2-details-link">View all courses →</a>
+        </div>
+    </div>
+
+    {{#hasmilestone}}
+    <div class="cucc2-milestone">
+        <span class="cucc2-milestone-ico">⚡</span>
+        <span class="cucc2-milestone-text">{{milestonemsg}}</span>
+    </div>
+    {{/hasmilestone}}
+    {{/hascourses}}
+
+    {{^hascourses}}
+    <p class="cucc2-empty">{{nocourses}}</p>
+    {{/hascourses}}
+</div>

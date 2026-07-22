@@ -1,0 +1,168 @@
+{{!
+    @template block_corpwelcome/content_light
+    Light split-layout welcome block — Variation A refined
+    @copyright 2025 EdzCorp
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Context variables:
+    - daylabel        {string}  e.g. "SUNDAY MORNING"
+    - username        {string}  Full name of the logged-in user
+    - goalPct         {int}     0-100 progress percentage
+    - goalremaining   {int}     completions remaining toward goal (0 = goal met)
+    - goalremainingplural {bool} true when goalremaining != 1
+    - streak          {int}     current day streak
+    - hasstreak       {bool}
+    - enrolledcount   {int}
+    - completedcount  {int}
+    - certcount       {int}
+    - badgecount      {int}
+    - newenrolled     {int}
+    - newcompleted    {int}
+    - newcerts        {int}
+    - newbadges       {int}
+    - hasnewenrolled  {bool}
+    - hasnewcompleted {bool}
+    - hasnewcerts     {bool}
+    - hasnewbadges    {bool}
+    - categories      {array}   [{id, name}]
+    - hascategories   {bool}
+    - instanceid      {int}
+}}
+<div class="cwl-wrap" data-instanceid="{{instanceid}}" style="--cwl-accent: {{bgcolor}};">
+
+    <div class="cwl-body">
+
+        {{! ── LEFT: greeting / progress / streak ──────────────────────────── }}
+        <div class="cwl-left">
+
+            <p class="cwl-daylabel">{{daylabel}}</p>
+
+            <div class="cwl-heading">
+                <span class="cwl-hey">Hey {{username}},</span>
+                <span class="cwl-tagline">ready to level up?</span>
+            </div>
+
+            <div class="cwl-progress-block">
+                <div class="cwl-progress-labels">
+                    <span class="cwl-progress-title">Monthly goal</span>
+                    <span class="cwl-progress-pct">{{goalPct}}%</span>
+                </div>
+                <div class="cwl-progress-track">
+                    <div class="cwl-progress-fill" style="width:{{goalPct}}%"></div>
+                </div>
+                {{#goalremaining}}
+                <p class="cwl-progress-sub">{{goalremaining}} completion{{#goalremainingplural}}s{{/goalremainingplural}} to go this month</p>
+                {{/goalremaining}}
+                {{^goalremaining}}
+                <p class="cwl-progress-sub">Monthly goal reached! 🎉</p>
+                {{/goalremaining}}
+            </div>
+
+            {{#hasstreak}}
+            <div class="cwl-streak-badge">
+                <span class="cwl-streak-flame">🔥</span>
+                <div class="cwl-streak-info">
+                    <div class="cwl-streak-num">{{streak}}</div>
+                    <div class="cwl-streak-lbl">day streak</div>
+                </div>
+            </div>
+            {{/hasstreak}}
+
+        </div>{{! /.cwl-left }}
+
+        {{! ── RIGHT: stat cards 2×2 ───────────────────────────────────────── }}
+        <div class="cwl-right">
+
+            <p class="cwl-section-lbl">YOUR PROGRESS</p>
+
+            <div class="cwl-stats">
+
+                <div class="cwl-stat cwl-stat--purple">
+                    <div class="cwl-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <div class="cwl-stat-body">
+                        <div class="cwl-stat-row">
+                            <span class="cwl-stat-num">{{enrolledcount}}</span>
+                            {{#hasnewenrolled}}<span class="cwl-delta">+{{newenrolled}}</span>{{/hasnewenrolled}}
+                        </div>
+                        <div class="cwl-stat-lbl">Enrolled</div>
+                    </div>
+                </div>
+
+                <div class="cwl-stat cwl-stat--green">
+                    <div class="cwl-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div class="cwl-stat-body">
+                        <div class="cwl-stat-row">
+                            <span class="cwl-stat-num">{{completedcount}}</span>
+                            {{#hasnewcompleted}}<span class="cwl-delta">+{{newcompleted}}</span>{{/hasnewcompleted}}
+                        </div>
+                        <div class="cwl-stat-lbl">Completed</div>
+                    </div>
+                </div>
+
+                <div class="cwl-stat cwl-stat--amber">
+                    <div class="cwl-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-certificate"></i>
+                    </div>
+                    <div class="cwl-stat-body">
+                        <div class="cwl-stat-row">
+                            <span class="cwl-stat-num">{{certcount}}</span>
+                            {{#hasnewcerts}}<span class="cwl-delta">+{{newcerts}}</span>{{/hasnewcerts}}
+                        </div>
+                        <div class="cwl-stat-lbl">Certificates</div>
+                    </div>
+                </div>
+
+                <div class="cwl-stat cwl-stat--pink">
+                    <div class="cwl-stat-icon" aria-hidden="true">
+                        <i class="fa-solid fa-medal"></i>
+                    </div>
+                    <div class="cwl-stat-body">
+                        <div class="cwl-stat-row">
+                            <span class="cwl-stat-num">{{badgecount}}</span>
+                            {{#hasnewbadges}}<span class="cwl-delta">+{{newbadges}}</span>{{/hasnewbadges}}
+                        </div>
+                        <div class="cwl-stat-lbl">Badges</div>
+                    </div>
+                </div>
+
+            </div>{{! /.cwl-stats }}
+
+        </div>{{! /.cwl-right }}
+
+    </div>{{! /.cwl-body }}
+
+    {{! ── FULL-WIDTH: search + category pills ─────────────────────────────── }}
+    <div class="cwl-search-area">
+
+        <div class="cwl-search-row" data-region="cw-search-row">
+            <div class="cwl-search-box">
+                <svg class="cwl-search-ico" width="16" height="16" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text"
+                       class="cwl-search-input"
+                       data-action="cw-search"
+                       placeholder="{{#str}}searchplaceholder, block_corpwelcome{{/str}}"
+                       autocomplete="off"/>
+            </div>
+            <button class="cwl-find-btn" data-action="cw-search-btn">Find courses</button>
+        </div>
+
+        <div class="cwl-pills">
+            <button class="cwl-pill cwl-pill--active" data-action="cw-cat" data-catid="0">All</button>
+            {{#categories}}
+            <button class="cwl-pill" data-action="cw-cat" data-catid="{{id}}" data-catname="{{name}}">{{name}}</button>
+            {{/categories}}
+        </div>
+
+        <div class="cwl-results" data-region="cw-results" hidden></div>
+
+    </div>{{! /.cwl-search-area }}
+
+</div>{{! /.cwl-wrap }}

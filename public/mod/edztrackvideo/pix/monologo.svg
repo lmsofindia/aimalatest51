@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" role="img" aria-label="EDZ Track Video">
+  <!-- Video screen with a knocked-out play triangle (evenodd makes the triangle a hole) -->
+  <path fill-rule="evenodd" clip-rule="evenodd"
+        d="M5 4 H19 A3 3 0 0 1 22 7 V13 A3 3 0 0 1 19 16 H5 A3 3 0 0 1 2 13 V7 A3 3 0 0 1 5 4 Z
+           M10 7.4 L15.2 10 L10 12.6 Z"/>
+  <!-- Tracking bar: watched portion (solid) + remaining portion (faded) -->
+  <rect x="2" y="18.4" width="13" height="2.4" rx="1.2"/>
+  <rect x="16" y="18.4" width="6" height="2.4" rx="1.2" opacity="0.35"/>
+</svg>

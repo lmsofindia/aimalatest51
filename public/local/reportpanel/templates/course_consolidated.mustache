@@ -1,0 +1,255 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_reportpanel/course_consolidated
+
+    Consolidated course report: category/course pickers + summary stat cards +
+    completion doughnut + grade-distribution bar + per-user table + export.
+
+    Example context (json):
+    {
+        "backurl": "#", "intro": "Choose a course.", "actionurl": "#",
+        "categories": [{"id":1,"name":"Cat","selected":true}],
+        "courses": [{"id":2,"name":"Course","selected":false}],
+        "hascourses": true, "categoryid": 1, "courseid": 0,
+        "hascourse": true, "coursename": "Demo course",
+        "stat_total": 12, "stat_completed": 5, "stat_inprogress": 4,
+        "stat_notstarted": 3, "stat_completionrate": "42%", "stat_avggrade": "71%",
+        "haschart": true, "hasdonut": true, "donutchart": "<canvas></canvas>",
+        "hasgradebar": true, "gradebarchart": "<canvas></canvas>",
+        "hasrows": true,
+        "rows": [{"fullname":"Jane Doe","email":"j@x.io","completionpct":"80%",
+                  "activities":"4 / 5","grade":"71%","completiondate":"—",
+                  "status":"In progress","statusbadge":"warning"}],
+        "exportpdfurl": "#", "exportcsvurl": "#"
+    }
+}}
+<div class="reportpanel-report">
+    <p><a href="{{backurl}}"><i class="fa fa-arrow-left"></i> {{#str}}backtopanel, local_reportpanel{{/str}}</a></p>
+    <p class="reportpanel-intro text-muted">{{intro}}</p>
+
+    <form method="get" action="{{actionurl}}" class="reportpanel-filterbar">
+        <div class="form-group">
+            <label for="reportpanel-category">{{#str}}selectcategory, local_reportpanel{{/str}}</label>
+            <select class="form-control" id="reportpanel-category" name="categoryid">
+                <option value="0">{{#str}}choosecategory, local_reportpanel{{/str}}</option>
+                {{#categories}}
+                <option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                {{/categories}}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="reportpanel-course">{{#str}}selectcourse, local_reportpanel{{/str}}</label>
+            <select class="form-control" id="reportpanel-course" name="courseid">
+                <option value="0">{{#str}}choosecourse, local_reportpanel{{/str}}</option>
+                {{#courses}}
+                <option value="{{id}}" {{#selected}}selected{{/selected}}>{{name}}</option>
+                {{/courses}}
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">{{#str}}open, local_reportpanel{{/str}}</button>
+        </div>
+    </form>
+
+    {{#hascourse}}
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-0">{{coursename}}</h3>
+            <div class="reportpanel-toolbar mb-0">
+                <a class="btn btn-outline-secondary btn-sm" href="{{exportpdfurl}}">
+                    <i class="fa fa-file-pdf"></i> {{#str}}downloadpdf, local_reportpanel{{/str}}
+                </a>
+                <a class="btn btn-outline-secondary btn-sm" href="{{exportcsvurl}}">
+                    <i class="fa fa-file-csv"></i> {{#str}}downloadcsv, local_reportpanel{{/str}}
+                </a>
+            </div>
+        </div>
+
+        {{#hasrows}}
+        <div class="reportpanel-stats">
+            <div class="reportpanel-stat reportpanel-stat-total">
+                <span class="reportpanel-stat-icon"><i class="fa fa-users"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_total}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}stat_enrolled, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+            <div class="reportpanel-stat reportpanel-stat-success">
+                <span class="reportpanel-stat-icon"><i class="fa fa-circle-check"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_completed}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}status_completed, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+            <div class="reportpanel-stat reportpanel-stat-warning">
+                <span class="reportpanel-stat-icon"><i class="fa fa-hourglass-half"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_inprogress}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}status_inprogress, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+            <div class="reportpanel-stat reportpanel-stat-muted">
+                <span class="reportpanel-stat-icon"><i class="fa fa-circle-minus"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_notstarted}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}status_notstarted, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+            <div class="reportpanel-stat reportpanel-stat-primary">
+                <span class="reportpanel-stat-icon"><i class="fa fa-chart-line"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_completionrate}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}stat_completionrate, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+            <div class="reportpanel-stat reportpanel-stat-grade">
+                <span class="reportpanel-stat-icon"><i class="fa fa-graduation-cap"></i></span>
+                <span class="reportpanel-stat-text">
+                    <span class="reportpanel-stat-value">{{stat_avggrade}}</span>
+                    <span class="reportpanel-stat-label">{{#str}}stat_avggrade, local_reportpanel{{/str}}</span>
+                </span>
+            </div>
+        </div>
+        {{/hasrows}}
+
+        {{#haschart}}
+        <div class="reportpanel-charts">
+            {{#hasdonut}}
+            <div class="reportpanel-chartcard">
+                <h4 class="reportpanel-chartcard-title">{{#str}}chart_completionstatus, local_reportpanel{{/str}}</h4>
+                <div class="reportpanel-chartcard-body">{{{donutchart}}}</div>
+            </div>
+            {{/hasdonut}}
+            {{#hasgradebar}}
+            <div class="reportpanel-chartcard">
+                <h4 class="reportpanel-chartcard-title">{{#str}}chart_gradedist, local_reportpanel{{/str}}</h4>
+                <div class="reportpanel-chartcard-body">{{{gradebarchart}}}</div>
+            </div>
+            {{/hasgradebar}}
+        </div>
+        {{/haschart}}
+
+        {{#hasrows}}
+        <div class="reportpanel-tablefilter">
+            <div class="reportpanel-tablefilter-field">
+                <label for="reportpanel-filter-name">{{#str}}filter_name, local_reportpanel{{/str}}</label>
+                <input type="text" class="form-control" id="reportpanel-filter-name"
+                       autocomplete="off" placeholder="{{#str}}filter_typeph, local_reportpanel{{/str}}">
+            </div>
+            <div class="reportpanel-tablefilter-field">
+                <label for="reportpanel-filter-email">{{#str}}filter_email, local_reportpanel{{/str}}</label>
+                <input type="text" class="form-control" id="reportpanel-filter-email"
+                       autocomplete="off" placeholder="{{#str}}filter_typeph, local_reportpanel{{/str}}">
+            </div>
+            <div class="reportpanel-tablefilter-field">
+                <label for="reportpanel-filter-status">{{#str}}filter_status, local_reportpanel{{/str}}</label>
+                <select class="form-control" id="reportpanel-filter-status">
+                    <option value="">{{#str}}filter_allstatuses, local_reportpanel{{/str}}</option>
+                    <option value="completed">{{#str}}status_completed, local_reportpanel{{/str}}</option>
+                    <option value="inprogress">{{#str}}status_inprogress, local_reportpanel{{/str}}</option>
+                    <option value="notstarted">{{#str}}status_notstarted, local_reportpanel{{/str}}</option>
+                </select>
+            </div>
+            <div class="reportpanel-tablefilter-count" id="reportpanel-filter-count" aria-live="polite"></div>
+        </div>
+        <div class="reportpanel-table-wrap">
+            <table class="table table-striped table-hover reportpanel-datatable" id="reportpanel-course-table">
+                <thead>
+                    <tr>
+                        <th>{{#str}}name, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}email, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_completionpct, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}coursecons_activities, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_grade, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}cons_completiondate, local_reportpanel{{/str}}</th>
+                        <th>{{#str}}coursecons_status, local_reportpanel{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#rows}}
+                    <tr data-name="{{fullname}}" data-email="{{email}}" data-status="{{statuskey}}">
+                        <td><a href="{{nameurl}}" class="reportpanel-cell-link">{{fullname}}</a></td>
+                        <td>{{email}}</td>
+                        <td>{{completionpct}}</td>
+                        <td>
+                            {{#hasactivities}}<a href="{{activitiesurl}}" class="reportpanel-cell-link">{{activities}}</a>{{/hasactivities}}
+                            {{^hasactivities}}{{activities}}{{/hasactivities}}
+                        </td>
+                        <td>
+                            {{#hasgrade}}<a href="{{gradeurl}}" class="reportpanel-cell-link">{{grade}}</a>{{/hasgrade}}
+                            {{^hasgrade}}{{grade}}{{/hasgrade}}
+                        </td>
+                        <td>{{completiondate}}</td>
+                        <td><span class="badge badge-{{statusbadge}}">{{status}}</span></td>
+                    </tr>
+                    {{/rows}}
+                </tbody>
+            </table>
+            <div class="reportpanel-table-empty" id="reportpanel-table-empty" hidden>
+                {{#str}}filter_nomatch, local_reportpanel{{/str}}
+            </div>
+        </div>
+        <div class="reportpanel-pagination" id="reportpanel-pagination" hidden>
+            <div class="reportpanel-pagination-size">
+                <label for="reportpanel-pagesize">{{#str}}page_perpage, local_reportpanel{{/str}}</label>
+                <select class="form-control" id="reportpanel-pagesize">
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                    <option value="0">{{#str}}page_all, local_reportpanel{{/str}}</option>
+                </select>
+            </div>
+            <div class="reportpanel-pagination-info" id="reportpanel-pagination-info" aria-live="polite"></div>
+            <div class="reportpanel-pagination-nav">
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="reportpanel-page-prev">
+                    <i class="fa fa-chevron-left"></i> {{#str}}page_prev, local_reportpanel{{/str}}
+                </button>
+                <span class="reportpanel-pagination-label" id="reportpanel-page-label"></span>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="reportpanel-page-next">
+                    {{#str}}page_next, local_reportpanel{{/str}} <i class="fa fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        {{/hasrows}}
+        {{^hasrows}}
+        <div class="alert alert-info">{{#str}}coursecons_noenrol, local_reportpanel{{/str}}</div>
+        {{/hasrows}}
+
+        {{! Domain E - per-activity coverage. }}
+        {{#activities}}
+        {{#hasrows}}
+        <div class="card mt-4 local-reportpanel-activities">
+            <div class="card-header"><strong>{{#str}}act_title, local_reportpanel{{/str}}</strong></div>
+            <div class="card-body table-responsive">
+                <table class="table table-sm mb-0">
+                    <thead>
+                        <tr>
+                            <th>{{#str}}act_activity, local_reportpanel{{/str}}</th>
+                            <th>{{#str}}act_type, local_reportpanel{{/str}}</th>
+                            <th>{{#str}}act_completion, local_reportpanel{{/str}}</th>
+                            <th class="text-center">{{#str}}act_overdue, local_reportpanel{{/str}}</th>
+                            <th class="text-center">{{#str}}stat_avggrade, local_reportpanel{{/str}}</th>
+                            <th class="text-center">{{#str}}col_timeontask, local_reportpanel{{/str}}</th>
+                            <th>{{#str}}act_details, local_reportpanel{{/str}}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#rows}}
+                        <tr>
+                            <td><img src="{{icon}}" alt="" class="rp-act-icon">{{#url}}<a href="{{url}}">{{name}}</a>{{/url}}{{^url}}{{name}}{{/url}}</td>
+                            <td class="text-muted">{{type}}</td>
+                            <td>{{donelabel}}</td>
+                            <td class="text-center">{{#hasoverdue}}<span class="badge badge-warning">{{overduelabel}}</span>{{/hasoverdue}}{{^hasoverdue}}—{{/hasoverdue}}</td>
+                            <td class="text-center">{{grade}}</td>
+                            <td class="text-center">{{time}}</td>
+                            <td class="small text-muted">{{extra}}</td>
+                        </tr>
+                        {{/rows}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {{/hasrows}}
+        {{/activities}}
+    {{/hascourse}}
+</div>

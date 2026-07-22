@@ -1,0 +1,105 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_reportpanel/rankings
+
+    Ranking / top-N reports.
+
+    Context variables required for this template:
+    * actionurl string
+    * rangemenu array of {value,label,selected}
+    * catmenu array of {value,label,selected}
+    * topmenu array of {value,label,selected}
+    * blocks array of {title,colunit,barclass,hasrows,rows:[{rank,label,value,barpct}]}
+}}
+<div class="local-reportpanel-rankings">
+
+    <div class="rp-subhead mb-2">
+        <span class="rp-chip">{{rangelabel}}</span>
+        <span class="text-muted small ml-2">{{asof}}</span>
+    </div>
+
+    <form class="rp-eng-filters d-flex flex-wrap align-items-end gap-2 mb-3" method="get" action="{{actionurl}}">
+        <div>
+            <label class="d-block small text-muted mb-1" for="rp-rk-range">{{#str}}filter_range, local_reportpanel{{/str}}</label>
+            <select class="custom-select" id="rp-rk-range" name="range">
+                {{#rangemenu}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/rangemenu}}
+            </select>
+        </div>
+        {{#iscustom}}
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-rk-from">{{#str}}filter_from, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-rk-from" name="from" value="{{customfrom}}">
+            </div>
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-rk-to">{{#str}}filter_to, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-rk-to" name="to" value="{{customto}}">
+            </div>
+        {{/iscustom}}
+        <div>
+            <label class="d-block small text-muted mb-1" for="rp-rk-cat">{{#str}}filter_category, local_reportpanel{{/str}}</label>
+            <select class="custom-select" id="rp-rk-cat" name="category">
+                {{#catmenu}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/catmenu}}
+            </select>
+        </div>
+        <div>
+            <label class="d-block small text-muted mb-1" for="rp-rk-top">{{#str}}filter_topn, local_reportpanel{{/str}}</label>
+            <select class="custom-select" id="rp-rk-top" name="top">
+                {{#topmenu}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/topmenu}}
+            </select>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary">{{#str}}filter_apply, local_reportpanel{{/str}}</button>
+        </div>
+        <div class="ml-auto d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{csvurl}}"><i class="fa fa-download mr-1"></i>{{#str}}exportcsv, local_reportpanel{{/str}}</a>
+            <a class="btn btn-link" href="{{backurl}}">{{#str}}backtohub, local_reportpanel{{/str}}</a>
+        </div>
+    </form>
+
+    <div class="row">
+        {{#blocks}}
+            <div class="col-lg-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header"><strong>{{title}}</strong>
+                        <span class="text-muted small">— {{rangelabel}}</span></div>
+                    <div class="card-body">
+                        {{#hasrows}}
+                            <div class="rp-bars {{barclass}}">
+                                <div class="rp-bars-head">
+                                    <span class="rp-bar-label">{{#str}}col_name, local_reportpanel{{/str}}</span>
+                                    <span class="rp-bar-value">{{colunit}}</span>
+                                </div>
+                                {{#rows}}
+                                    <div class="rp-bar-row">
+                                        <span class="rp-bar-rank">{{rank}}</span>
+                                        <span class="rp-bar-label" title="{{label}}">{{#url}}<a href="{{url}}">{{label}}</a>{{/url}}{{^url}}{{label}}{{/url}}</span>
+                                        <span class="rp-bar-track"><span class="rp-bar-fill" style="width:{{barpct}}%"></span></span>
+                                        <span class="rp-bar-value">{{value}}</span>
+                                    </div>
+                                {{/rows}}
+                            </div>
+                        {{/hasrows}}
+                        {{^hasrows}}
+                            <p class="text-muted mb-0">{{#str}}rank_nodata, local_reportpanel{{/str}}</p>
+                        {{/hasrows}}
+                    </div>
+                </div>
+            </div>
+        {{/blocks}}
+    </div>
+</div>

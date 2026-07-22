@@ -1,0 +1,49 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_reportpanel/quiz_self
+
+    Quiz reports, self mode: the current user's own attempts.
+
+    Example context (json):
+    {
+        "backurl": "#", "intro": "Your attempts.",
+        "rows": [{"name":"Quiz 1","url":"#","coursename":"Course",
+                  "mygrade":"80% (8.00 / 10.00)","attempts":2,"lastattempt":"1 Jan 2026"}],
+        "hasrows": true
+    }
+}}
+<div class="reportpanel-report">
+    <p><a href="{{backurl}}"><i class="fa fa-arrow-left"></i> {{#str}}backtopanel, local_reportpanel{{/str}}</a></p>
+    <p class="reportpanel-intro text-muted">{{intro}}</p>
+
+    {{#hasrows}}
+    <div class="reportpanel-table-wrap">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>{{#str}}course, local_reportpanel{{/str}}</th>
+                    <th>{{#str}}quiz_name, local_reportpanel{{/str}}</th>
+                    <th>{{#str}}quiz_mygrade, local_reportpanel{{/str}}</th>
+                    <th class="text-center">{{#str}}quiz_myattempts, local_reportpanel{{/str}}</th>
+                    <th>{{#str}}quiz_lastattempt, local_reportpanel{{/str}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#rows}}
+                <tr>
+                    <td>{{coursename}}</td>
+                    <td><a href="{{url}}">{{name}}</a></td>
+                    <td>{{mygrade}}</td>
+                    <td class="text-center">{{attempts}}</td>
+                    <td>{{lastattempt}}</td>
+                </tr>
+                {{/rows}}
+            </tbody>
+        </table>
+    </div>
+    {{/hasrows}}
+    {{^hasrows}}
+    <div class="alert alert-info">{{#str}}quiz_noattempts, local_reportpanel{{/str}}</div>
+    {{/hasrows}}
+</div>

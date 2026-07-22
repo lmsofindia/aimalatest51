@@ -1,0 +1,699 @@
+/*
+ * local_trackmytime — performance page styles.
+ * Theme-neutral (compiled from a self-contained SCSS palette, Boost primary
+ * #0f6cbf). Scoped to body.local-trackmytime-performance so nothing bleeds.
+ *
+ * @package    local_trackmytime
+ * @copyright  2026 EDZLMS
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+.local-trackmytime-performance .gemui-performance {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 24px 0;
+}
+@media (max-width: 991px) {
+  .local-trackmytime-performance .gemui-performance {
+    grid-template-columns: 1fr;
+  }
+}
+.local-trackmytime-performance .gemui-performance__full {
+  grid-column: 1/-1;
+}
+.local-trackmytime-performance .gemui-perf-section {
+  background: #ffffff;
+  border: 1px solid #dee2e6;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.local-trackmytime-performance .gemui-perf-section:last-child {
+  margin-bottom: 0;
+}
+.local-trackmytime-performance .gemui-perf-section__title {
+  font-weight: 700;
+  font-size: 1.125rem;
+  color: #212529;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+  line-height: 1.2;
+}
+.local-trackmytime-performance .gemui-perf-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+.local-trackmytime-performance .gemui-perf-section__period-select {
+  border: 1.5px solid #dee2e6;
+  border-radius: 8px;
+  padding: 4px 8px;
+  font-size: 0.8125rem;
+  color: #495057;
+  background: #ffffff;
+  cursor: pointer;
+}
+.local-trackmytime-performance .gemui-heatmap {
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  gap: 2px;
+  margin-top: 8px;
+}
+.local-trackmytime-performance .gemui-heatmap__cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: #dee2e6;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.local-trackmytime-performance .gemui-heatmap__cell:hover {
+  transform: scale(1.4);
+  z-index: 1;
+  position: relative;
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="1"] {
+  background: rgba(47, 107, 242, 0.25);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="2"] {
+  background: rgba(47, 107, 242, 0.5);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="3"] {
+  background: rgba(47, 107, 242, 0.75);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="4"] {
+  background: var(--bs-primary, #0f6cbf);
+}
+.local-trackmytime-performance .gemui-heatmap__legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch--0 {
+  background: #dee2e6;
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch--1 {
+  background: rgba(47, 107, 242, 0.25);
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch--2 {
+  background: rgba(47, 107, 242, 0.5);
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch--3 {
+  background: rgba(47, 107, 242, 0.75);
+}
+.local-trackmytime-performance .gemui-heatmap__legend .heatmap-swatch--4 {
+  background: var(--bs-primary, #0f6cbf);
+}
+.local-trackmytime-performance .gemui-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+.local-trackmytime-performance .gemui-stat-row:last-of-type {
+  border-bottom: none;
+}
+.local-trackmytime-performance .gemui-stat-row__label {
+  font-size: 0.875rem;
+  color: #495057;
+  line-height: 1.3;
+}
+.local-trackmytime-performance .gemui-stat-row__value {
+  font-weight: 700;
+  color: #212529;
+  font-size: 0.9375rem;
+  text-align: right;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+.local-trackmytime-performance .gemui-stat-row--highlight .local-trackmytime-performance .gemui-stat-row__value {
+  color: var(--bs-primary, #0f6cbf);
+}
+.local-trackmytime-performance .gemui-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 16px;
+}
+.local-trackmytime-performance .gemui-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+.local-trackmytime-performance .gemui-badge-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  display: block;
+}
+.local-trackmytime-performance .gemui-badge-item span {
+  font-size: 0.75rem;
+  color: #6c757d;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+.local-trackmytime-performance .gemui-badge-item--locked {
+  opacity: 0.4;
+}
+.local-trackmytime-performance .gemui-badge-item--locked img {
+  filter: grayscale(100%);
+}
+.local-trackmytime-performance .gemui-perf-chart {
+  width: 100%;
+  aspect-ratio: 16/7;
+  background: #dee2e6;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-top: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.local-trackmytime-performance .gemui-perf-chart canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
+.local-trackmytime-performance .gemui-perf-donut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0;
+}
+.local-trackmytime-performance .gemui-perf-donut__label {
+  font-size: 0.875rem;
+  color: #495057;
+  text-align: center;
+}
+.local-trackmytime-performance .gemui-perf-donut__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #212529;
+  line-height: 1;
+}
+.local-trackmytime-performance .gemui-perf-donut svg {
+  overflow: visible;
+}
+.local-trackmytime-performance .gemui-leaderboard {
+  width: 100%;
+  border-collapse: collapse;
+}
+.local-trackmytime-performance .gemui-leaderboard th, .local-trackmytime-performance .gemui-leaderboard td {
+  padding: 8px 16px;
+  text-align: left;
+  font-size: 0.875rem;
+}
+.local-trackmytime-performance .gemui-leaderboard th {
+  color: #6c757d;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+}
+.local-trackmytime-performance .gemui-leaderboard td {
+  border-bottom: 1px solid #dee2e6;
+  color: #212529;
+}
+.local-trackmytime-performance .gemui-leaderboard tr:last-child td {
+  border-bottom: none;
+}
+.local-trackmytime-performance .gemui-leaderboard tr:hover td {
+  background: rgba(0, 0, 0, 0.02);
+}
+.local-trackmytime-performance .gemui-leaderboard tr.gem-current-user td {
+  background: rgba(47, 107, 242, 0.06);
+  font-weight: 600;
+}
+.local-trackmytime-performance .gemui-leaderboard .rank {
+  font-weight: 700;
+  color: #6c757d;
+  width: 40px;
+}
+.local-trackmytime-performance .gemui-leaderboard .rank--1 {
+  color: #f59e0b;
+}
+.local-trackmytime-performance .gemui-leaderboard .rank--2 {
+  color: #6c757d;
+}
+.local-trackmytime-performance .gemui-leaderboard .rank--3 {
+  color: #d97706;
+}
+.local-trackmytime-performance .gemui-leaderboard .user-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.local-trackmytime-performance .gemui-leaderboard .user-cell img {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.local-trackmytime-performance .gemui-leaderboard .xp-value {
+  font-weight: 700;
+  color: #5b21b6;
+}
+.local-trackmytime-performance .gemui-performance {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.local-trackmytime-performance .gemui-performance__heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 32px;
+  color: #212529;
+}
+.local-trackmytime-performance .gemui-performance__section {
+  margin-bottom: 24px;
+}
+.local-trackmytime-performance .gemui-performance__section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #212529;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+.local-trackmytime-performance .gemui-performance__empty {
+  font-size: 0.875rem;
+  padding: 16px 0;
+}
+.local-trackmytime-performance .gemui-performance__loading {
+  font-size: 0.875rem;
+  padding: 16px 0;
+}
+.local-trackmytime-performance .gemui-heatmap {
+  display: grid;
+  grid-template-columns: repeat(26, 1fr);
+  gap: 3px;
+  margin-bottom: 16px;
+}
+@media (max-width: 768px) {
+  .local-trackmytime-performance .gemui-heatmap {
+    grid-template-columns: repeat(13, 1fr);
+  }
+}
+.local-trackmytime-performance .gemui-heatmap__cell {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  cursor: default;
+  transition: transform 0.1s;
+}
+.local-trackmytime-performance .gemui-heatmap__cell:hover {
+  transform: scale(1.3);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="0"] {
+  background: #dee2e6;
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="1"] {
+  background: rgba(47, 107, 242, 0.25);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="2"] {
+  background: rgba(47, 107, 242, 0.5);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="3"] {
+  background: rgba(47, 107, 242, 0.75);
+}
+.local-trackmytime-performance .gemui-heatmap__cell[data-level="4"] {
+  background: #2f6bf2;
+}
+.local-trackmytime-performance .gemui-heatmap__legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+.local-trackmytime-performance .gemui-heatmap__legend .gemui-heatmap__cell {
+  width: 14px;
+  height: 14px;
+}
+.local-trackmytime-performance .gemui-heatmap__legend-label {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+.local-trackmytime-performance .gemui-grades-table {
+  font-size: 0.875rem;
+}
+.local-trackmytime-performance .gemui-grades-table__course {
+  font-weight: 500;
+}
+.local-trackmytime-performance .gemui-grades-table__grade {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.local-trackmytime-performance .gemui-badges-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 16px;
+}
+.local-trackmytime-performance .gemui-badge-tile {
+  text-align: center;
+}
+.local-trackmytime-performance .gemui-badge-tile__img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  border: 2px solid #dee2e6;
+  margin-bottom: 4px;
+}
+.local-trackmytime-performance .gemui-badge-tile__name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #212529;
+  margin: 0 0 2px;
+}
+.local-trackmytime-performance .gemui-badge-tile__date {
+  font-size: 0.6875rem;
+  color: #6c757d;
+}
+
+/* Card surface (the template uses .gem-card, a GemUI class not in Bootstrap) */
+.local-trackmytime-performance .gem-card{
+  background:var(--bs-body-bg,#fff);
+  border:1px solid var(--bs-border-color,#dee2e6);
+  border-radius:16px;
+  padding:20px 22px;
+  box-shadow:0 1px 2px rgba(0,0,0,.04);
+}
+
+/* ── Time analytics (stat cards + CSS bar charts + XP) ─────────────────────── */
+.local-trackmytime-performance .tmt-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;
+  margin-bottom:22px;
+}
+.local-trackmytime-performance .tmt-stat{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  padding:12px 14px;
+  border:1px solid var(--bs-border-color,#dee2e6);
+  border-radius:12px;
+  background:var(--bs-body-bg,#fff);
+}
+.local-trackmytime-performance .tmt-stat__value{
+  font-size:20px;
+  font-weight:700;
+  color:var(--bs-body-color,#212529);
+  line-height:1.1;
+}
+.local-trackmytime-performance .tmt-stat__label{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--bs-secondary-color,#6c757d);
+}
+.local-trackmytime-performance .tmt-stat--xp{
+  flex-direction:row;
+  align-items:center;
+  gap:10px;
+  border-color:var(--bs-primary,#0f6cbf);
+  background:rgba(15,108,191,.05);
+}
+.local-trackmytime-performance .tmt-stat--xp .tmt-stat__value{font-size:16px;}
+.local-trackmytime-performance .tmt-xp-badge{flex-shrink:0;display:inline-flex;}
+
+.local-trackmytime-performance .tmt-chart{margin-top:18px;}
+.local-trackmytime-performance .tmt-chart__title{
+  font-size:12px;
+  font-weight:600;
+  color:var(--bs-secondary-color,#6c757d);
+  margin:0 0 10px;
+}
+.local-trackmytime-performance .tmt-bars{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+.local-trackmytime-performance .tmt-bar{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  min-width:0;
+}
+.local-trackmytime-performance .tmt-bar__col{
+  height:120px;
+  width:100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.local-trackmytime-performance .tmt-bar__fill{
+  width:72%;
+  max-width:30px;
+  min-height:3px;
+  background:var(--bs-primary,#0f6cbf);
+  border-radius:4px 4px 0 0;
+  transition:height .3s ease;
+}
+.local-trackmytime-performance .tmt-bar:hover .tmt-bar__fill{opacity:.82;}
+.local-trackmytime-performance .tmt-bar__label{
+  font-size:10px;
+  margin-top:6px;
+  color:var(--bs-secondary-color,#6c757d);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:100%;
+}
+
+/* ── LAYOUT FIX: the ported .gemui-performance used a 2-col grid which crammed
+      everything into the narrow right column. Force a clean single column. ── */
+.local-trackmytime-performance .gemui-performance{
+  display:block !important;
+  grid-template-columns:none !important;
+}
+.local-trackmytime-performance .gemui-performance__section{ width:100%; }
+
+/* ── Chart card: title + period dropdown ── */
+.local-trackmytime-performance .tmt-chartcard{ margin-top:20px; }
+.local-trackmytime-performance .tmt-chartcard__head{
+  display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;
+}
+.local-trackmytime-performance .tmt-chartcard__title{
+  font-size:13px; font-weight:600; color:var(--bs-body-color,#212529); margin:0;
+}
+.local-trackmytime-performance .tmt-select{
+  font-size:12px; padding:5px 28px 5px 10px; border-radius:8px;
+  border:1px solid var(--bs-border-color,#dee2e6); background:var(--bs-body-bg,#fff);
+  color:var(--bs-body-color,#212529); cursor:pointer;
+}
+.local-trackmytime-performance .sr-only{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+  clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+.local-trackmytime-performance .tmt-chart-empty{
+  padding:28px 12px; text-align:center; border:1px dashed var(--bs-border-color,#dee2e6);
+  border-radius:12px; margin:0;
+}
+
+/* ── Bar chart: baseline + gridlines look ── */
+.local-trackmytime-performance .tmt-bars{
+  display:flex; align-items:flex-end; gap:8px;
+  padding:10px 4px 0; border-bottom:1px solid var(--bs-border-color,#dee2e6);
+}
+.local-trackmytime-performance .tmt-bar__col{ height:130px; }
+.local-trackmytime-performance .tmt-bar__fill{
+  background:linear-gradient(180deg, var(--bs-primary,#0f6cbf), color-mix(in srgb, var(--bs-primary,#0f6cbf) 78%, #000));
+  background:var(--bs-primary,#0f6cbf);
+}
+
+/* ── Recent activity timeline ── */
+.local-trackmytime-performance .tmt-timeline{ list-style:none; margin:0; padding:0; }
+.local-trackmytime-performance .tmt-timeline__item{
+  display:flex; align-items:center; gap:12px; padding:10px 0;
+  border-bottom:1px solid var(--bs-border-color,#e9ecef);
+}
+.local-trackmytime-performance .tmt-timeline__item:last-child{ border-bottom:0; }
+.local-trackmytime-performance .tmt-timeline__icon{
+  flex-shrink:0; width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center;
+  border-radius:10px; background:rgba(15,108,191,.08); color:var(--bs-primary,#0f6cbf);
+}
+.local-trackmytime-performance .tmt-timeline__icon svg{ width:18px; height:18px; display:block; }
+.local-trackmytime-performance .tmt-timeline__body{ display:flex; flex-direction:column; min-width:0; flex:1; }
+.local-trackmytime-performance .tmt-timeline__name{
+  font-weight:600; color:var(--bs-body-color,#212529); text-decoration:none;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.local-trackmytime-performance .tmt-timeline__name:hover{ color:var(--bs-primary,#0f6cbf); }
+.local-trackmytime-performance .tmt-timeline__meta{ font-size:11.5px; color:var(--bs-secondary-color,#6c757d); }
+.local-trackmytime-performance .tmt-timeline__time{
+  flex-shrink:0; font-weight:700; font-size:13px; color:var(--bs-primary,#0f6cbf);
+  background:rgba(15,108,191,.08); padding:4px 10px; border-radius:20px;
+}
+
+/* Grade course links */
+.local-trackmytime-performance .gemui-grades-table__course a{
+  color:var(--bs-body-color,#212529); text-decoration:none; font-weight:500;
+}
+.local-trackmytime-performance .gemui-grades-table__course a:hover{
+  color:var(--bs-primary,#0f6cbf); text-decoration:underline;
+}
+
+/* ══ Perf page v2 refinements ══════════════════════════════════════════════ */
+
+/* Top row: 4 stat cards (left) + larger XP card (right) */
+.local-trackmytime-performance .tmt-analytics-top{
+  display:flex; flex-wrap:wrap; gap:14px; align-items:stretch; margin-bottom:22px;
+}
+.local-trackmytime-performance .tmt-stats{
+  flex:1 1 340px;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px; margin:0;
+}
+@media (max-width:860px){
+  .local-trackmytime-performance .tmt-stats{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+/* Stat cards — soft tinted backgrounds + subtle hover lift */
+.local-trackmytime-performance .tmt-stat{
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.local-trackmytime-performance .tmt-stat:hover{
+  transform:translateY(-3px);
+  box-shadow:0 6px 18px rgba(20,30,60,.10);
+}
+.local-trackmytime-performance .tmt-stat--a{ background:rgba(47,107,242,.07); border-color:rgba(47,107,242,.18); }
+.local-trackmytime-performance .tmt-stat--b{ background:rgba(34,197,94,.09);  border-color:rgba(34,197,94,.20); }
+.local-trackmytime-performance .tmt-stat--c{ background:rgba(245,158,11,.10); border-color:rgba(245,158,11,.22); }
+.local-trackmytime-performance .tmt-stat--d{ background:rgba(139,92,246,.09); border-color:rgba(139,92,246,.20); }
+
+/* XP card — bigger, prominent */
+.local-trackmytime-performance .tmt-xpcard{
+  flex:0 0 240px;
+  display:flex; align-items:center; gap:16px;
+  padding:16px 18px; border-radius:16px;
+  background:linear-gradient(135deg, rgba(47,107,242,.10), rgba(23,71,181,.06));
+  border:1px solid rgba(47,107,242,.22);
+}
+.local-trackmytime-performance .tmt-xpcard__badge{ flex-shrink:0; line-height:0; }
+.local-trackmytime-performance .tmt-xpcard__body{ display:flex; flex-direction:column; }
+.local-trackmytime-performance .tmt-xpcard__points{ font-size:26px; font-weight:800; color:var(--bs-body-color,#212529); line-height:1; }
+.local-trackmytime-performance .tmt-xpcard__unit{ font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--bs-primary,#2f6bf2); }
+.local-trackmytime-performance .tmt-xpcard__level{ font-size:12px; color:var(--bs-secondary-color,#6c757d); margin-top:4px; }
+@media (max-width:860px){ .local-trackmytime-performance .tmt-xpcard{ flex:1 1 100%; } }
+
+/* Two-column row: recent activity (main) + course-time donut (side) */
+.local-trackmytime-performance .tmt-two-col{
+  display:grid; grid-template-columns:1.5fr 1fr; gap:16px; align-items:start;
+}
+@media (max-width:900px){
+  .local-trackmytime-performance .tmt-two-col{ grid-template-columns:1fr; }
+}
+.local-trackmytime-performance .tmt-two-col__main,
+.local-trackmytime-performance .tmt-two-col__side{ margin:0; }
+
+/* Donut (CSS conic-gradient) */
+.local-trackmytime-performance .tmt-donut-wrap{ display:flex; justify-content:center; padding:6px 0 16px; }
+.local-trackmytime-performance .tmt-donut{
+  width:170px; height:170px; border-radius:50%; position:relative;
+}
+.local-trackmytime-performance .tmt-donut__hole{
+  position:absolute; inset:27%; border-radius:50%;
+  background:var(--bs-body-bg,#fff);
+}
+.local-trackmytime-performance .tmt-legend{ list-style:none; margin:0; padding:0; }
+.local-trackmytime-performance .tmt-legend__item{ display:flex; align-items:center; gap:8px; padding:5px 0; font-size:12.5px; }
+.local-trackmytime-performance .tmt-legend__dot{ width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+.local-trackmytime-performance .tmt-legend__name{ flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--bs-body-color,#212529); }
+.local-trackmytime-performance .tmt-legend__val{ flex-shrink:0; color:var(--bs-secondary-color,#6c757d); }
+
+/* Pager */
+.local-trackmytime-performance .tmt-pager{ display:flex; align-items:center; justify-content:flex-end; gap:10px; margin-top:12px; }
+.local-trackmytime-performance .tmt-pager__btn{
+  width:30px; height:30px; border-radius:8px; border:1px solid var(--bs-border-color,#dee2e6);
+  background:var(--bs-body-bg,#fff); color:var(--bs-body-color,#212529); cursor:pointer; font-size:16px; line-height:1;
+}
+.local-trackmytime-performance .tmt-pager__btn:hover:not(:disabled){ border-color:var(--bs-primary,#2f6bf2); color:var(--bs-primary,#2f6bf2); }
+.local-trackmytime-performance .tmt-pager__btn:disabled{ opacity:.4; cursor:default; }
+.local-trackmytime-performance .tmt-pager__label{ font-size:12px; color:var(--bs-secondary-color,#6c757d); min-width:44px; text-align:center; }
+
+/* ── Certificates (mod_customcert) ── */
+.local-trackmytime-performance .tmt-certs{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:12px;
+}
+.local-trackmytime-performance .tmt-cert{
+  display:flex; flex-direction:column; gap:3px;
+  padding:14px 16px; text-decoration:none;
+  border:1px solid var(--bs-border-color,#dee2e6); border-radius:12px;
+  background:linear-gradient(135deg, rgba(245,158,11,.06), rgba(15,108,191,.04));
+  color:var(--bs-body-color,#212529);
+  transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.local-trackmytime-performance .tmt-cert:hover{
+  transform:translateY(-3px); box-shadow:0 6px 18px rgba(20,30,60,.10);
+  border-color:var(--bs-primary,#2f6bf2);
+}
+.local-trackmytime-performance .tmt-cert__ribbon{ color:#d97706; margin-bottom:4px; line-height:0; }
+.local-trackmytime-performance .tmt-cert__name{
+  font-weight:600; font-size:13.5px; line-height:1.3;
+  overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;
+}
+.local-trackmytime-performance .tmt-cert__meta{ font-size:11.5px; color:var(--bs-secondary-color,#6c757d); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.local-trackmytime-performance .tmt-cert__date{ font-size:11px; color:var(--bs-secondary-color,#6c757d); margin-top:2px; }
+
+/* ── Stat card watermark SVGs ── */
+.local-trackmytime-performance .tmt-stat{ position:relative; overflow:hidden; }
+.local-trackmytime-performance .tmt-stat__wm{
+  position:absolute; bottom:-14px; right:-10px; width:74px; height:74px;
+  opacity:.13; pointer-events:none; z-index:0; transition:transform .15s ease, opacity .15s ease;
+}
+.local-trackmytime-performance .tmt-stat:hover .tmt-stat__wm{ transform:scale(1.08) rotate(-4deg); opacity:.18; }
+.local-trackmytime-performance .tmt-stat__wm svg{ width:100%; height:100%; }
+.local-trackmytime-performance .tmt-stat__value,
+.local-trackmytime-performance .tmt-stat__label{ position:relative; z-index:1; }
+.local-trackmytime-performance .tmt-stat--a .tmt-stat__wm{ color:#2f6bf2; }
+.local-trackmytime-performance .tmt-stat--b .tmt-stat__wm{ color:#22c55e; }
+.local-trackmytime-performance .tmt-stat--c .tmt-stat__wm{ color:#f59e0b; }
+.local-trackmytime-performance .tmt-stat--d .tmt-stat__wm{ color:#8b5cf6; }
+
+/* ── Section heading icons ── */
+.local-trackmytime-performance .gemui-performance__section-title{
+  display:flex; align-items:center; gap:9px;
+}
+.local-trackmytime-performance .tmt-sec-icon{
+  flex-shrink:0; color:var(--bs-primary,#2f6bf2); opacity:.9;
+}
+
+/* ── Page header + Download-as-PDF button ── */
+.local-trackmytime-performance .tmt-page-head{
+  display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:6px;
+}
+.local-trackmytime-performance .tmt-page-head .gemui-performance__heading{ margin:0; }
+.local-trackmytime-performance .tmt-pdf-btn{
+  display:inline-flex; align-items:center; gap:8px; flex-shrink:0;
+  padding:9px 16px; border-radius:10px; text-decoration:none;
+  font-size:13px; font-weight:600;
+  color:#fff; background:var(--bs-primary,#2f6bf2);
+  border:1px solid var(--bs-primary,#2f6bf2);
+  transition:filter .15s ease, transform .15s ease;
+}
+.local-trackmytime-performance .tmt-pdf-btn:hover{ filter:brightness(1.08); transform:translateY(-1px); color:#fff; }
+@media print{ .local-trackmytime-performance .tmt-pdf-btn{ display:none; } }

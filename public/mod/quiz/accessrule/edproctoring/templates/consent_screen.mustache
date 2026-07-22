@@ -1,0 +1,42 @@
+{{!
+    Consent screen shown to students before a proctored quiz.
+
+    @package   quizaccess_edproctoring
+    @copyright 2025 EDZLMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+
+    Context:
+        quizname        string  name of the quiz
+        retentiondays   int     days images are retained
+        privacyurl      string  URL to privacy policy (empty string if not set)
+}}
+<div class="edp-consent-screen card mb-4" role="region" aria-label="{{#str}}consenttitle,quizaccess_edproctoring{{/str}}">
+    <div class="card-header bg-warning text-dark">
+        <h4 class="mb-0">
+            <span class="fa fa-video-camera me-2" aria-hidden="true"></span>
+            {{#str}}consenttitle,quizaccess_edproctoring{{/str}}
+        </h4>
+    </div>
+    <div class="card-body">
+        <p class="lead">
+            {{#str}}consentintro,quizaccess_edproctoring,{{quizname}}{{/str}}
+        </p>
+        <ul>
+            <li>{{#str}}consentbullet_camera,quizaccess_edproctoring{{/str}}</li>
+            <li>{{#str}}consentbullet_storage,quizaccess_edproctoring,{{retentiondays}}{{/str}}</li>
+            <li>{{#str}}consentbullet_access,quizaccess_edproctoring{{/str}}</li>
+            <li>{{#str}}consentbullet_violations,quizaccess_edproctoring{{/str}}</li>
+        </ul>
+        {{#privacyurl}}
+        <p>
+            <a href="{{privacyurl}}" target="_blank" rel="noopener">
+                {{#str}}privacypolicy,quizaccess_edproctoring{{/str}}
+            </a>
+        </p>
+        {{/privacyurl}}
+        <div class="alert alert-info">
+            <span class="fa fa-info-circle me-1" aria-hidden="true"></span>
+            {{#str}}consentdenymessage,quizaccess_edproctoring{{/str}}
+        </div>
+    </div>
+</div>

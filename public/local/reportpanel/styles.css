@@ -1,0 +1,790 @@
+/* local_reportpanel — panel + report styles. Colours inherit from the active
+   theme via Bootstrap CSS variables so the panel matches theme_edzcorp. */
+
+.reportpanel-wrap {
+    margin-top: 0.5rem;
+}
+
+.reportpanel-intro {
+    margin-bottom: 1.25rem;
+    font-size: 0.95rem;
+}
+
+.reportpanel-modebadge {
+    margin-left: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Responsive card grid. */
+.reportpanel-grid {
+    display: grid;
+    /* Four cards per row on desktop, responsive down. */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.25rem;
+}
+
+@media (max-width: 1200px) {
+    .reportpanel-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+    .reportpanel-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .reportpanel-grid { grid-template-columns: 1fr; }
+}
+
+.reportpanel-card {
+    display: flex;
+    flex-direction: column;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.75rem;
+    padding: 1.25rem;
+    transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+    height: 100%;
+}
+
+.reportpanel-card:hover {
+    box-shadow: 0 0.5rem 1.25rem rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: var(--bs-primary, #0f6cbf);
+}
+
+.reportpanel-card-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--bs-primary, #0f6cbf);
+    background: color-mix(in srgb, var(--bs-primary, #0f6cbf) 12%, transparent);
+    margin-bottom: 1rem;
+}
+
+.reportpanel-card-body {
+    flex: 1 1 auto;
+}
+
+.reportpanel-card-title {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 0.35rem;
+}
+
+.reportpanel-card-desc {
+    font-size: 0.875rem;
+    color: var(--bs-secondary-color, #6c757d);
+    margin: 0 0 1rem;
+}
+
+.reportpanel-card-action .btn {
+    width: 100%;
+}
+
+/* Report sub-pages: filter bar + tables. */
+.reportpanel-filterbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: flex-end;
+    background: var(--bs-light, #f8f9fa);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.6rem;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.reportpanel-filterbar .form-group {
+    margin-bottom: 0;
+    min-width: 220px;
+}
+
+.reportpanel-toolbar {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-bottom: 1rem;
+}
+
+.reportpanel-table-wrap {
+    overflow-x: auto;
+}
+
+.reportpanel-usersearch {
+    position: relative;
+    min-width: 320px;
+}
+
+.reportpanel-usersearch-results {
+    position: absolute;
+    z-index: 20;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0 0 0.5rem 0.5rem;
+    max-height: 18rem;
+    overflow-y: auto;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.reportpanel-usersearch-results .list-group-item {
+    cursor: pointer;
+    border-left: 0;
+    border-right: 0;
+}
+
+.reportpanel-usersearch-results .list-group-item:hover {
+    background: var(--bs-light, #f1f3f5);
+}
+
+.reportpanel-meta {
+    color: var(--bs-secondary-color, #6c757d);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================================
+   Consolidated-report enhancements: full-width user search, summary stat cards,
+   chart cards. Colours inherit from the active theme via Bootstrap CSS vars.
+   ============================================================================ */
+
+/* --- Full-width user search box (feel-good redesign) --- */
+.reportpanel-usersearch {
+    position: relative;
+    width: 100%;
+    max-width: 760px;
+    margin: 0 0 1.5rem;
+}
+
+.reportpanel-usersearch-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+}
+
+.reportpanel-usersearch-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.reportpanel-usersearch-icon {
+    position: absolute;
+    left: 1rem;
+    color: var(--bs-primary, #0f6cbf);
+    font-size: 1.05rem;
+    pointer-events: none;
+}
+
+.reportpanel-usersearch-input.form-control {
+    width: 100%;
+    height: auto;
+    padding: 0.85rem 2.75rem 0.85rem 2.9rem;
+    font-size: 1.05rem;
+    border-radius: 999px;
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reportpanel-usersearch-input.form-control:focus {
+    border-color: var(--bs-primary, #0f6cbf);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--bs-primary, #0f6cbf) 22%, transparent);
+}
+
+.reportpanel-usersearch-spinner {
+    position: absolute;
+    right: 1.1rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+/* Results dropdown (rounded, elevated, roomy rows). */
+.reportpanel-usersearch-results {
+    position: absolute;
+    z-index: 30;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    right: 0;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.85rem;
+    max-height: 20rem;
+    overflow-y: auto;
+    box-shadow: 0 0.75rem 1.75rem rgba(0, 0, 0, 0.12);
+    padding: 0.35rem;
+}
+
+.reportpanel-usersearch-item.list-group-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    cursor: pointer;
+    border: 0;
+    border-radius: 0.6rem;
+    padding: 0.6rem 0.85rem;
+}
+
+.reportpanel-usersearch-item.list-group-item:hover,
+.reportpanel-usersearch-item.list-group-item:focus {
+    background: color-mix(in srgb, var(--bs-primary, #0f6cbf) 10%, transparent);
+}
+
+.reportpanel-usersearch-name {
+    font-weight: 600;
+}
+
+.reportpanel-usersearch-email {
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.reportpanel-usersearch-empty {
+    padding: 0.75rem 0.85rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+/* --- Summary stat cards --- */
+.reportpanel-stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 992px) {
+    .reportpanel-stats { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 560px) {
+    .reportpanel-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+.reportpanel-stat {
+    --stat-color: #6c757d;
+    --stat-bg: rgba(108, 117, 125, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1rem;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.85rem;
+    transition: box-shadow 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.reportpanel-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+    border-color: var(--stat-color);
+}
+
+.reportpanel-stat-icon {
+    flex: 0 0 auto;
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    color: var(--stat-color);
+    background: var(--stat-bg);
+}
+
+.reportpanel-stat-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    min-width: 0;
+}
+
+.reportpanel-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.reportpanel-stat-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bs-secondary-color, #6c757d);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.reportpanel-stat-total   { --stat-color: var(--bs-primary, #0f6cbf); --stat-bg: color-mix(in srgb, var(--bs-primary, #0f6cbf) 12%, transparent); }
+.reportpanel-stat-success { --stat-color: #2f9e44; --stat-bg: rgba(47, 158, 68, 0.12); }
+.reportpanel-stat-warning { --stat-color: #f08c00; --stat-bg: rgba(240, 159, 0, 0.14); }
+.reportpanel-stat-muted   { --stat-color: #868e96; --stat-bg: rgba(134, 142, 150, 0.14); }
+.reportpanel-stat-primary { --stat-color: var(--bs-primary, #0f6cbf); --stat-bg: color-mix(in srgb, var(--bs-primary, #0f6cbf) 12%, transparent); }
+.reportpanel-stat-grade   { --stat-color: #6741d9; --stat-bg: rgba(103, 65, 217, 0.12); }
+
+/* --- Chart cards --- */
+.reportpanel-charts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+@media (max-width: 768px) {
+    .reportpanel-charts { grid-template-columns: 1fr; }
+}
+
+.reportpanel-chartcard {
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.85rem;
+    padding: 1.15rem 1.35rem 1.35rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.reportpanel-chartcard-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--bs-secondary-color, #6c757d);
+    margin: 0 0 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--bs-border-color, #e9ecef);
+}
+
+/* Moodle renders charts with Chart.js responsive:true + maintainAspectRatio:false,
+   so the canvas fills its parent (.chart-image) at INIT time. That parent is
+   otherwise unconstrained, so the chart initialises huge and never resizes (this
+   Moodle build's resize() is effectively a no-op). Fix: give the whole parent chain
+   a definite width AND height BEFORE the chart initialises, so it measures a compact
+   box from the start. Shared by both the course and user reports. */
+.reportpanel-chartcard-body {
+    position: relative;
+    width: 100%;
+    max-width: 340px;
+    height: 300px;
+    margin: 0 auto;
+}
+
+.reportpanel-chartcard-body .chart-area,
+.reportpanel-chartcard-body .chart-image {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0 !important;
+}
+
+.reportpanel-chartcard-body canvas {
+    display: block;
+    max-width: 100%;
+}
+
+/* ============================================================================
+   UI polish: custom select arrow, table filters, clickable cells.
+   ============================================================================ */
+
+/* --- Nicer selects with a custom chevron (covers quiz/cert/course filter bars
+   and the status filter). Some themes strip the native arrow, so we draw one. --- */
+.reportpanel-filterbar select.form-control,
+.reportpanel-tablefilter select.form-control,
+.reportpanel-pagination select.form-control {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 2.4rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='%236c757d' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round' d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    background-size: 0.85rem;
+    cursor: pointer;
+}
+
+.reportpanel-filterbar select.form-control:focus,
+.reportpanel-tablefilter select.form-control:focus,
+.reportpanel-pagination select.form-control:focus {
+    border-color: var(--bs-primary, #0f6cbf);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--bs-primary, #0f6cbf) 20%, transparent);
+}
+
+/* Give the filter-bar controls a comfortable width. */
+.reportpanel-filterbar .form-group select.form-control {
+    min-width: 240px;
+}
+
+/* --- Table filter row --- */
+.reportpanel-tablefilter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 0.85rem;
+    padding: 0.9rem 1rem;
+    margin-bottom: 1rem;
+    background: var(--bs-light, #f8f9fa);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.75rem;
+}
+
+.reportpanel-tablefilter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    flex: 1 1 200px;
+    min-width: 170px;
+}
+
+.reportpanel-tablefilter-field label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bs-secondary-color, #6c757d);
+    margin: 0;
+}
+
+.reportpanel-tablefilter-field .form-control {
+    border-radius: 0.55rem;
+}
+
+.reportpanel-tablefilter-count {
+    flex: 0 0 auto;
+    align-self: center;
+    margin-left: auto;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color, #6c757d);
+    padding: 0.3rem 0.7rem;
+    background: var(--bs-body-bg, #fff);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 999px;
+}
+
+.reportpanel-table-empty {
+    padding: 1.25rem;
+    text-align: center;
+    color: var(--bs-secondary-color, #6c757d);
+    background: var(--bs-light, #f8f9fa);
+    border-radius: 0.6rem;
+}
+
+/* --- Clickable table cells --- */
+.reportpanel-cell-link {
+    color: var(--bs-primary, #0f6cbf);
+    text-decoration: none;
+    font-weight: 500;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.12s ease;
+}
+
+.reportpanel-cell-link:hover,
+.reportpanel-cell-link:focus {
+    color: var(--bs-primary, #0f6cbf);
+    text-decoration: none;
+    border-bottom-color: currentColor;
+}
+
+/* --- Table pagination bar (course report) --- */
+.reportpanel-pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem 1.25rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--bs-border-color, #e9ecef);
+}
+
+.reportpanel-pagination-size {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.reportpanel-pagination-size label {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--bs-secondary-color, #6c757d);
+    white-space: nowrap;
+}
+
+.reportpanel-pagination-size select.form-control {
+    width: auto;
+    min-width: 4.6rem;
+    padding-top: 0.3rem;
+    padding-bottom: 0.3rem;
+}
+
+.reportpanel-pagination-info {
+    font-size: 0.85rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.reportpanel-pagination-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-left: auto;
+}
+
+.reportpanel-pagination-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    min-width: 6.5rem;
+    text-align: center;
+}
+
+.reportpanel-pagination-nav .btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* ── Engagement report (Domain A) ─────────────────────────────────────────── */
+.local-reportpanel-engagement .rp-eng-kpi-icon {
+    width: 2.6rem;
+    height: 2.6rem;
+    border-radius: 0.6rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    background: var(--bs-primary, #0f6cbf);
+    color: #fff;
+    flex: 0 0 auto;
+}
+
+.local-reportpanel-engagement .rp-eng-kpi-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+/* Chart sizing guard: core \core\chart_* render unbounded unless the parent chain
+   has a definite height. Constrain the wrapper (globally, so every report page gets it)
+   so canvases stay a sane size and never overflow their card — this also stops a
+   single-bar chart from ballooning. */
+.rp-chart-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.rp-chart-wrap .chart-area {
+    width: 100%;
+    max-width: 100%;
+    height: 300px;
+}
+
+.rp-chart-wrap .chart-area .chart-image {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 280px;
+}
+
+.rp-chart-wrap .chart-area .chart-image canvas {
+    max-width: 100% !important;
+    max-height: 280px !important;
+}
+
+/* Hide the core chart data-table fallback (we render our own tables). */
+.rp-chart-wrap .chart-table-data {
+    display: none;
+}
+
+/* Weekly usage heatmap. */
+.local-reportpanel-engagement .rp-heatmap {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.local-reportpanel-engagement .rp-hm-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.local-reportpanel-engagement .rp-hm-day {
+    flex: 0 0 2.4rem;
+    font-size: 0.72rem;
+    color: var(--bs-secondary-color, #6c757d);
+    text-align: right;
+}
+
+.local-reportpanel-engagement .rp-hm-cells {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    gap: 2px;
+    flex: 1 1 auto;
+}
+
+.local-reportpanel-engagement .rp-hm-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 2px;
+    background: var(--bs-light, #f1f3f5);
+}
+
+.local-reportpanel-engagement .rp-hm-l1 { background: #c3e8cb; }
+.local-reportpanel-engagement .rp-hm-l2 { background: #7bcf93; }
+.local-reportpanel-engagement .rp-hm-l3 { background: #40a75f; }
+.local-reportpanel-engagement .rp-hm-l4 { background: #2b8a3e; }
+
+.local-reportpanel-engagement .rp-hm-hours {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+}
+
+.local-reportpanel-engagement .rp-hm-hour {
+    font-size: 0.62rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+
+/* ── Report filter toolbar (shared) ───────────────────────────────────────── */
+.rp-eng-filters {
+    background: var(--bs-light, #f8f9fa);
+    border: 1px solid var(--bs-border-color, #dee2e6);
+    border-radius: 0.6rem;
+    padding: 0.85rem 1rem;
+    row-gap: 0.6rem;
+}
+
+.rp-eng-filters label {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.rp-eng-filters .custom-select,
+.rp-eng-filters .form-control {
+    min-width: 10rem;
+}
+
+.rp-eng-filters .btn {
+    white-space: nowrap;
+}
+
+/* ── CSS meter bars (rankings + engagement top courses) ───────────────────── */
+.rp-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+}
+
+.rp-bars-head {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--bs-secondary-color, #6c757d);
+    border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+    padding-bottom: 0.3rem;
+}
+
+.rp-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.rp-bar-rank {
+    flex: 0 0 1.2rem;
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--bs-secondary-color, #6c757d);
+}
+
+.rp-bar-label {
+    flex: 0 0 38%;
+    max-width: 38%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.85rem;
+}
+
+.rp-bar-track {
+    flex: 1 1 auto;
+    height: 0.7rem;
+    background: var(--bs-light, #eef1f4);
+    border-radius: 0.4rem;
+    overflow: hidden;
+}
+
+.rp-bar-fill {
+    display: block;
+    height: 100%;
+    min-width: 2px;
+    border-radius: 0.4rem;
+    background: var(--bs-primary, #0f6cbf);
+}
+
+.rp-bar-value {
+    flex: 0 0 auto;
+    min-width: 3rem;
+    text-align: right;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+
+/* Meter-bar colour variants. */
+.rp-bars--blue   .rp-bar-fill { background: #0f6cbf; }
+.rp-bars--purple .rp-bar-fill { background: #6741d9; }
+.rp-bars--green  .rp-bar-fill { background: #2f9e44; }
+.rp-bars--teal   .rp-bar-fill { background: #0c8599; }
+.rp-bars--amber  .rp-bar-fill { background: #e8590c; }
+
+/* ── Quick-win UI polish (deltas, links, subhead, responsive) ─────────────── */
+.rp-eng-kpi { position: relative; }
+.rp-eng-kpi--link { transition: box-shadow 0.15s ease, transform 0.15s ease; }
+.rp-eng-kpi--link:hover { box-shadow: 0 0.3rem 0.8rem rgba(0, 0, 0, 0.08); transform: translateY(-1px); }
+.rp-eng-kpi-hit { position: absolute; inset: 0; z-index: 1; }
+.rp-eng-kpi-text { min-width: 0; }
+
+.rp-eng-kpi-delta { font-size: 0.72rem; font-weight: 700; margin-left: 0.4rem; white-space: nowrap; }
+.rp-delta--up { color: #2f9e44; }
+.rp-delta--down { color: #e03131; }
+.rp-delta--flat { color: #868e96; }
+.rp-delta--up::before { content: "\25B2\00A0"; }
+.rp-delta--down::before { content: "\25BC\00A0"; }
+
+.rp-subhead { display: flex; align-items: center; flex-wrap: wrap; gap: 0.4rem; }
+.rp-chip {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 1rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    background: var(--bs-primary, #0f6cbf);
+    color: #fff;
+}
+
+.rp-bar-label a { color: inherit; text-decoration: none; }
+.rp-bar-label a:hover { text-decoration: underline; }
+
+.reportpanel-section-title { letter-spacing: 0.05em; font-weight: 700; font-size: 0.8rem; }
+
+/* Responsive: heatmap scrolls horizontally on small screens; filters stack. */
+.local-reportpanel-engagement .rp-heatmap { overflow-x: auto; }
+.local-reportpanel-engagement .rp-hm-cells { min-width: 22rem; }
+
+@media (max-width: 576px) {
+    .rp-eng-filters > div { flex: 1 1 100%; }
+    .rp-eng-filters .custom-select,
+    .rp-eng-filters .form-control { min-width: 0; width: 100%; }
+}
+
+/* Activity coverage table (Domain E). */
+.local-reportpanel-activities .rp-act-icon {
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.4rem;
+    vertical-align: -2px;
+}

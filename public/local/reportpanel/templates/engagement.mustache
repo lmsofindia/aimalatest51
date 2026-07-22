@@ -1,0 +1,164 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_reportpanel/engagement
+
+    Site-wide time & engagement report.
+
+    Context variables required for this template:
+    * available bool
+    * actionurl string
+    * rangemenu array of {value,label,selected}
+    * kpicards array of {label,value,icon}
+    * trendchart string (raw chart HTML)
+    * heatmap {days:[{name,cells:[{level,tip}]}], hourlabels:[], hasdata}
+}}
+<div class="local-reportpanel-engagement">
+
+    <div class="rp-subhead mb-2">
+        <span class="rp-chip">{{rangelabel}}</span>
+        <span class="text-muted small ml-2">{{asof}}</span>
+    </div>
+
+    <form class="rp-eng-filters d-flex flex-wrap align-items-end gap-2 mb-3" method="get" action="{{actionurl}}">
+        <div>
+            <label class="d-block small text-muted mb-1" for="rp-eng-range">{{#str}}filter_range, local_reportpanel{{/str}}</label>
+            <select class="custom-select" id="rp-eng-range" name="range">
+                {{#rangemenu}}
+                    <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                {{/rangemenu}}
+            </select>
+        </div>
+        {{#iscustom}}
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-eng-from">{{#str}}filter_from, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-eng-from" name="from" value="{{customfrom}}">
+            </div>
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-eng-to">{{#str}}filter_to, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-eng-to" name="to" value="{{customto}}">
+            </div>
+        {{/iscustom}}
+        <div>
+            <button type="submit" class="btn btn-primary">{{#str}}filter_apply, local_reportpanel{{/str}}</button>
+        </div>
+        <div class="ml-auto d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{csvurl}}"><i class="fa fa-download mr-1"></i>{{#str}}exportcsv, local_reportpanel{{/str}}</a>
+            <a class="btn btn-link" href="{{backurl}}">{{#str}}backtohub, local_reportpanel{{/str}}</a>
+        </div>
+    </form>
+
+    {{^available}}
+        <div class="alert alert-info">{{unavailablemsg}}</div>
+    {{/available}}
+
+    {{#available}}
+    {{! KPI stat cards. }}
+    <div class="rp-eng-kpis row mb-4">
+        {{#kpicards}}
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="rp-eng-kpi card h-100 {{#url}}rp-eng-kpi--link{{/url}}">
+                    {{#url}}<a class="rp-eng-kpi-hit" href="{{url}}" aria-label="{{label}}"></a>{{/url}}
+                    <div class="card-body d-flex align-items-center">
+                        <span class="rp-eng-kpi-icon mr-3"><i class="fa {{icon}}"></i></span>
+                        <span class="rp-eng-kpi-text">
+                            <span class="rp-eng-kpi-value d-block">{{value}}{{#hasdelta}}<span class="rp-eng-kpi-delta rp-delta--{{deltadir}}">{{deltatext}}</span>{{/hasdelta}}</span>
+                            <span class="rp-eng-kpi-label text-muted small">{{label}}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {{/kpicards}}
+    </div>
+
+    {{! Engagement trend. }}
+    <div class="card mb-4">
+        <div class="card-header"><strong>{{#str}}eng_trend_title, local_reportpanel{{/str}}</strong>
+            <span class="text-muted small">— {{rangelabel}}</span></div>
+        <div class="card-body">
+            {{#hastrend}}
+                <div class="rp-chart-wrap">{{{trendchart}}}</div>
+            {{/hastrend}}
+            {{^hastrend}}
+                <p class="text-muted mb-0">{{#str}}eng_notrend, local_reportpanel{{/str}}</p>
+            {{/hastrend}}
+        </div>
+    </div>
+
+    <div class="row">
+        {{! Top courses by time. }}
+        <div class="col-lg-7 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}eng_topcourses_title, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    {{#hascourse}}
+                        <div class="rp-bars rp-bars--purple">
+                            <div class="rp-bars-head">
+                                <span class="rp-bar-label">{{#str}}col_course, local_reportpanel{{/str}}</span>
+                                <span class="rp-bar-value">{{#str}}col_timeontask, local_reportpanel{{/str}}</span>
+                            </div>
+                            {{#courserows}}
+                                <div class="rp-bar-row">
+                                    <span class="rp-bar-label" title="{{course}}">{{course}}</span>
+                                    <span class="rp-bar-track"><span class="rp-bar-fill" style="width:{{barpct}}%"></span></span>
+                                    <span class="rp-bar-value">{{time}}</span>
+                                </div>
+                            {{/courserows}}
+                        </div>
+                    {{/hascourse}}
+                    {{^hascourse}}
+                        <p class="text-muted mb-0">{{#str}}eng_nocourses, local_reportpanel{{/str}}</p>
+                    {{/hascourse}}
+                </div>
+            </div>
+        </div>
+
+        {{! Weekly usage heatmap. }}
+        <div class="col-lg-5 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}eng_heatmap_title, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    {{#heatmap}}
+                    {{#hasdata}}
+                        <div class="rp-heatmap">
+                            {{#days}}
+                                <div class="rp-hm-row">
+                                    <span class="rp-hm-day">{{name}}</span>
+                                    <span class="rp-hm-cells">
+                                        {{#cells}}<span class="rp-hm-cell rp-hm-l{{level}}" title="{{tip}}"></span>{{/cells}}
+                                    </span>
+                                </div>
+                            {{/days}}
+                            <div class="rp-hm-row rp-hm-axis">
+                                <span class="rp-hm-day"></span>
+                                <span class="rp-hm-cells rp-hm-hours">
+                                    {{#hourlabels}}<span class="rp-hm-hour">{{.}}</span>{{/hourlabels}}
+                                </span>
+                            </div>
+                        </div>
+                        <p class="text-muted small mt-2 mb-0">{{#str}}eng_heatmap_help, local_reportpanel{{/str}}</p>
+                    {{/hasdata}}
+                    {{^hasdata}}
+                        <p class="text-muted mb-0">{{#str}}eng_noheatmap, local_reportpanel{{/str}}</p>
+                    {{/hasdata}}
+                    {{/heatmap}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/available}}
+</div>

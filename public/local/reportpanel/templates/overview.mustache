@@ -1,0 +1,161 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_reportpanel/overview
+
+    Site-wide overview dashboard.
+
+    Context variables required for this template:
+    * actionurl string
+    * rangemenu array of {value,label,selected}
+    * kpicards array of {label,value,icon}
+    * regchart / compchart / timechart strings (raw chart HTML)
+    * regrows / healthrows arrays of {label,value}
+    * topcourses array of {name,count}
+}}
+<div class="local-reportpanel-engagement local-reportpanel-overview">
+
+    <div class="rp-subhead mb-2">
+        <span class="rp-chip">{{rangelabel}}</span>
+        <span class="text-muted small ml-2">{{asof}}</span>
+    </div>
+
+    <form class="rp-eng-filters d-flex flex-wrap align-items-end gap-2 mb-3" method="get" action="{{actionurl}}">
+        <div>
+            <label class="d-block small text-muted mb-1" for="rp-ov-range">{{#str}}filter_range, local_reportpanel{{/str}}</label>
+            <select class="custom-select" id="rp-ov-range" name="range">
+                {{#rangemenu}}<option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>{{/rangemenu}}
+            </select>
+        </div>
+        {{#iscustom}}
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-ov-from">{{#str}}filter_from, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-ov-from" name="from" value="{{customfrom}}">
+            </div>
+            <div>
+                <label class="d-block small text-muted mb-1" for="rp-ov-to">{{#str}}filter_to, local_reportpanel{{/str}}</label>
+                <input type="date" class="form-control" id="rp-ov-to" name="to" value="{{customto}}">
+            </div>
+        {{/iscustom}}
+        <div>
+            <button type="submit" class="btn btn-primary">{{#str}}filter_apply, local_reportpanel{{/str}}</button>
+        </div>
+        <div class="ml-auto d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="{{csvurl}}"><i class="fa fa-download mr-1"></i>{{#str}}exportcsv, local_reportpanel{{/str}}</a>
+            <a class="btn btn-link" href="{{backurl}}">{{#str}}backtohub, local_reportpanel{{/str}}</a>
+        </div>
+    </form>
+
+    {{^timeavailable}}
+        <div class="alert alert-info">{{#str}}ov_timeunavailable, local_reportpanel{{/str}}</div>
+    {{/timeavailable}}
+
+    {{! KPI stat cards. }}
+    <div class="rp-eng-kpis row mb-4">
+        {{#kpicards}}
+            <div class="col-6 col-lg-3 mb-3">
+                <div class="rp-eng-kpi card h-100 {{#url}}rp-eng-kpi--link{{/url}}">
+                    {{#url}}<a class="rp-eng-kpi-hit" href="{{url}}" aria-label="{{label}}"></a>{{/url}}
+                    <div class="card-body d-flex align-items-center">
+                        <span class="rp-eng-kpi-icon mr-3"><i class="fa {{icon}}"></i></span>
+                        <span class="rp-eng-kpi-text">
+                            <span class="rp-eng-kpi-value d-block">{{value}}{{#hasdelta}}<span class="rp-eng-kpi-delta rp-delta--{{deltadir}}">{{deltatext}}</span>{{/hasdelta}}</span>
+                            <span class="rp-eng-kpi-label text-muted small">{{label}}</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        {{/kpicards}}
+    </div>
+
+    {{! Trend charts. }}
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}ov_trend_regs, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    {{#hasregchart}}<div class="rp-chart-wrap">{{{regchart}}}</div>{{/hasregchart}}
+                    {{^hasregchart}}<p class="text-muted mb-0">{{#str}}ov_notrend, local_reportpanel{{/str}}</p>{{/hasregchart}}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}ov_trend_completions, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    {{#hascompchart}}<div class="rp-chart-wrap">{{{compchart}}}</div>{{/hascompchart}}
+                    {{^hascompchart}}<p class="text-muted mb-0">{{#str}}ov_notrend, local_reportpanel{{/str}}</p>{{/hascompchart}}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}ov_trend_time, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    {{#hastimechart}}<div class="rp-chart-wrap">{{{timechart}}}</div>{{/hastimechart}}
+                    {{^hastimechart}}<p class="text-muted mb-0">{{#str}}ov_notrend, local_reportpanel{{/str}}</p>{{/hastimechart}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{! Health tables + top courses. }}
+    <div class="row">
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}ov_registration_title, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {{#regrows}}<tr><td>{{label}}</td><td class="text-right">{{value}}</td></tr>{{/regrows}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header"><strong>{{#str}}ov_health_title, local_reportpanel{{/str}}</strong></div>
+                <div class="card-body">
+                    <table class="table table-sm mb-0">
+                        <tbody>
+                            {{#healthrows}}<tr><td>{{label}}</td><td class="text-right">{{value}}</td></tr>{{/healthrows}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-4">
+            <div class="card h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <strong>{{#str}}ov_topcourses_title, local_reportpanel{{/str}}</strong>
+                    <a class="small" href="{{rankingsurl}}">{{#str}}ov_allrankings, local_reportpanel{{/str}}</a>
+                </div>
+                <div class="card-body">
+                    {{#hastopcourses}}
+                        <table class="table table-sm mb-0">
+                            <tbody>
+                                {{#topcourses}}<tr><td>{{#url}}<a href="{{url}}">{{name}}</a>{{/url}}{{^url}}{{name}}{{/url}}</td><td class="text-right">{{count}}</td></tr>{{/topcourses}}
+                            </tbody>
+                        </table>
+                    {{/hastopcourses}}
+                    {{^hastopcourses}}<p class="text-muted mb-0">{{#str}}ov_notopcourses, local_reportpanel{{/str}}</p>{{/hastopcourses}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

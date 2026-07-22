@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="mod/quiz/accessrule/edproctoring/db" VERSION="20250501" COMMENT="XMLDB file for Moodle mod/quiz/accessrule/edproctoring"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+
+    <!-- Per-quiz proctoring settings (one row per quiz) -->
+    <TABLE NAME="quizaccess_edproctoring" COMMENT="Per-quiz proctoring configuration">
+      <FIELDS>
+        <FIELD NAME="id"                     TYPE="int"    LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quizid"                 TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="FK quiz.id"/>
+        <FIELD NAME="enabled"                TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="capture_interval"       TYPE="int"    LENGTH="6"  NOTNULL="true" DEFAULT="30" COMMENT="Seconds between snapshots"/>
+        <FIELD NAME="require_fullscreen"     TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="detect_tabs"            TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="enable_face_detect"     TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="enable_face_recog"      TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0" COMMENT="Phase 2"/>
+        <FIELD NAME="base_img_uploader"      TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0" COMMENT="0=either,1=student,2=admin"/>
+        <FIELD NAME="require_consent"        TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="auto_submit"            TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="auto_submit_threshold"  TYPE="int"    LENGTH="4"  NOTNULL="true" DEFAULT="5"/>
+        <FIELD NAME="grace_period"           TYPE="int"    LENGTH="4"  NOTNULL="true" DEFAULT="5" COMMENT="Seconds before FACE_ABSENT fires"/>
+        <FIELD NAME="block_mobile"           TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="notify_teacher"         TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="notify_threshold"       TYPE="int"    LENGTH="4"  NOTNULL="true" DEFAULT="60"/>
+        <FIELD NAME="timecreated"            TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified"           TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="quizid" UNIQUE="true" FIELDS="quizid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- One proctoring session per quiz attempt -->
+    <TABLE NAME="quizaccess_edproctoring_session" COMMENT="Proctoring session per quiz attempt">
+      <FIELDS>
+        <FIELD NAME="id"                 TYPE="int"     LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="quizid"             TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="cmid"               TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="userid"             TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="attemptid"          TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="FK quiz_attempts.id"/>
+        <FIELD NAME="status"             TYPE="char"    LENGTH="20" NOTNULL="true" DEFAULT="active" COMMENT="active|completed|abandoned|suspended"/>
+        <FIELD NAME="consent_given"      TYPE="int"     LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="consent_time"       TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="started_at"         TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="ended_at"           TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="trust_score"        TYPE="number"  LENGTH="5"  DECIMALS="2" NOTNULL="false" COMMENT="Computed on completion"/>
+        <FIELD NAME="total_snapshots"    TYPE="int"     LENGTH="6"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="total_violations"   TYPE="int"     LENGTH="6"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="critical_violations" TYPE="int"   LENGTH="6"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="warning_violations"  TYPE="int"   LENGTH="6"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated"        TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified"       TYPE="int"     LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="quizid"    UNIQUE="false" FIELDS="quizid"/>
+        <INDEX NAME="userid"    UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="attemptid" UNIQUE="true"  FIELDS="attemptid"/>
+        <INDEX NAME="status"    UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Webcam snapshots -->
+    <TABLE NAME="quizaccess_edproctoring_snap" COMMENT="Webcam snapshots captured during quiz attempts">
+      <FIELDS>
+        <FIELD NAME="id"              TYPE="int"    LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid"       TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="FK edproctoring_session.id"/>
+        <FIELD NAME="userid"          TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="attemptid"       TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="pathnamehash"    TYPE="char"   LENGTH="40" NOTNULL="true" DEFAULT="" COMMENT="Moodle filestore pathnamehash"/>
+        <FIELD NAME="capture_type"    TYPE="char"   LENGTH="20" NOTNULL="true" DEFAULT="interval" COMMENT="interval|burst|pre_quiz|manual"/>
+        <FIELD NAME="timecaptured"    TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="elapsed_seconds" TYPE="int"    LENGTH="6"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="quiz_page"       TYPE="int"    LENGTH="4"  NOTNULL="false"/>
+        <FIELD NAME="face_detected"   TYPE="int"    LENGTH="1"  NOTNULL="false" COMMENT="NULL=not checked"/>
+        <FIELD NAME="face_count"      TYPE="int"    LENGTH="4"  NOTNULL="false"/>
+        <FIELD NAME="brightness_score" TYPE="number" LENGTH="4"  DECIMALS="2" NOTNULL="false"/>
+        <FIELD NAME="face_match_score" TYPE="number" LENGTH="5"  DECIMALS="2" NOTNULL="false" COMMENT="Phase 2: 0-100"/>
+        <FIELD NAME="is_violation"    TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated"     TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sessionid"    UNIQUE="false" FIELDS="sessionid"/>
+        <INDEX NAME="userid"       UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="timecaptured" UNIQUE="false" FIELDS="timecaptured"/>
+        <INDEX NAME="is_violation" UNIQUE="false" FIELDS="is_violation"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Violation events -->
+    <TABLE NAME="quizaccess_edproctoring_violation" COMMENT="Violation events logged during proctored quizzes">
+      <FIELDS>
+        <FIELD NAME="id"              TYPE="int"    LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid"       TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="userid"          TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="attemptid"       TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="snap_id"         TYPE="int"    LENGTH="10" NOTNULL="false" COMMENT="FK snap.id (burst snapshot)"/>
+        <FIELD NAME="violation_type"  TYPE="char"   LENGTH="50" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="severity"        TYPE="char"   LENGTH="10" NOTNULL="true" DEFAULT="warning" COMMENT="critical|warning|info"/>
+        <FIELD NAME="severity_weight" TYPE="number" LENGTH="4"  DECIMALS="2"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="details"         TYPE="text"   NOTNULL="false" COMMENT="JSON extra context"/>
+        <FIELD NAME="quiz_page"       TYPE="int"    LENGTH="4"  NOTNULL="false"/>
+        <FIELD NAME="elapsed_seconds" TYPE="int"    LENGTH="6"  NOTNULL="false"/>
+        <FIELD NAME="dismissed"       TYPE="int"    LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="dismissed_by"    TYPE="int"    LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="dismissed_time"  TYPE="int"    LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timecreated"     TYPE="int"    LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="sessionid"      UNIQUE="false" FIELDS="sessionid"/>
+        <INDEX NAME="userid"         UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="violation_type" UNIQUE="false" FIELDS="violation_type"/>
+        <INDEX NAME="severity"       UNIQUE="false" FIELDS="severity"/>
+        <INDEX NAME="timecreated"    UNIQUE="false" FIELDS="timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- Reference face images (created in Phase 1 install, used from Phase 2) -->
+    <TABLE NAME="quizaccess_edproctoring_baseimg" COMMENT="Reference face images for identity verification (Phase 2)">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"       TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="pathnamehash" TYPE="char" LENGTH="40" NOTNULL="true" DEFAULT=""/>
+        <FIELD NAME="uploaded_by"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="image_type"   TYPE="char" LENGTH="20" NOTNULL="true" DEFAULT="photo" COMMENT="photo|id_card|pan_card|passport|other"/>
+        <FIELD NAME="is_active"    TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="1"/>
+        <FIELD NAME="verified"     TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid"    UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="is_active" UNIQUE="false" FIELDS="is_active"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

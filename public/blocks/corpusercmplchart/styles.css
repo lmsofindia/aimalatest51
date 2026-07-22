@@ -1,0 +1,193 @@
+/* ── block_corpusercmplchart v2 — Dark multi-ring gauge ─────────────────── */
+.cucc2-block {
+    background: linear-gradient(var(--cucc-grad-angle, 145deg), var(--cucc-grad1, #1a0533) 0%, var(--cucc-grad2, #0f172a) 100%);
+    border-radius: 18px;
+    padding: 1.4rem 1.5rem 1.25rem;
+    font-family: inherit;
+    color: #fff;
+    min-height: 220px;
+    position: relative;
+    overflow: hidden;
+}
+/* Ambient glow */
+.cucc2-block::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: 30px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(168,85,247,.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Header */
+.cucc2-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.1rem;
+    position: relative;
+    z-index: 2;
+}
+.cucc2-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    color: #fff;
+}
+.cucc2-course-count {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    color: rgba(255,255,255,.35);
+}
+
+/* Body: canvas + metrics side-by-side */
+.cucc2-body {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* Gauge canvas wrap */
+.cucc2-gauge-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 220px;
+    height: 220px;
+}
+.cucc2-canvas {
+    display: block;
+    width: 220px;
+    height: 220px;
+}
+
+/* Centre overlay */
+.cucc2-center-overlay {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    text-align: center;
+}
+.cucc2-center-pct {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1;
+    background: linear-gradient(135deg, #f472b6, #fb923c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.cucc2-pct-sym { font-size: 1.2rem; }
+.cucc2-center-lbl {
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: rgba(255,255,255,.4);
+    margin-top: .25rem;
+}
+
+/* Metrics column */
+.cucc2-metrics {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .85rem;
+}
+.cucc2-metric {}
+.cucc2-metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: .35rem;
+}
+.cucc2-metric-label {
+    font-size: .875rem;
+    color: rgba(255,255,255,.75);
+}
+.cucc2-metric-pct {
+    font-size: .875rem;
+    font-weight: 700;
+}
+.cucc2-pct--pink { color: #f472b6; }
+.cucc2-pct--blue { color: #60a5fa; }
+.cucc2-pct--teal { color: #2dd4bf; }
+
+/* Progress bars */
+.cucc2-bar-track {
+    height: 8px;
+    background: rgba(255,255,255,.08);
+    border-radius: 20px;
+    overflow: hidden;
+}
+.cucc2-bar {
+    height: 100%;
+    border-radius: 20px;
+    transition: width .8s cubic-bezier(.4,0,.2,1);
+}
+.cucc2-bar--pink { background: linear-gradient(90deg, #ec4899, #a855f7); }
+.cucc2-bar--blue { background: linear-gradient(90deg, #38bdf8, #6366f1); }
+.cucc2-bar--teal { background: linear-gradient(90deg, #2dd4bf, #22c55e); }
+
+.cucc2-details-link {
+    display: block;
+    font-size: .8rem;
+    color: rgba(255,255,255,.4);
+    text-decoration: none;
+    margin-top: .25rem;
+    transition: color .2s;
+}
+.cucc2-details-link:hover { color: #a78bfa; }
+
+/* Milestone banner */
+.cucc2-milestone {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 10px;
+    padding: .65rem 1rem;
+    margin-top: 1rem;
+    position: relative;
+    z-index: 2;
+}
+.cucc2-milestone-ico { font-size: 1.15rem; flex-shrink: 0; }
+.cucc2-milestone-text {
+    font-size: .825rem;
+    color: rgba(255,255,255,.75);
+    line-height: 1.4;
+}
+
+/* Empty state */
+.cucc2-empty { padding: 1.5rem; text-align: center; color: rgba(255,255,255,.4); font-size: .875rem; margin: 0; }
+
+/* Responsive */
+@media (max-width: 540px) {
+    .cucc2-body { flex-direction: column; align-items: center; }
+    .cucc2-gauge-wrap { width: 180px; height: 180px; }
+    .cucc2-canvas { width: 180px !important; height: 180px !important; }
+}
+
+/* ── Reach-the-edges: strip Moodle's block card chrome/padding ───────────────
+   .cucc2-block already has its own gradient + radius, so remove the outer
+   section's white padding/border/background — the gradient reaches the edge. */
+.block_corpusercmplchart.block {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.block_corpusercmplchart .card-body,
+.block_corpusercmplchart .card-text.content {
+    padding: 0 !important;
+    margin-top: 0 !important;
+}
+.block_corpusercmplchart .cucc2-block {
+    box-shadow: 0 8px 24px rgba(15, 23, 42, .22);
+}
