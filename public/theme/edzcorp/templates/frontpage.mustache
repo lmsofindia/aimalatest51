@@ -1,0 +1,473 @@
+{{!
+    EdzCorp — frontpage template.
+
+    Renders the 4-section enterprise homepage:
+      1. Employee spotlight  — large photo + star rating + pull quote
+      2. Hero                — eyebrow, headline, dual CTAs, stats row
+      3. Popular topics      — course-category pill chips with counts
+      4. Recently launched   — 2-col accent-border course cards
+
+    Below the 4 sections the standard Moodle site-home content area is
+    rendered so admins can still add blocks or news forums if needed.
+
+    Context keys (all provided by theme_edzcorp_get_frontpage_context()):
+      fp_emp_name, fp_emp_title, fp_emp_dept, fp_emp_quote, fp_emp_stars,
+      fp_emp_initials, fp_emp_photo, fp_emp_has_photo
+      fp_hero_eyebrow, fp_hero_headline, fp_hero_sub,
+      fp_hero_btn1_label, fp_hero_btn1_url, fp_hero_btn2_label, fp_hero_btn2_url,
+      fp_stats[]  { num, label }
+      fp_topics_heading, fp_topics[]  { name, url, count, color }
+      fp_courses_heading, fp_courses[] { name, url, category, sections, enrolled }
+      fp_has_topics, fp_has_courses
+
+    @package    theme_edzcorp
+    @copyright  2024 EdzCorp
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+
+{{! Synchronous init — restores sidebar + dark-mode state before first paint. }}
+<script>
+(function () {
+    try {
+        if (localStorage.getItem('edzcorp_sidenav_collapsed') === '1') {
+            document.body.classList.add('sidenav-collapsed');
+        }
+        var t = localStorage.getItem('edzcorp_theme');
+        if (t === 'dark') {
+            /* dark mode temporarily disabled — re-enable when dark theme is ready */ void 0;
+        } else if (!t && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            /* dark mode temporarily disabled — re-enable when dark theme is ready */ void 0;
+        }
+    } catch (e) {}
+    document.body.classList.add('edz-no-trans');
+}());
+</script>
+
+{{> core/local/toast/wrapper}}
+{{{ output.standard_top_of_body_html }}}
+
+{{! ── Left sidebar (same as all other edzcorp layouts) ───────────────────── }}
+{{> theme_edzcorp/partials/sidenav}}
+
+<div id="page-wrapper" class="d-print-block edzcorp-page-wrapper">
+
+    {{> theme_boost/navbar }}
+
+    <div id="page" class="drawers edz-frontpage-page" data-region="mainpage">
+        <div id="topofscroll" class="main-inner">
+
+            {{! ================================================================
+                SECTION 0 — TOP HERO (configurable first section)
+                Left: eyebrow, heading, subtext, CTA (auto login/dashboard),
+                question link. Centre: arch illustration + rotating badge.
+                Right: three stats + avatar row. No double braces in this note.
+            ================================================================ }}
+            {{#fp_top_has}}
+            <section class="edz-top" aria-label="{{fp_top_heading}}">
+
+                <div class="edz-top__left">
+                    <p class="edz-top__eyebrow"><span class="edz-top__rocket">🚀</span> {{fp_top_eyebrow}}</p>
+                    <h1 class="edz-top__heading">{{fp_top_heading}}</h1>
+                    <p class="edz-top__subtext">{{fp_top_subtext}}</p>
+                    <a href="{{fp_top_cta_url}}" class="edz-top__cta">{{fp_top_cta_label}} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                    {{#fp_top_has_q}}
+                    <a href="{{fp_top_qurl}}" class="edz-top__qlink"><span class="edz-top__qdot" aria-hidden="true"></span>{{fp_top_qlabel}}</a>
+                    {{/fp_top_has_q}}
+                </div>
+
+                <div class="edz-top__center">
+                    <div class="edz-top__illus">
+                        <img src="{{fp_top_image}}" alt="" class="edz-top__illus-img" loading="eager">
+                    </div>
+                    {{#fp_top_has_badge}}
+                    <div class="edz-top__badge">
+                        {{#fp_top_has_badge_url}}<a href="{{fp_top_badge_url}}" class="edz-top__badge-link" aria-label="{{fp_top_badge}}"></a>{{/fp_top_has_badge_url}}
+                        <svg viewBox="0 0 100 100" class="edz-top__badge-svg" aria-hidden="true">
+                            <defs><path id="edz-top-badge-path" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0"/></defs>
+                            <text class="edz-top__badge-text"><textPath href="#edz-top-badge-path" startOffset="0">{{fp_top_badge}} &#8226; {{fp_top_badge}} &#8226; </textPath></text>
+                        </svg>
+                        <span class="edz-top__badge-ico"><i class="fa-solid fa-arrow-right" aria-hidden="true"></i></span>
+                    </div>
+                    {{/fp_top_has_badge}}
+                </div>
+
+                <div class="edz-top__right">
+                    <div class="edz-top__stats">
+                        {{#fp_top_stats}}
+                        <div class="edz-top__stat">
+                            <div class="edz-top__stat-num">{{num}}</div>
+                            <div class="edz-top__stat-label">{{label}}</div>
+                        </div>
+                        {{/fp_top_stats}}
+                    </div>
+                    <div class="edz-top__people">
+                        <div class="edz-top__avatars" aria-hidden="true">
+                            <span class="edz-top__avatar edz-top__avatar--1"><i class="fa-solid fa-user"></i></span>
+                            <span class="edz-top__avatar edz-top__avatar--2"><i class="fa-solid fa-user"></i></span>
+                            <span class="edz-top__avatar edz-top__avatar--3"><i class="fa-solid fa-user"></i></span>
+                        </div>
+                        <div class="edz-top__people-text"><span class="edz-top__spark" aria-hidden="true">&#10022;</span> {{fp_top_avatars_text}}</div>
+                    </div>
+                </div>
+
+            </section>
+            {{/fp_top_has}}
+
+            {{! ================================================================
+                SECTION 1 — EMPLOYEE SPOTLIGHT  (Variation B)
+                Layout : text panel LEFT  |  floating photo RIGHT
+                Left   : category chips, big bold headline (with accent word),
+                         feedback quote, person row (avatar + name + tiny stars).
+                Right  : transparent bg — only the photo has blob halo graphics.
+                ================================================================ }}
+            {{#fp_has_spotlight}}
+            {{! ── Employee spotlight (switchable: card / panel) — full-bleed photo ── }}
+            <section class="edz-spot edz-spot--{{fp_emp_style}}" aria-label="Employee spotlight">
+                <div class="edz-spot__photo">
+                    <img src="{{fp_emp_photo}}" alt="{{fp_emp_name}}" class="edz-spot__img" loading="lazy">
+                </div>
+                <div class="edz-spot__body">
+                    <span class="edz-spot__label">{{#str}}employeespotlight, theme_edzcorp{{/str}}</span>
+                    <div class="edz-spot__stars" aria-label="Rating {{fp_emp_rating}} of 5">{{{fp_emp_stars}}}</div>
+                    <p class="edz-spot__quote">{{{fp_emp_quote}}}</p>
+                    <div class="edz-spot__person">
+                        <span class="edz-spot__name">{{fp_emp_name}}</span>
+                        {{#fp_emp_title}}<span class="edz-spot__role">{{fp_emp_title}}{{#fp_emp_dept}} · {{fp_emp_dept}}{{/fp_emp_dept}}</span>{{/fp_emp_title}}
+                    </div>
+                </div>
+            </section>
+            {{/fp_has_spotlight}}
+
+            {{! ================================================================
+                SECTION 3 — POPULAR TOPICS
+                Auto-populated from top-level course categories.
+                Each pill links to the category browse page.
+                Hidden entirely when no categories exist.
+                ================================================================ }}
+            {{#fp_has_topics}}
+            <section class="edz-topics">
+                <p class="edz-topics__heading">{{fp_topics_heading}}</p>
+                <div class="edz-topics__pills">
+                    {{#fp_topics}}
+                    <a href="{{url}}" class="edz-topic-pill">
+                        <span class="edz-topic-pill__dot" style="background:{{color}}"></span>
+                        <span class="edz-topic-pill__name">{{name}}</span>
+                        <span class="edz-topic-pill__count">&middot; {{count}}</span>
+                    </a>
+                    {{/fp_topics}}
+                </div>
+            </section>
+            {{/fp_has_topics}}
+
+            {{! ================================================================
+                SECTION 2 — HERO
+                Light background, eyebrow label, large headline, dual CTA
+                buttons, and a 4-column stats row.
+                ================================================================ }}
+            {{#fp_hero_show}}
+            <section class="edz-hero">
+
+                {{#fp_hero_eyebrow}}
+                <p class="edz-hero__eyebrow">{{fp_hero_eyebrow}}</p>
+                {{/fp_hero_eyebrow}}
+
+                <h1 class="edz-hero__headline">{{fp_hero_headline}}</h1>
+
+                {{#fp_hero_sub}}
+                <p class="edz-hero__sub">{{fp_hero_sub}}</p>
+                {{/fp_hero_sub}}
+
+                <div class="edz-hero__btns">
+                    <a href="{{fp_hero_btn1_url}}" class="edz-hero__btn-fill">{{fp_hero_btn1_label}}</a>
+                    <a href="{{fp_hero_btn2_url}}" class="edz-hero__btn-out">{{fp_hero_btn2_label}}</a>
+                </div>
+
+                <div class="edz-hero__stats" role="list">
+                    {{#fp_stats}}
+                    <div class="edz-hero__stat" role="listitem">
+                        <div class="edz-hero__stat-num">{{num}}</div>
+                        <div class="edz-hero__stat-label">{{label}}</div>
+                    </div>
+                    {{/fp_stats}}
+                </div>
+
+            </section>
+            {{/fp_hero_show}}
+
+            {{! ================================================================
+                SECTION 2A — SKILLS  (configurable via theme settings)
+                Left: heading + lead + three icon features (dotted connector).
+                Right: poster image that opens the video in a lightbox on click.
+                Hidden entirely unless fp_skills_title is set.
+                NOTE: no double braces inside this comment.
+            ================================================================ }}
+            {{#fp_skills_has}}
+            <section class="edz-skills" aria-label="{{fp_skills_title}}">
+
+                <div class="edz-skills__head">
+                    <h2 class="edz-skills__title">{{fp_skills_title}}</h2>
+                    {{#fp_skills_lead}}<p class="edz-skills__lead">{{fp_skills_lead}}</p>{{/fp_skills_lead}}
+                </div>
+
+                <div class="edz-skills__body">
+                    <div class="edz-skills__features">
+                        {{#fp_skills_features}}
+                        <div class="edz-skills__feature">
+                            <span class="edz-skills__feature-ico"><i class="fa-solid {{icon}}" aria-hidden="true"></i></span>
+                            <div class="edz-skills__feature-body">
+                                <div class="edz-skills__feature-title">{{title}}</div>
+                                <div class="edz-skills__feature-desc">{{desc}}</div>
+                            </div>
+                        </div>
+                        {{/fp_skills_features}}
+                    </div>
+
+                    <div class="edz-skills__media">
+                        {{#fp_skills_has_image}}
+                            {{#fp_skills_has_video}}
+                            <button type="button" class="edz-skills__media-btn" data-action="edz-skills-play"
+                                    aria-label="{{#str}}fp_skills_playvideo, theme_edzcorp{{/str}}">
+                                <img src="{{fp_skills_image}}" alt="" class="edz-skills__img" loading="lazy"{{#fp_skills_image_ytfb}} data-ytfb="{{fp_skills_image_ytfb}}"{{/fp_skills_image_ytfb}}>
+                                <span class="edz-skills__play"><i class="fa-solid fa-play" aria-hidden="true"></i></span>
+                            </button>
+                            {{/fp_skills_has_video}}
+                            {{^fp_skills_has_video}}
+                            <img src="{{fp_skills_image}}" alt="" class="edz-skills__img" loading="lazy"{{#fp_skills_image_ytfb}} data-ytfb="{{fp_skills_image_ytfb}}"{{/fp_skills_image_ytfb}}>
+                            {{/fp_skills_has_video}}
+                        {{/fp_skills_has_image}}
+                        {{^fp_skills_has_image}}
+                            {{#fp_skills_has_video}}
+                            <button type="button" class="edz-skills__media-btn edz-skills__media-btn--noimg" data-action="edz-skills-play"
+                                    aria-label="{{#str}}fp_skills_playvideo, theme_edzcorp{{/str}}">
+                                <span class="edz-skills__play"><i class="fa-solid fa-play" aria-hidden="true"></i></span>
+                            </button>
+                            {{/fp_skills_has_video}}
+                        {{/fp_skills_has_image}}
+                    </div>
+                </div>
+
+                {{#fp_skills_has_video}}
+                <div class="edz-skills-lb" data-region="edz-skills-lb" hidden
+                     data-video="{{fp_skills_video}}"
+                     data-youtube="{{#fp_skills_video_isyoutube}}1{{/fp_skills_video_isyoutube}}"
+                     data-file="{{#fp_skills_video_isfile}}1{{/fp_skills_video_isfile}}">
+                    <div class="edz-skills-lb__backdrop" data-action="edz-skills-close"></div>
+                    <div class="edz-skills-lb__inner">
+                        <button type="button" class="edz-skills-lb__close" data-action="edz-skills-close"
+                                aria-label="{{#str}}fp_skills_closevideo, theme_edzcorp{{/str}}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+                        <div class="edz-skills-lb__frame" data-region="edz-skills-frame"></div>
+                    </div>
+                </div>
+                {{/fp_skills_has_video}}
+
+            </section>
+            {{/fp_skills_has}}
+
+            {{! ================================================================
+                SECTION 2B — PHILOSOPHY  ("Why we built it differently")
+                Dark full-bleed band, centred intro, 3 columns divided by
+                hairlines: AI Roleplay / LMS / Proctoring.
+                Content is intentionally hard-coded (no theme settings yet).
+                ================================================================ }}
+            {{#fp_philosophy_show}}
+            <section class="edz-philosophy" aria-label="Why we built it differently">
+
+                <div class="edz-philosophy__intro">
+                    <p class="edz-philosophy__eyebrow">Our philosophy</p>
+                    <h2 class="edz-philosophy__headline">
+                        Why we built it <em>differently.</em>
+                    </h2>
+                    <p class="edz-philosophy__sub">
+                        Every LMS tracks completions. Very few actually build capability.
+                        We built EdzLMS around three ideas — practise it, learn it, prove it.
+                    </p>
+                </div>
+
+                <div class="edz-philosophy__cols">
+
+                    <div class="edz-philosophy__col">
+                        <div class="edz-philosophy__icon edz-philosophy__icon--roleplay" aria-hidden="true">
+                            <i class="fa fa-comments"></i>
+                        </div>
+                        <p class="edz-philosophy__kicker">AI roleplay</p>
+                        <h3 class="edz-philosophy__title">Practise conversations before they happen for real.</h3>
+                        <span class="edz-philosophy__rule" aria-hidden="true"></span>
+                        <p class="edz-philosophy__body">
+                            Reading about a difficult conversation is not the same as having one.
+                            EdzLMS lets your people rehearse sales calls, client objections and
+                            patient interactions against realistic AI personas — with instant,
+                            specific feedback after every attempt.
+                        </p>
+                    </div>
+
+                    <div class="edz-philosophy__col">
+                        <div class="edz-philosophy__icon edz-philosophy__icon--lms" aria-hidden="true">
+                            <i class="fa fa-bolt"></i>
+                        </div>
+                        <p class="edz-philosophy__kicker">The LMS core</p>
+                        <h3 class="edz-philosophy__title">One platform for creation, delivery and tracking.</h3>
+                        <span class="edz-philosophy__rule" aria-hidden="true"></span>
+                        <p class="edz-philosophy__body">
+                            Courses, paths, assessments and certificates in one place — with AI
+                            at every layer, not bolted on as a feature. Build content faster,
+                            personalise every learner journey, and see exactly where each team
+                            stands at any moment.
+                        </p>
+                    </div>
+
+                    <div class="edz-philosophy__col">
+                        <div class="edz-philosophy__icon edz-philosophy__icon--proctoring" aria-hidden="true">
+                            <i class="fa fa-circle-check"></i>
+                        </div>
+                        <p class="edz-philosophy__kicker">Secure proctoring</p>
+                        <h3 class="edz-philosophy__title">Assessments your auditors can actually trust.</h3>
+                        <span class="edz-philosophy__rule" aria-hidden="true"></span>
+                        <p class="edz-philosophy__body">
+                            Identity checks, environment monitoring and attempt analytics built
+                            into every high-stakes assessment. Compliance training records that
+                            are audit-ready on demand — no spreadsheets, no screenshots, no doubt.
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+            {{/fp_philosophy_show}}
+
+
+            {{! ================================================================
+                SECTION 4 — RECENTLY LAUNCHED COURSES
+                2-column grid with left accent-border cards.
+                Admin-selected course IDs, or falls back to 4 newest courses.
+                ================================================================ }}
+            {{#fp_has_courses}}
+            <section class="edz-fp-courses">
+                <p class="edz-fp-courses__heading">{{fp_courses_heading}}</p>
+                <div class="edz-fp-courses__grid">
+                    {{#fp_courses}}
+                    <a href="{{url}}" class="edz-fp-course-card">
+                        {{! Media: course image, or per-course gradient fallback }}
+                        <div class="edz-fp-course-card__media{{^image}} edz-fp-course-card__media--{{gradclass}}{{/image}}">
+                            {{#image}}<img src="{{image}}" alt="" loading="lazy">{{/image}}
+                            {{#category}}<span class="edz-fp-course-card__tag">{{category}}</span>{{/category}}
+                        </div>
+                        <div class="edz-fp-course-card__body">
+                            <h3 class="edz-fp-course-card__name">{{name}}</h3>
+                            {{#summary}}
+                            <p class="edz-fp-course-card__desc">{{summary}}</p>
+                            {{/summary}}
+                            {{#teacher}}
+                            <div class="edz-fp-course-card__teacher">
+                                <i class="fa fa-chalkboard-user" aria-hidden="true"></i>
+                                <span>{{teacher}}</span>
+                            </div>
+                            {{/teacher}}
+                            <div class="edz-fp-course-card__footer">
+                                <span class="edz-fp-course-card__meta">{{sections}} &middot; {{enrolled}}</span>
+                                <span class="edz-fp-course-card__enroll">Enroll &rarr;</span>
+                            </div>
+                        </div>
+                    </a>
+                    {{/fp_courses}}
+                </div>
+            </section>
+            {{/fp_has_courses}}
+
+            {{! ================================================================
+                Standard Moodle site-home content area.
+                Renders blocks, news forums, or whatever the admin has
+                configured under Site admin → Front page → Front page items.
+                When set to "None" this area is invisible.
+                ================================================================ }}
+            <div id="page-content" class="pb-3 d-print-block edz-frontpage-main-content">
+                <div id="region-main-box">
+                    {{#hasregionmainsettingsmenu}}
+                    <div id="region-main-settings-menu" class="d-print-none">
+                        <div>{{{ regionmainsettingsmenu }}}</div>
+                    </div>
+                    {{/hasregionmainsettingsmenu}}
+                    <div id="region-main">
+                        {{#hasregionmainsettingsmenu}}
+                        <div class="region_main_settings_menu_proxy"></div>
+                        {{/hasregionmainsettingsmenu}}
+                        {{{ output.course_content_header }}}
+                        {{{ output.main_content }}}
+                        {{{ output.activity_navigation }}}
+                        {{{ output.course_content_footer }}}
+                    </div>
+                </div>
+            </div>
+
+        </div>{{! /#topofscroll }}
+
+        {{! Footer inside #page so it scrolls with the content. }}
+        {{> theme_edzcorp/partials/footer}}
+
+    </div>{{! /#page }}
+
+</div>{{! /#page-wrapper }}
+
+{{{ output.standard_after_main_region_html }}}
+{{{ output.standard_end_of_body_html }}}
+
+</body>
+</html>
+{{#fp_skills_has_video}}
+{{#js}}
+(function () {
+    var lb = document.querySelector('[data-region="edz-skills-lb"]');
+    if (!lb) { return; }
+    var frame  = lb.querySelector('[data-region="edz-skills-frame"]');
+    var url    = lb.getAttribute('data-video');
+    var isFile = lb.getAttribute('data-file') === '1';
+    var openLb = function () {
+        if (isFile) {
+            frame.innerHTML = '<video src="' + url + '" controls autoplay playsinline></video>';
+        } else {
+            frame.innerHTML = '<iframe src="' + url + '" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>';
+        }
+        lb.hidden = false;
+        document.body.classList.add('edz-skills-lb-open');
+    };
+    var closeLb = function () {
+        frame.innerHTML = '';
+        lb.hidden = true;
+        document.body.classList.remove('edz-skills-lb-open');
+    };
+    document.querySelectorAll('[data-action="edz-skills-play"]').forEach(function (b) {
+        b.addEventListener('click', openLb);
+    });
+    lb.querySelectorAll('[data-action="edz-skills-close"]').forEach(function (c) {
+        c.addEventListener('click', closeLb);
+    });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && !lb.hidden) { closeLb(); }
+    });
+    // YouTube maxres thumbnails don't exist for every video; if the poster
+    // fails to load, fall back to the always-present hqdefault thumbnail.
+    document.querySelectorAll('.edz-skills__img[data-ytfb]').forEach(function (img) {
+        var swap = function () {
+            var fb = img.getAttribute('data-ytfb');
+            if (fb && img.src !== fb) { img.src = fb; }
+            img.removeAttribute('data-ytfb');
+        };
+        img.addEventListener('error', swap);
+        if (img.complete && img.naturalWidth === 0) { swap(); }
+    });
+}());
+{{/js}}
+{{/fp_skills_has_video}}
+{{#js}}
+M.util.js_pending('theme_boost/loader');
+require(['theme_boost/loader', 'theme_boost/drawer', 'theme_edzcorp/sidebar', 'theme_edzcorp/theme'],
+    function(Loader, Drawer, Sidebar, Theme) {
+        Drawer.init();
+        Sidebar.init();
+        Theme.init();
+        M.util.js_complete('theme_boost/loader');
+    }
+);
+{{/js}}

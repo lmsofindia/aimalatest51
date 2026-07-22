@@ -1,0 +1,1426 @@
+// =============================================================================
+// EdzCorp — _layout.scss
+// Page-level layout grids, content wrappers, block regions, and special pages.
+// =============================================================================
+
+
+// ---- Page header (context header: course/user title area) ----------------
+
+.edz-page-header {
+    margin-bottom: 1.25rem;
+
+    // Moodle's context header sets h1 inside here.
+    h1.page-header,
+    h1 {
+        font-size: var(--edz-fs-h2);
+        font-weight: var(--edz-fw-bold);
+        color: var(--edz-heading-color);
+        margin: 0;
+        line-height: 1.3;
+    }
+}
+
+// ---- Fix double margin-top from Boost's drawer JS + our padding-top --------
+// Boost's drawer.js dynamically sets margin-top on #page to equal the navbar
+// height. Our #page-wrapper already has padding-top:var(--edz-navbar-height),
+// so the combined effect creates a ~120 px dead zone at the top of content.
+// Overriding to 0 here removes Boost's extra margin while keeping ours.
+#page,
+#page.drawers,
+#page[data-region="mainpage"] {
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.edz-region-settings {
+    margin-bottom: 1rem;
+}
+
+
+// ---- Standard two-column grid: main content + optional side-post ---------
+
+.edz-content-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+
+    @media (max-width: 992px) {
+        flex-direction: column;
+    }
+}
+
+.edz-main-col {
+    flex: 1;
+    min-width: 0;
+}
+
+.edz-side-post {
+    width: 280px;
+    flex-shrink: 0;
+
+    @media (max-width: 1280px) { width: 260px; }
+    @media (max-width: 1100px) { width: 240px; }
+    @media (max-width: 992px)  { width: 100%; }
+}
+
+
+// ---- Course layout: three-column grid ------------------------------------
+// [course-index] | [main content] | [side-post]
+
+.layout-course .edz-course-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: flex-start;
+
+    // Default: just main column.
+    grid-template-columns: 1fr;
+
+    // With course index.
+    &.has-course-index {
+        grid-template-columns: 260px 1fr;
+    }
+
+    // With right blocks.
+    &.has-side-post {
+        grid-template-columns: 1fr 260px;
+    }
+
+    // Both course index and right blocks.
+    &.has-course-index.has-side-post {
+        grid-template-columns: 260px 1fr 260px;
+    }
+
+    @media (max-width: 1280px) {
+        &.has-course-index            { grid-template-columns: 240px 1fr; }
+        &.has-side-post               { grid-template-columns: 1fr 240px; }
+        &.has-course-index.has-side-post { grid-template-columns: 240px 1fr 240px; }
+    }
+
+    @media (max-width: 1024px) {
+        &, &.has-course-index, &.has-side-post, &.has-course-index.has-side-post {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+// Course index — sticky TOC panel.
+.edz-course-index {
+    background: var(--edz-card-bg);
+    border: 1px solid var(--edz-border-color);
+    border-radius: var(--edz-border-radius);
+    padding: 1rem 0;
+    position: sticky;
+    top: calc(var(--edz-navbar-height) + 1rem);
+    max-height: calc(100vh - var(--edz-navbar-height) - 2rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+
+    // Moodle course index internal elements.
+    .courseindex-section-title a {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--edz-text-muted);
+        padding: 0.5rem 1rem 0.25rem;
+        display: block;
+        text-decoration: none;
+    }
+
+    .courseindex-item {
+        a {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 1rem;
+            font-size: 0.8125rem;
+            color: var(--edz-text-color);
+            text-decoration: none;
+            border-radius: 0;
+            transition: background 0.15s, color 0.15s;
+
+            &:hover { background: var(--edz-hover-bg); color: var(--bs-primary); }
+        }
+
+        &.pageitem.current > a {
+            color: var(--bs-primary);
+            font-weight: 600;
+        }
+    }
+}
+
+
+// ---- Block regions -------------------------------------------------------
+
+.edz-side-post {
+
+    // Individual block cards.
+    .block {
+        background: var(--edz-card-bg);
+        border: 1px solid var(--edz-border-color);
+        border-radius: var(--edz-border-radius);
+        margin-bottom: 1rem;
+        overflow: hidden;
+        box-shadow: var(--bs-box-shadow-sm, 0 1px 3px rgba(0,0,0,0.06));
+        transition: box-shadow 0.2s;
+
+        &:hover { box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); }
+
+        // Moodle block header.
+        .card-body > .d-flex.card-header,
+        .block-header {
+            padding: 0.75rem 1rem;
+            background: transparent;
+            border-bottom: 1px solid var(--edz-border-color);
+
+            h5, .title {
+                font-size: 0.8125rem;
+                font-weight: 700;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                color: var(--edz-text-muted);
+                margin: 0;
+            }
+        }
+
+        // Block content area.
+        .content, .card-body {
+            padding: 1rem;
+            font-size: 0.875rem;
+        }
+    }
+}
+
+
+// ---- Page header layout --------------------------------------------------
+// full_header() is NOT overridden — Moodle renders secondary nav itself.
+// Do not add custom wrappers here; they conflict with Moodle's drawer JS.
+
+
+// ---- Footer --------------------------------------------------------------
+// The footer partial is rendered INSIDE #page (the Boost 5.x scroll
+// container) so it scrolls naturally with the content instead of sitting
+// pinned at the viewport bottom. #page becomes a flex column so the
+// footer's margin-top:auto anchors it to the bottom of short pages.
+
+#page.drawers {
+    display: flex;
+    flex-direction: column;
+    // Fill the viewport below the fixed navbar so the footer (margin-top:auto)
+    // anchors to the bottom on short pages. Using calc(100vh - navbar) rather
+    // than 100vh avoids overshooting (which previously pushed it below the fold).
+    min-height: calc(100vh - var(--edz-navbar-height, 64px));
+
+    > .main-inner { width: 100%; }
+}
+
+.edzcorp-footer-wrap {
+    background: var(--edz-card-bg);
+    border-top: 1px solid var(--edz-border-color);
+    padding: 2rem var(--edz-content-padding) 1.5rem;
+    margin-top: auto;
+}
+
+.edzcorp-footer-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+// ── Social icons row ────────────────────────────────────────────────────────
+
+.edzcorp-footer-social {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+
+.edzcorp-footer-social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--edz-border-color);
+    color: var(--edz-text-muted);
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    flex-shrink: 0;
+
+    &:hover {
+        color: #fff;
+        border-color: transparent;
+        transform: translateY(-2px);
+    }
+
+    // Brand-colour hovers.
+    &.edzcorp-social-fb:hover  { background: #1877f2; }
+    &.edzcorp-social-ig:hover  { background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%); }
+    &.edzcorp-social-li:hover  { background: #0a66c2; }
+    &.edzcorp-social-yt:hover  { background: #ff0000; }
+    &.edzcorp-social-tw:hover  { background: #000; }
+}
+
+// ── App download badges ────────────────────────────────────────────────────
+
+.edzcorp-footer-apps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.875rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.edzcorp-footer-app-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1.125rem 0.5rem 0.875rem;
+    border: 1.5px solid var(--edz-border-color);
+    border-radius: var(--edz-border-radius);
+    text-decoration: none;
+    color: var(--edz-text-color);
+    background: var(--edz-page-bg);
+    transition: border-color 0.18s, color 0.18s, box-shadow 0.18s, transform 0.18s;
+    min-width: 130px;
+
+    &:hover {
+        border-color: var(--bs-primary);
+        color: var(--bs-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transform: translateY(-1px);
+    }
+}
+
+.edzcorp-app-badge-icon {
+    font-size: 1.5rem;
+    line-height: 1;
+    opacity: 0.85;
+}
+
+.edzcorp-app-badge-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.edzcorp-app-badge-sub {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--edz-text-muted);
+}
+
+.edzcorp-app-badge-main {
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+// ── Top section wrapper (only present when social OR app links exist) ──────
+
+.edzcorp-footer-top {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--edz-border-color);
+}
+
+// ── Bottom bar: copyright + Moodle links ───────────────────────────────────
+
+.edzcorp-footer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: var(--edz-text-muted);
+}
+
+.edzcorp-footer-copyright {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+
+    p, span { margin: 0; }
+}
+
+.edzcorp-footer-tagline {
+    color: var(--edz-text-muted);
+    opacity: 0.8;
+}
+
+.edzcorp-footer-moodle {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+
+    a {
+        color: var(--edz-text-muted);
+        text-decoration: none;
+
+        &:hover { color: var(--bs-primary); }
+    }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────
+
+@media (max-width: 576px) {
+    .edzcorp-footer-top {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .edzcorp-footer-bar {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .edzcorp-footer-moodle {
+        justify-content: center;
+    }
+}
+
+
+// ---- Skip link -----------------------------------------------------------
+
+.edz-skip-link {
+    &:focus {
+        position: fixed;
+        top: 0.5rem;
+        left: calc(var(--edz-sidebar-width) + 0.5rem);
+        z-index: 9999;
+        background: var(--bs-primary);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: var(--edz-border-radius);
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+}
+
+
+// ---- Login page — split layout and card layout ----------------------------
+//
+// Two layout modes controlled by class on #page-wrapper:
+//   .edz-layout-split  Full-screen side-by-side (slider fills viewport)
+//   .edz-layout-card   Floating card centered on a gradient background
+//
+// Slide images are injected as background-image CSS by lib.php:
+//   .edz-slide-1 { background-image: url('...'); }
+//   .edz-slide-2 { background-image: url('...'); }
+// Gradient fallback is always on .edz-login-slider, shown when no image set.
+//
+// Moodle IDs preserved: #page-content, #region-main-box, #region-main.
+
+body.pagelayout-login {
+    padding-top: 0 !important;
+}
+
+// ── Shared: outer Moodle wrapper ──────────────────────────────────────────
+
+#page-wrapper.edzcorp-login-page {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+    display: flex !important;
+    min-height: 100vh !important;
+}
+
+
+// ── Split layout ──────────────────────────────────────────────────────────
+
+#page-wrapper.edzcorp-login-page.edz-layout-split {
+    height: 100vh;
+    overflow: hidden;   // each panel scrolls internally
+}
+
+#page-wrapper.edzcorp-login-page.edz-layout-split .edz-login-split {
+    min-height: 100vh;
+}
+
+#page-wrapper.edzcorp-login-page.edz-layout-split .edz-login-panel {
+    min-height: 100vh;
+}
+
+
+// ── Card layout ───────────────────────────────────────────────────────────
+
+#page-wrapper.edzcorp-login-page.edz-layout-card {
+    align-items: center;
+    justify-content: center;
+    padding: 2rem !important;
+    background: linear-gradient(135deg,
+        #0f172a  0%,
+        #1e1b4b 35%,
+        #312e81 65%,
+        #4c1d95 100%
+    ) !important;
+    overflow-y: auto;
+}
+
+#page-wrapper.edzcorp-login-page.edz-layout-card .edz-login-split {
+    max-width: 980px;
+    width: 100%;
+    min-height: 580px;
+    max-height: calc(100vh - 4rem);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.40),
+        0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+#page-wrapper.edzcorp-login-page.edz-layout-card .edz-login-slider {
+    // Slider fills the card height naturally (flex stretch)
+}
+
+#page-wrapper.edzcorp-login-page.edz-layout-card .edz-login-panel {
+    // In card mode, cap the panel height so it doesn't exceed the card boundary.
+    max-height: calc(100vh - 4rem);
+}
+
+
+// ── Shared split wrapper ──────────────────────────────────────────────────
+
+.edz-login-split {
+    display: flex;
+    width: 100%;
+}
+
+
+// ── Left: image slider ────────────────────────────────────────────────────
+
+.edz-login-slider {
+    flex: 0 0 55%;
+    position: relative;
+    overflow: hidden;
+    // Gradient fallback when no images are uploaded.
+    background: linear-gradient(135deg,
+        #1a1a2e   0%,
+        #16213e  35%,
+        #0f3460  65%,
+        #533483 100%
+    );
+
+    @media (max-width: 900px) { display: none; }
+}
+
+.edz-slider-slide {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0;
+    transition: opacity 0.85s ease-in-out;
+    z-index: 0;
+
+    &.edz-slide-active { opacity: 1; z-index: 1; }
+}
+
+// Text-readability gradient.
+.edz-slider-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.08)  0%,
+        rgba(0, 0, 0, 0.04) 45%,
+        rgba(0, 0, 0, 0.60) 100%
+    );
+    z-index: 2;
+    pointer-events: none;
+}
+
+.edz-slider-content {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 2.5rem;
+    z-index: 3;
+    color: #fff;
+}
+
+.edz-slider-heading {
+    font-size: 1.875rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+
+    @media (max-width: 1200px) { font-size: 1.5rem; }
+}
+
+.edz-slider-caption {
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    opacity: 0.9;
+    text-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+    min-height: 1.55em;
+}
+
+.edz-slider-dots {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+}
+
+.edz-slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.40);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s;
+
+    &.edz-dot-active {
+        background: #ffffff;
+        transform: scale(1.35);
+    }
+
+    &:hover:not(.edz-dot-active) { background: rgba(255, 255, 255, 0.70); }
+}
+
+
+// ── Left: designed hero fallback (no slider images) ───────────────────────
+.edz-login-hero {
+    flex: 0 0 55%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 2.75rem 3rem;
+    color: #fff;
+    overflow: hidden;
+    // Driven by admin setting (--edz-login-hero-bg) with a vivid blue default.
+    background: var(--edz-login-hero-bg, #1d4ed8);
+
+    // Soft radial glows for depth.
+    &::before,
+    &::after {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        pointer-events: none;
+    }
+    &::before {
+        top: -120px; right: -80px;
+        width: 360px; height: 360px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 70%);
+    }
+    &::after {
+        bottom: -140px; left: -60px;
+        width: 320px; height: 320px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.10), transparent 70%);
+    }
+
+    @media (max-width: 900px) { display: none; }
+}
+
+// Brand chip — top-left.
+.edz-hero-brand {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .edz-hero-brand-mark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.18);
+        color: #fff;
+        flex-shrink: 0;
+    }
+
+    .edz-hero-brand-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: 0.01em;
+        color: #fff;
+    }
+}
+
+// Centre block — icon, title, subtitle (vertically centred).
+.edz-hero-main {
+    position: relative;
+    z-index: 1;
+    margin-top: auto;
+    margin-bottom: auto;
+    max-width: 34rem;
+}
+
+.edz-hero-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    margin-bottom: 1.75rem;
+}
+
+.edz-hero-title {
+    font-size: 2.625rem;
+    line-height: 1.12;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 1.25rem;
+    color: #fff;
+
+    @media (max-width: 1200px) { font-size: 2.125rem; }
+}
+
+.edz-hero-subtitle {
+    font-size: 1.125rem;
+    line-height: 1.6;
+    font-weight: 400;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.82);
+
+    @media (max-width: 1200px) { font-size: 1rem; }
+}
+
+// Stat cards — bottom row.
+.edz-hero-stats {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+}
+
+.edz-hero-stat {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 1.125rem 1.25rem;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+
+    .edz-hero-stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        color: #fff;
+        margin-bottom: 0.35rem;
+    }
+
+    .edz-hero-stat-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba(255, 255, 255, 0.62);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+
+// ── Right: form panel ─────────────────────────────────────────────────────
+//
+// Layout approach: simple block + overflow-y: auto.
+// No flex vertical centering — it pushes content too far down (margin:auto
+// in a tall flex column centers at ~50% viewport, appearing "very down").
+// The panel simply scrolls if content is taller than the available height.
+// Horizontal centering is done via margin: 0 auto on the inner wrapper.
+
+.edz-login-panel {
+    flex: 1;
+    overflow-y: auto;
+    background: #ffffff;
+    // Padding provides breathing room at top/bottom; inner div is centred
+    // horizontally within the padded area.
+    padding: 3rem 2.5rem;
+
+    @media (max-width: 900px) { padding: 2.5rem 1.5rem; }
+    @media (max-width: 480px) { padding: 2rem 1.25rem; }
+}
+
+.edz-login-panel-inner {
+    width: 100%;
+    max-width: 380px;
+    margin: 0 auto;  // horizontal centering only — no vertical flex tricks
+}
+
+// Fix: Moodle / Bootstrap may apply overflow: clip to #maincontent.
+// Inside the login panel that would hide the form — force it visible.
+.edz-login-panel #maincontent,
+.edz-login-panel #maincontent > * {
+    overflow: visible !important;
+}
+
+// Fix: Moodle applies height:1px / overflow:clip to #maincontent (the skip-link
+// target). In the embedded & popup layouts the activity content (e.g. a SCORM
+// player) lives INSIDE #maincontent, so that rule collapses it to nothing — this
+// is why a SCORM set to "open in new window" showed a blank/white page. Force the
+// content wrappers to fill the viewport.
+#maincontent.edz-embedded-content,
+#maincontent.edz-popup-content {
+    height: auto !important;
+    min-height: 100vh;
+    overflow: visible !important;
+}
+
+// Logo / brand.
+.edz-login-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+
+    a { display: inline-block; text-decoration: none; }
+}
+
+.edz-login-logo {
+    max-height: 56px;
+    width: auto;
+    max-width: 200px;
+    object-fit: contain;
+}
+
+.edz-login-sitename {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--edz-heading-color);
+    letter-spacing: -0.02em;
+    display: block;
+}
+
+// Welcome copy.
+.edz-login-welcome {
+    text-align: center;
+    margin-bottom: 1.75rem;
+}
+
+.edz-login-title {
+    font-size: 1.375rem;
+    font-weight: 700;
+    color: var(--edz-heading-color);
+    line-height: 1.3;
+    margin-bottom: 0.25rem;
+}
+
+.edz-login-subtitle {
+    font-size: 0.875rem;
+    color: var(--edz-text-muted);
+}
+
+// Strip Moodle/Bootstrap layout from login region IDs.
+.edz-login-panel {
+    #page-content,
+    #region-main-box,
+    #region-main {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+
+    .row { margin-left: 0; margin-right: 0; }
+
+    [class*="col-"] {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        max-width: 100% !important;
+        flex: 0 0 100% !important;
+        width: 100% !important;
+    }
+
+    .container,
+    .container-fluid { padding-left: 0; padding-right: 0; max-width: 100%; }
+
+    .login-container,
+    .loginpanel > .card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        margin: 0 !important;
+        padding: 0 !important;
+
+        .card-body { padding: 0 !important; }
+    }
+
+    .d-flex.flex-column.min-vh-100,
+    .d-flex.flex-column { min-height: 0 !important; }
+
+    .login-wrapper { padding: 0 !important; flex: unset !important; }
+
+    // Always keep the form visible.
+    #loginbtn, .loginpanel, .login-form-container {
+        display: block !important;
+        visibility: visible !important;
+    }
+
+    // Form control styling.
+    .form-group label,
+    .form-label {
+        font-weight: 600;
+        font-size: 0.8125rem;
+        color: var(--edz-text-color);
+    }
+
+    .form-control {
+        border-radius: 8px;
+        border-color: var(--edz-border-color);
+        font-size: 0.9rem;
+
+        &:focus {
+            box-shadow: var(--edz-focus-ring);
+            border-color: var(--bs-primary);
+        }
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 0.65rem;
+        font-weight: 600;
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        font-size: 0.9375rem;
+    }
+
+    // Alerts (cookie notice, error messages, etc.) should be centred within
+    // the panel and not stretch to the panel edge.
+    .alert {
+        border-radius: 10px;
+        margin-bottom: 1rem;
+    }
+
+    // ---- Login inputs: full width + leading icons -------------------------
+    // Username collapses to the browser's default input width (~176px)
+    // without an explicit width — force both fields to fill the panel.
+    .login-form .form-control {
+        width: 100%;
+    }
+
+    // Small leading icon inside username/password (CSS-only, no template
+    // override of core/loginform needed). SVG data-URIs, muted grey.
+    .login-form-username .form-control,
+    .login-form-password .form-control {
+        padding-left: 2.625rem;
+        background-repeat: no-repeat;
+        background-position: 0.875rem center;
+        background-size: 1rem 1rem;
+    }
+
+    .login-form-username .form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z'/%3E%3C/svg%3E");
+    }
+
+    .login-form-password .form-control {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M18 8h-1V6c0-2.8-2.2-5-5-5S7 3.2 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM9 8V6c0-1.7 1.3-3 3-3s3 1.3 3 3v2H9z'/%3E%3C/svg%3E");
+    }
+
+    // ---- Guest access / cookies notice buttons ----------------------------
+    // Core renders these stacked with no margins — they visually touch.
+    // Make them full-width quiet buttons with consistent spacing.
+    .btn-secondary {
+        display: block;
+        width: 100%;
+        margin-top: 0.75rem;
+        padding: 0.55rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+
+    // ---- Password show/hide (eye) toggle ----------------------------------
+    // Moodle renders the reveal control as a .btn.btn-secondary inside an
+    // .input-group next to the password field. The full-width .btn-secondary
+    // rule above (meant for the Cookies / guest buttons) would otherwise turn
+    // it into a full-width coloured bar. Dock it as a small quiet icon button
+    // on the right edge of the field instead.
+    .login-form-password .input-group {
+        position: relative;
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    // Leave room for the eye button on the right of the password input.
+    .login-form-password .form-control {
+        padding-right: 2.75rem;
+    }
+
+    .login-form-password .input-group .btn,
+    .login-form-password .input-group .btn-secondary {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 4;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.75rem;
+        height: 100%;
+        min-height: 100%;
+        margin: 0;
+        padding: 0;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        border-radius: 0 var(--edz-border-radius-sm) var(--edz-border-radius-sm) 0;
+        color: var(--edz-text-muted, #9ca3af) !important;
+
+        &:hover,
+        &:focus {
+            background: transparent !important;
+            color: var(--edz-text-color, #1f2937) !important;
+            filter: none;
+            box-shadow: none !important;
+        }
+
+        // Keep the icon itself at a sensible size / muted colour.
+        i,
+        .icon {
+            margin: 0;
+            font-size: 1rem;
+            color: inherit;
+        }
+    }
+}
+
+// Language menu.
+.edz-login-langmenu {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.8125rem;
+    color: var(--edz-text-muted);
+}
+
+
+// ---- Course view page header (context_header override) -------------------
+// Rendered on course/view.php pages by core_renderer::context_header().
+// Shows: course thumbnail image | course name | short description
+
+.edz-course-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.75rem 2rem;
+    // Dark hero panel — matches the sidebar brand colour.
+    background: linear-gradient(135deg, var(--edz-sidebar-bg, #1a1a2e) 0%, #312b5e 100%);
+    border: none;
+    border-radius: var(--edz-border-radius);
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.18);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+
+    // Soft decorative glows.
+    &::before {
+        content: "";
+        position: absolute;
+        top: -70px;
+        right: -40px;
+        width: 260px;
+        height: 260px;
+        background: radial-gradient(circle, rgba(99, 102, 241, 0.35), transparent 70%);
+        pointer-events: none;
+    }
+
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: -90px;
+        left: 35%;
+        width: 220px;
+        height: 220px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 70%);
+        pointer-events: none;
+    }
+}
+
+.edz-course-header-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 14px;
+    object-fit: cover;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    border: 2px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.edz-course-header-body {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.edz-course-header-title {
+    font-size: var(--edz-fs-h1);
+    font-weight: var(--edz-fw-bold);
+    color: #ffffff;
+    margin: 0 0 0.375rem;
+    line-height: 1.3;
+    white-space: normal;
+}
+
+.edz-course-header-desc {
+    font-size: var(--edz-fs-body);
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.6;
+    margin: 0;
+    // Clamp to 3 lines.
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+// Completion donut chart on the right side of the course header.
+.edz-course-header-progress {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+    margin-left: auto;
+    padding-left: 1rem;
+
+    .edz-donut {
+        width: 96px;
+        height: 96px;
+        display: block;
+    }
+
+    .edz-donut-track {
+        fill: none;
+        stroke: rgba(255, 255, 255, 0.18);
+        stroke-width: 8;
+    }
+
+    .edz-donut-arc {
+        fill: none;
+        stroke: #4ade80; // fresh green — pops on the dark panel
+        stroke-width: 8;
+        stroke-linecap: round;
+        transition: stroke-dasharray 0.6s ease;
+    }
+
+    .edz-donut-text {
+        fill: #ffffff;
+        font-size: 17px;
+        font-weight: 700;
+        text-anchor: middle;
+        font-family: var(--edz-font-heading);
+    }
+
+    .edz-donut-label {
+        font-size: var(--edz-fs-small);
+        font-weight: var(--edz-fw-medium);
+        color: rgba(255, 255, 255, 0.75);
+        letter-spacing: 0.02em;
+    }
+}
+
+@media (max-width: 576px) {
+    .edz-course-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .edz-course-header-progress {
+        margin-left: 0;
+        padding-left: 0;
+    }
+
+    .edz-course-header-img {
+        width: 88px;
+        height: 88px;
+    }
+}
+
+
+// ---- Maintenance page ----------------------------------------------------
+
+.edz-maintenance-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--edz-page-bg);
+    padding: 2rem 1rem;
+}
+
+.edz-maintenance-inner {
+    text-align: center;
+    max-width: 560px;
+}
+
+.edz-maintenance-brand {
+    margin-bottom: 1.5rem;
+}
+
+.edz-maintenance-sitename {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--edz-heading-color);
+}
+
+
+// ---- Secure exam layout --------------------------------------------------
+
+.edz-secure-wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: var(--edz-page-bg);
+}
+
+.edz-secure-header {
+    height: var(--edz-navbar-height);
+    background: var(--edz-navbar-bg);
+    border-bottom: 1px solid var(--edz-navbar-border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+
+    .edz-secure-sitename {
+        font-weight: 700;
+        color: var(--edz-heading-color);
+    }
+}
+
+.edz-secure-content-area {
+    flex: 1;
+    display: flex;
+    gap: 1.5rem;
+    padding: var(--edz-content-padding);
+    align-items: flex-start;
+}
+
+
+// ---- Full-viewport pages: hide footer, let app fill available height ------
+// The Messages page (and similar full-height Moodle apps) use a viewport-
+// filling interface. Adding a footer creates overflow and a broken layout.
+// Suppress the footer and ensure #page fills cleanly.
+
+body#page-message-index {
+    // Hide footer — messages is a full-viewport app
+    .edzcorp-footer-wrap {
+        display: none !important;
+    }
+
+    // Page wrapper: fixed viewport height, flex column, clip overflow
+    #page-wrapper {
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    // #page fills all space below navbar
+    #page {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+
+    // topofscroll / main-inner fill #page
+    #topofscroll,
+    .main-inner {
+        flex: 1 1 auto;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    // page-content fills the remaining space below page-header
+    #page-content {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: hidden;
+    }
+
+    // The message app itself fills page-content
+    .message-app,
+    [data-region="message-app-content-area"],
+    .messaging-app-container {
+        height: 100%;
+        min-height: 0;
+    }
+}
+
+
+// ---- Override Moodle's limitedwidth 830px content squish ─────────────────
+// Moodle's Boost CSS caps .main-inner at max-width: 830px on limitedwidth
+// pages (pagelayout-standard, course pages, etc.) which looks too narrow on
+// modern wide screens. Raise the cap to 1280px to use available space better.
+@media (min-width: 768px) {
+    .pagelayout-standard #page.drawers .main-inner,
+    .pagelayout-course #page.drawers .main-inner,
+    .pagelayout-incourse #page.drawers .main-inner,
+    .pagelayout-admin #page.drawers .main-inner,
+    .pagelayout-mycourses #page.drawers .main-inner,
+    .pagelayout-mydashboard #page.drawers .main-inner,
+    .pagelayout-report #page.drawers .main-inner,
+    .pagelayout-mypublic #page.drawers .main-inner,
+    body.limitedwidth #page.drawers .main-inner {
+        max-width: 1280px;
+    }
+}
+
+
+// ---- Override Moodle's .header-maxwidth 830px cap ─────────────────────────
+// Boost applies .header-maxwidth to #page-header, pinning it to 830px even on
+// wide screens — while .main-inner below has been raised to 1280px. This makes
+// the page-header narrower than the content below it, causing visual misalignment.
+// Override it to match our wider content cap.
+@media (min-width: 768px) {
+    .pagelayout-course .header-maxwidth,
+    .pagelayout-incourse .header-maxwidth,
+    .pagelayout-standard .header-maxwidth,
+    .pagelayout-admin .header-maxwidth,
+    .pagelayout-mycourses .header-maxwidth,
+    .pagelayout-mydashboard .header-maxwidth,
+    .pagelayout-report .header-maxwidth,
+    .pagelayout-mypublic .header-maxwidth,
+    body.limitedwidth .header-maxwidth {
+        max-width: 1280px !important;
+    }
+}
+
+
+// ---- Course page: stretch context-header card to full content width ─────────
+// Boost's #page-header uses a flex row (.d-flex.align-items-center) where the
+// left side is .me-auto which takes only its content width. After fixing the
+// header-maxwidth cap above, the header is wide — but the card inside still
+// shrinks to ~541px. Force the left container to stretch to fill available space.
+.pagelayout-course #page-header,
+.pagelayout-incourse #page-header {
+
+    // Stretch left flex item to fill all available header space
+    .d-flex.align-items-center > .me-auto {
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    // Any immediate div wrapper inside the stretching container
+    .d-flex.align-items-center > .me-auto > div {
+        width: 100%;
+    }
+
+    // Course header card: full-width
+    .edz-course-header {
+        width: 100%;
+        max-width: none;
+    }
+}
+
+
+// ---- Star rating widget (tool_courserating) ─────────────────────────────────
+// Shown below the course header card on course/view.php pages.
+// Keep it compact, left-aligned, and consistent with our theme text styles.
+.tool_courserating-widget {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    font-size: var(--edz-fs-small, 0.8125rem);
+    color: var(--edz-text-muted, #6b7280);
+    padding: 0 0 0.75rem 0;
+
+    .tool_courserating-cfield,
+    .rating-summary {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        flex-wrap: wrap;
+    }
+
+    // Star icons (FontAwesome)
+    .fa-star,
+    .fa-star-half-alt,
+    .fa-star-o,
+    [class*="fa-star"] {
+        color: #f59e0b !important;
+        font-size: 0.875rem;
+    }
+
+    a {
+        color: var(--edz-text-muted, #6b7280);
+        text-decoration: none;
+        transition: color 0.15s ease;
+
+        &:hover { color: var(--edz-accent, #6366f1); text-decoration: underline; }
+    }
+
+    .tool_courserating-ratings {
+        color: var(--edz-text-muted, #6b7280);
+        font-size: var(--edz-fs-small, 0.8125rem);
+    }
+}
+
+[data-edz-theme="dark"] .tool_courserating-widget {
+    color: rgba(255,255,255,0.5);
+    a { color: rgba(255,255,255,0.5); &:hover { color: #a5b4fc; } }
+}
+
+
+// ---- Page header breathing room ────────────────────────────────────────────
+// #page-header has Bootstrap's default 15px horizontal padding which looks
+// tight now that the header spans the full content width.
+// Increase to 1.25rem (20px) and ensure #page-content matches for visual
+// consistency between breadcrumb/title and section content below.
+#page-header {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+// Ensure secondary nav left-edge aligns with page-header content (not the raw container edge)
+.secondary-navigation .nav-tabs {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+
+// ── Alignment fixes — diagnosed 2025-05-10 ──────────────────────────────────
+
+// FIX 1: Secondary nav tabs
+// Boost CSS: `.secondary-navigation .navigation .nav-tabs { max-width: 830px; margin-left: auto }`
+// This cap centers the tabs at 399px while page content starts at 291px — 108px gap.
+// Override to remove the cap and left-align tabs with the content column.
+.secondary-navigation .navigation .nav-tabs,
+.secondary-navigation .nav-tabs {
+    max-width: none !important;
+    margin-left: 0 !important;
+}
+
+// FIX 2: Breadcrumb extra left margin
+// Boost CSS puts 26px margin-left on OL.breadcrumb inside #page-navbar,
+// shifting the breadcrumb 26px right of the page icon — misaligned.
+#page-navbar .breadcrumb {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}

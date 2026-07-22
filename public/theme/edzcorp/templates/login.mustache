@@ -1,0 +1,204 @@
+{{!
+    EdzCorp — login template.
+    Split-panel layout:
+      Left  (55 %): image slider with caption, dots, auto-advance JS.
+      Right (45 %): logo (links to home) + welcome heading + Moodle login form.
+
+    Slide images are injected as background-image CSS by lib.php at compile time:
+      .edz-slide-1 { background-image: url('...image1...'); }
+      .edz-slide-2 { background-image: url('...image2...'); }
+    If no images are uploaded the left panel shows the gradient fallback.
+
+    Context variables (provided by layout/login.php):
+      homeurl            (string)  URL to the site home page.
+      logourl            (string)  Uploaded logo URL (may be empty).
+      haslogo            (bool)    True if a logo file is configured.
+      sitename           (string)  Site full name.
+      sliderheading      (string)  Optional heading text on the left panel.
+      slidercaption1     (string)  Caption for slide 1.
+      slidercaption2     (string)  Caption for slide 2 (may be empty).
+      slidercaptions_json (string) JSON array of captions for the JS slider.
+      hasslide2          (bool)    True when a second slider image is configured.
+      langmenu           (mixed)   Moodle lang-menu data (false if only 1 lang).
+}}
+{{> theme_boost/head }}
+
+<body {{{ bodyattributes }}}>
+{{> core/local/toast/wrapper}}
+{{{ output.standard_top_of_body_html }}}
+
+<div id="page-wrapper" class="d-print-block edzcorp-login-page {{{loginlayoutclass}}}">
+
+    <div class="edz-login-split">
+
+        {{! ── Left panel ─────────────────────────────────────────────────── }}
+        {{#hasslideany}}
+        {{! Image slider (one or more slider images uploaded) }}
+        <div class="edz-login-slider" aria-hidden="true">
+
+            {{! Slide elements — background images injected by lib.php CSS }}
+            <div class="edz-slider-slide edz-slide-1 edz-slide-active"></div>
+            <div class="edz-slider-slide edz-slide-2"></div>
+
+            {{! Gradient overlay for text legibility }}
+            <div class="edz-slider-overlay"></div>
+
+            {{! Caption / heading area }}
+            <div class="edz-slider-content">
+                {{#sliderheading}}
+                <div class="edz-slider-heading">{{sliderheading}}</div>
+                {{/sliderheading}}
+
+                <div class="edz-slider-caption" id="edz-slider-caption">{{slidercaption1}}</div>
+
+                {{#hasslide2}}
+                <div class="edz-slider-dots">
+                    <button class="edz-slider-dot edz-dot-active" data-slide="0"
+                            type="button" aria-label="Slide 1"></button>
+                    <button class="edz-slider-dot" data-slide="1"
+                            type="button" aria-label="Slide 2"></button>
+                </div>
+                {{/hasslide2}}
+            </div>
+
+        </div>{{! .edz-login-slider }}
+        {{/hasslideany}}
+
+        {{^hasslideany}}
+        {{! Designed hero fallback — no slider images uploaded }}
+        <div class="edz-login-hero" aria-hidden="true">
+
+            {{! Brand chip (top-left) }}
+            <div class="edz-hero-brand">
+                <span class="edz-hero-brand-mark">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
+                         stroke="currentColor" stroke-width="2.2"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
+                                 fill="currentColor" stroke="none"/>
+                    </svg>
+                </span>
+                <span class="edz-hero-brand-name">{{sitename}}</span>
+            </div>
+
+            {{! Centre content }}
+            <div class="edz-hero-main">
+                <span class="edz-hero-icon">
+                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none"
+                         stroke="currentColor" stroke-width="1.8"
+                         stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/>
+                        <path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/>
+                    </svg>
+                </span>
+                <h1 class="edz-hero-title">{{herotitle}}</h1>
+                <p class="edz-hero-subtitle">{{herosubtitle}}</p>
+            </div>
+
+            {{! Stat cards (bottom) }}
+            {{#hasherostats}}
+            <div class="edz-hero-stats">
+                {{#herostats}}
+                <div class="edz-hero-stat">
+                    <div class="edz-hero-stat-value">{{value}}</div>
+                    <div class="edz-hero-stat-label">{{label}}</div>
+                </div>
+                {{/herostats}}
+            </div>
+            {{/hasherostats}}
+
+        </div>{{! .edz-login-hero }}
+        {{/hasslideany}}
+
+        {{! ── Right panel: login form ────────────────────────────────────── }}
+        <div class="edz-login-panel">
+            <div class="edz-login-panel-inner" id="maincontent" tabindex="-1">
+
+                {{! Logo — click goes back to the site home page }}
+                <div class="edz-login-brand">
+                    <a href="{{{homeurl}}}" aria-label="{{sitename}}">
+                        {{#haslogo}}
+                        <img src="{{{logourl}}}"
+                             alt="{{sitename}}"
+                             class="edz-login-logo"
+                             loading="eager">
+                        {{/haslogo}}
+                        {{^haslogo}}
+                        <span class="edz-login-sitename">{{sitename}}</span>
+                        {{/haslogo}}
+                    </a>
+                </div>
+
+                {{! Welcome heading }}
+                <div class="edz-login-welcome">
+                    <div class="edz-login-title">{{#str}}logintitle, theme_edzcorp{{/str}}</div>
+                    <div class="edz-login-subtitle">{{#str}}loginsubtitle, theme_edzcorp{{/str}}</div>
+                </div>
+
+                {{! Moodle login form — standard region IDs preserved for Moodle JS }}
+                <div id="page-content">
+                    <div id="region-main-box">
+                        <div id="region-main" tabindex="-1">
+                            {{{ output.main_content }}}
+                        </div>
+                    </div>
+                </div>
+
+                {{! Language switcher — only rendered when >1 language pack installed }}
+                {{#langmenu}}
+                <div class="edz-login-langmenu">
+                    {{> core/moremenu}}
+                </div>
+                {{/langmenu}}
+
+            </div>{{! .edz-login-panel-inner }}
+        </div>{{! .edz-login-panel }}
+
+    </div>{{! .edz-login-split }}
+
+    {{! These MUST be inside #page-wrapper so Boost's JS finds them. }}
+    {{{ output.standard_after_main_region_html }}}
+    {{{ output.standard_end_of_body_html }}}
+
+</div>{{! #page-wrapper }}
+
+{{! Slider auto-advance JS — only loaded when two slide images are configured }}
+{{#hasslide2}}
+{{#js}}
+(function () {
+    var captions = {{{slidercaptions_json}}};
+    var slides   = document.querySelectorAll('.edz-slider-slide');
+    var dots     = document.querySelectorAll('.edz-slider-dot');
+    var captEl   = document.getElementById('edz-slider-caption');
+    var current  = 0;
+    var total    = slides.length;
+    var timer;
+
+    function goTo(idx) {
+        slides[current].classList.remove('edz-slide-active');
+        if (dots[current]) { dots[current].classList.remove('edz-dot-active'); }
+        current = (idx + total) % total;
+        slides[current].classList.add('edz-slide-active');
+        if (dots[current]) { dots[current].classList.add('edz-dot-active'); }
+        if (captEl && captions[current] !== undefined) {
+            captEl.textContent = captions[current];
+        }
+    }
+
+    // Dot click handlers.
+    dots.forEach(function (dot, i) {
+        dot.addEventListener('click', function () {
+            clearInterval(timer);
+            goTo(i);
+            timer = setInterval(function () { goTo(current + 1); }, 5000);
+        });
+    });
+
+    // Auto-advance every 5 seconds.
+    timer = setInterval(function () { goTo(current + 1); }, 5000);
+}());
+{{/js}}
+{{/hasslide2}}
+
+</body>
+</html>

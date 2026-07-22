@@ -1,0 +1,82 @@
+// =============================================================================
+// EdzCorp — _variables.scss
+// CSS custom properties (runtime variables) written to :root.
+// Values come from theme settings via the <body style> tag injected by lib.php,
+// or fall back to the defaults below.
+// =============================================================================
+
+:root {
+    // ---- Sidebar ----
+    --edz-sidebar-width:           220px;
+    --edz-sidebar-collapsed-width: 72px;
+    --edz-sidebar-bg:              #1a1a2e;
+    --edz-sidebar-color:           rgba(255, 255, 255, 0.80);
+    --edz-sidebar-hover-bg:        rgba(255, 255, 255, 0.09);
+    --edz-sidebar-active-bg:       #6366f1;   /* independent of --bs-primary */
+    --edz-accent:              #6366f1;     // Brand accent — used in frontpage, badges, highlights
+    --edz-sidebar-active-color:    #ffffff;
+    --edz-sidebar-border:          rgba(255, 255, 255, 0.07);
+    --edz-sidebar-transition:      all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+
+    // ---- Navbar ----
+    --edz-navbar-height:   64px;
+    --edz-navbar-bg:       #ffffff;
+    --edz-navbar-border:   #e9ecef;
+    --edz-navbar-shadow:   0 1px 4px rgba(0, 0, 0, 0.06);
+
+    // ---- Page / background ----
+    --edz-page-bg:         #f4f6fb;
+    --edz-card-bg:         #ffffff;
+    --edz-border-color:    #e9ecef;
+
+    // ---- Text ----
+    --edz-text-color:      #1e1e2d;
+    --edz-text-muted:      #6b7280;
+    --edz-heading-color:   #111827;
+    --edz-breadcrumb-link: #2563eb;   // breadcrumb link blue
+
+    // ---- Interactive ----
+    --edz-hover-bg:        #f3f4f6;
+    --edz-focus-ring:      0 0 0 3px rgba(99, 102, 241, 0.25);
+
+    // ---- Footer ----
+    --edz-footer-bg:       #ffffff;
+    --edz-footer-border:   #e9ecef;
+
+    // ---- Content padding ----
+    --edz-content-padding: 1.5rem;
+
+    // ---- Typography — font families ----
+    // Instrument Sans is always loaded via core_renderer.php standard_head_html().
+    // Admin font settings (headingfont, bodyfont) override these vars via lib.php.
+    --edz-font-heading:    'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --edz-font-subheading: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --edz-font-body:       'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    // ---- Typography — font sizes ----
+    // Defaults give a 16px body (client feedback: min 1rem). The whole scale
+    // can be shifted from Theme settings -> Typography -> Base font size,
+    // which re-emits these vars from lib.php.
+    --edz-fs-h1:    1.375rem;   // 22 px
+    --edz-fs-h2:    1.25rem;    // 20 px
+    --edz-fs-h3:    1.125rem;   // 18 px
+    --edz-fs-h4:    1.0625rem;  // 17 px
+    --edz-fs-h5:    1rem;       // 16 px
+    --edz-fs-h6:    1rem;       // 16 px
+    --edz-fs-body:  1rem;       // 16 px
+    --edz-fs-small: 0.875rem;   // 14 px — badges, captions, helper text
+    --edz-fs-courseindex: 0.85rem; // 13.6 px — course index drawer items
+
+    // ---- Typography — weights ----
+    --edz-fw-heading:  600;
+    --edz-fw-body:     400;
+    --edz-fw-medium:   500;
+    --edz-fw-semibold: 600;
+    --edz-fw-bold:     700;
+
+    // ---- Border radius ----
+    --edz-border-radius:   0.625rem;    // cards, panels
+    --edz-border-radius-btn: 0.625rem;    // buttons — consistent pill-ish feel
+    --edz-border-radius-sm:  0.425rem;  // badges, small elements
+    --edz-border-radius-lg:  0.875rem;  // modals, large cards
+}
