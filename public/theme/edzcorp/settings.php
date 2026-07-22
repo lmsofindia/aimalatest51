@@ -1045,20 +1045,21 @@ if ($ADMIN->fulltree) {
     );
     $page->add($setting);
 
-    // Specific category — only used when source = "specific".
-    $catoptions = [0 => get_string('fp_topics_specific_none', 'theme_edzcorp')];
+    // Specific category(ies) — only used when source = "specific".
+    // Multi-select: hold Ctrl/Cmd to pick more than one; each becomes a tile.
+    $catoptions = [];
     if (!during_initial_install()) {
         try {
-            $catoptions += \core_course_category::make_categories_list();
+            $catoptions = \core_course_category::make_categories_list();
         } catch (\Throwable $e) {
-            // Category tree not ready (e.g. mid-upgrade) — keep the placeholder only.
+            // Category tree not ready (e.g. mid-upgrade) — leave empty.
         }
     }
-    $setting = new admin_setting_configselect(
+    $setting = new admin_setting_configmultiselect(
         'theme_edzcorp/fp_topics_specific',
         get_string('fp_topics_specific', 'theme_edzcorp'),
         get_string('fp_topics_specificdesc', 'theme_edzcorp'),
-        0,
+        [],
         $catoptions
     );
     $page->add($setting);
