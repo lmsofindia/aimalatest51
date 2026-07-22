@@ -1,0 +1,12 @@
+{{!
+    EdzLeaderboard — avatar partial.
+
+    Renders the user's photo when they have one, otherwise a coloured
+    initials chip. Expects: haspic, picurl, name, initials, coloridx.
+
+    @package    block_edzleaderboard
+    @copyright  2026 EdzCorp
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{#haspic}}<img class="edzlb-ava edzlb-ava--img" src="{{picurl}}" alt="{{name}}">{{/haspic}}
+{{^haspic}}<span class="edzlb-ava edzlb-ava--c{{coloridx}}" aria-hidden="true">{{initials}}</span>{{/haspic}}
