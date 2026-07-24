@@ -16,6 +16,7 @@ use mod_edzsession\local\storage\processing_status;
 use mod_edzsession\local\storage\privacy_spec;
 use mod_edzsession\local\storage\embed_info;
 use mod_edzsession\local\storage\storage_quota;
+use mod_edzsession\local\connection_result;
 
 /**
  * AWS S3 storage provider — SKELETON.
@@ -63,6 +64,17 @@ class s3_provider implements storage_provider {
             && !empty($this->config->region)
             && !empty($this->config->accesskey)
             && !empty($this->config->secretkey);
+    }
+
+    public function test_connection(): connection_result {
+        if (!$this->is_configured()) {
+            return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
+        }
+        // Skeleton: settings are present but there is no live S3 client to verify
+        // credentials against yet. Report "configured, not verifiable" (neutral).
+        return connection_result::na(
+            get_string('test_s3_skeleton', 'mod_edzsession'),
+            $this->config->bucket . ' @ ' . $this->config->region);
     }
 
     // ---- Capabilities: S3 streams (no server-side pull), uses prefixes. ----

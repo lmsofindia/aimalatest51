@@ -15,6 +15,7 @@ use mod_edzsession\local\meeting\remote_meeting;
 use mod_edzsession\local\meeting\recording_asset;
 use mod_edzsession\local\meeting\download_ref;
 use mod_edzsession\local\meeting\participant_record;
+use mod_edzsession\local\connection_result;
 
 /**
  * Zoom meeting provider (Server-to-Server OAuth, per-account).
@@ -42,6 +43,24 @@ class zoom_provider implements meeting_provider {
 
     public function is_configured(account $account): bool {
         return $account->accountid !== '' && $account->clientid !== '' && $account->clientsecret !== '';
+    }
+
+    public function test_connection(account $account): connection_result {
+        if (!$this->is_configured($account)) {
+            return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
+        }
+        try {
+            // Force a fresh token (bypass cache) to genuinely exercise the creds.
+            unset($this->tokencache[$account->id]);
+            \cache::make('mod_edzsession', 'tokens')->delete('zoom_' . $account->id);
+            $me = $this->api($account, 'GET', '/users/me');
+            $who = trim(($me['first_name'] ?? '') . ' ' . ($me['last_name'] ?? ''));
+            $email = $me['email'] ?? '';
+            $label = $email !== '' ? $email : ($who !== '' ? $who : 'Zoom');
+            return connection_result::ok(get_string('test_ok_as', 'mod_edzsession', $label));
+        } catch (\Throwable $e) {
+            return connection_result::fail(get_string('test_failed', 'mod_edzsession'), $e->getMessage());
+        }
     }
 
     // ---- Meeting lifecycle ------------------------------------------------

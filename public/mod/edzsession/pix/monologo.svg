@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Live session: a video/broadcast camera. Monochrome (currentColor) so
+       Moodle's activity-icon system themes it per the site palette. -->
+  <path fill="currentColor" d="M4 6h11c.55 0 1 .45 1 1v3.2l4-3.1c.33-.26.8-.02.8.4v9c0 .42-.47.66-.8.4L16 13.8V17c0 .55-.45 1-1 1H4c-.55 0-1-.45-1-1V7c0-.55.45-1 1-1zm2.2 3.1a.9.9 0 1 0 0-1.8.9.9 0 0 0 0 1.8z"/>
+</svg>

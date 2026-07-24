@@ -28,6 +28,10 @@ class null_storage_provider implements storage_provider {
     public function is_configured(): bool {
         return true;
     }
+    public function test_connection(): \mod_edzsession\local\connection_result {
+        return \mod_edzsession\local\connection_result::na(
+            get_string('test_none', 'mod_edzsession'));
+    }
     public function supports_pull_upload(): bool {
         return false;
     }

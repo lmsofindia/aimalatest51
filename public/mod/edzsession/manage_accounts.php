@@ -17,6 +17,7 @@
 require(__DIR__ . '/../../config.php');
 
 use mod_edzsession\local\account_vault;
+use mod_edzsession\local\provider_manager;
 use mod_edzsession\form\account_form;
 
 $action = optional_param('action', 'list', PARAM_ALPHA);
@@ -48,6 +49,27 @@ if ($action === 'delete' && $id) {
         $confirmurl, $baseurl);
     echo $OUTPUT->footer();
     exit;
+}
+
+// ---- Test a single account's connection ----------------------------------
+if ($action === 'test' && $id) {
+    require_sesskey();
+    \core\session\manager::write_close(); // External call: don't hold the session lock.
+    try {
+        $account = account_vault::get($id);
+        $provider = provider_manager::get_meeting($account->provider);
+        $result = $provider->test_connection($account);
+        $msg = $result->message . ($result->detail ? ' — ' . $result->detail : '');
+        $type = $result->ok
+            ? \core\output\notification::NOTIFY_SUCCESS
+            : ($result->notapplicable
+                ? \core\output\notification::NOTIFY_INFO
+                : \core\output\notification::NOTIFY_ERROR);
+    } catch (\Throwable $e) {
+        $msg = get_string('test_failed', 'mod_edzsession') . ' — ' . $e->getMessage();
+        $type = \core\output\notification::NOTIFY_ERROR;
+    }
+    redirect($baseurl, $msg, null, $type);
 }
 
 // ---- Add / edit ----------------------------------------------------------
@@ -90,7 +112,9 @@ echo $OUTPUT->heading(get_string('manageaccounts', 'mod_edzsession'));
 
 echo html_writer::div(
     $OUTPUT->single_button(new moodle_url($baseurl, ['action' => 'add']),
-        get_string('account_add', 'mod_edzsession'), 'get'),
+        get_string('account_add', 'mod_edzsession'), 'get')
+    . ' ' . $OUTPUT->single_button(new moodle_url('/mod/edzsession/test_connections.php'),
+        get_string('test_runall', 'mod_edzsession'), 'get'),
     'mb-3');
 
 $rows = account_vault::list_rows(false);
@@ -108,7 +132,10 @@ if (empty($rows)) {
     foreach ($rows as $row) {
         $editurl = new moodle_url($baseurl, ['action' => 'edit', 'id' => $row->id]);
         $delurl = new moodle_url($baseurl, ['action' => 'delete', 'id' => $row->id, 'sesskey' => sesskey()]);
-        $actions = $OUTPUT->action_icon($editurl, new pix_icon('t/edit', get_string('edit')))
+        $testurl = new moodle_url($baseurl, ['action' => 'test', 'id' => $row->id, 'sesskey' => sesskey()]);
+        $actions = $OUTPUT->action_icon($testurl,
+                new pix_icon('i/valid', get_string('test_connection', 'mod_edzsession')))
+            . $OUTPUT->action_icon($editurl, new pix_icon('t/edit', get_string('edit')))
             . $OUTPUT->action_icon($delurl, new pix_icon('t/delete', get_string('delete')));
         $table->data[] = [
             format_string($row->name),

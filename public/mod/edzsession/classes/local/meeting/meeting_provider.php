@@ -24,6 +24,15 @@ interface meeting_provider {
     public static function get_display_name(): string;
     public function is_configured(account $account): bool;
 
+    /**
+     * Actively verify the account connection (e.g. fetch an OAuth token + a
+     * lightweight API call). Used by the admin "Test connections" screen.
+     *
+     * @param account $account
+     * @return \mod_edzsession\local\connection_result
+     */
+    public function test_connection(account $account): \mod_edzsession\local\connection_result;
+
     // ---- Meeting lifecycle ------------------------------------------------
 
     public function create_meeting(meeting_spec $spec, account $account): remote_meeting;

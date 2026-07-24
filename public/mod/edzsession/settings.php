@@ -31,6 +31,12 @@ if ($hassiteconfig) {
         new moodle_url('/mod/edzsession/manage_accounts.php'),
         'mod/edzsession:manageaccounts'
     ));
+    $ADMIN->add('modsettings', new admin_externalpage(
+        'edzsessiontestconnections',
+        get_string('testconnections', 'mod_edzsession'),
+        new moodle_url('/mod/edzsession/test_connections.php'),
+        'mod/edzsession:manageaccounts'
+    ));
 }
 
 if ($ADMIN->fulltree) {

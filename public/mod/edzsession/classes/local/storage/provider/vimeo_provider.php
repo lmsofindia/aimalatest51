@@ -16,6 +16,7 @@ use mod_edzsession\local\storage\processing_status;
 use mod_edzsession\local\storage\privacy_spec;
 use mod_edzsession\local\storage\embed_info;
 use mod_edzsession\local\storage\storage_quota;
+use mod_edzsession\local\connection_result;
 
 /**
  * Vimeo storage provider — the first fully implemented driver.
@@ -51,6 +52,23 @@ class vimeo_provider implements storage_provider {
 
     public function is_configured(): bool {
         return strlen($this->pat) > 0;
+    }
+
+    public function test_connection(): connection_result {
+        if (!$this->is_configured()) {
+            return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
+        }
+        try {
+            $me = $this->api('GET', '/me', ['fields' => 'name,upload_quota']);
+            $name = $me['name'] ?? 'Vimeo';
+            $free = $me['upload_quota']['periodic']['free']
+                ?? ($me['upload_quota']['space']['free'] ?? null);
+            $detail = ($free !== null)
+                ? get_string('test_vimeo_quota', 'mod_edzsession', display_size((int) $free)) : null;
+            return connection_result::ok(get_string('test_ok_as', 'mod_edzsession', $name), $detail);
+        } catch (\Throwable $e) {
+            return connection_result::fail(get_string('test_failed', 'mod_edzsession'), $e->getMessage());
+        }
     }
 
     // ---- Capabilities -----------------------------------------------------
