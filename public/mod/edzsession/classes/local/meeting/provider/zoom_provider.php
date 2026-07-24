@@ -49,18 +49,27 @@ class zoom_provider implements meeting_provider {
         if (!$this->is_configured($account)) {
             return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
         }
+        // Getting a fresh OAuth token already proves the account id + client
+        // credentials are valid — and it needs no extra API scopes.
         try {
-            // Force a fresh token (bypass cache) to genuinely exercise the creds.
             unset($this->tokencache[$account->id]);
             \cache::make('mod_edzsession', 'tokens')->delete('zoom_' . $account->id);
-            $me = $this->api($account, 'GET', '/users/me');
-            $who = trim(($me['first_name'] ?? '') . ' ' . ($me['last_name'] ?? ''));
-            $email = $me['email'] ?? '';
-            $label = $email !== '' ? $email : ($who !== '' ? $who : 'Zoom');
-            return connection_result::ok(get_string('test_ok_as', 'mod_edzsession', $label));
+            $this->get_token($account);
         } catch (\Throwable $e) {
             return connection_result::fail(get_string('test_failed', 'mod_edzsession'), $e->getMessage());
         }
+        // Optionally enrich with the account holder, but don't fail the test if
+        // the user:read scope isn't granted (it isn't needed for this plugin).
+        $label = $account->name;
+        try {
+            $me = $this->api($account, 'GET', '/users/me');
+            if (!empty($me['email'])) {
+                $label = $me['email'];
+            }
+        } catch (\Throwable $e) {
+            unset($e);
+        }
+        return connection_result::ok(get_string('test_ok_as', 'mod_edzsession', $label));
     }
 
     // ---- Meeting lifecycle ------------------------------------------------
@@ -155,20 +164,27 @@ class zoom_provider implements meeting_provider {
             unset($e);
         }
 
-        // 2) Single meeting fallback: the most recent ended instance's UUID.
-        //    We deliberately let a real API failure here propagate, so a genuine
-        //    scope/plan problem shows as a Zoom API error rather than "no instance".
+        // 2) Single meeting: GET /meetings/{id} reliably returns the meeting's
+        //    UUID for an existing meeting (numeric id works here, unlike the
+        //    past_meetings endpoints).
         if (empty($candidates)) {
             try {
-                $res = $this->api($account, 'GET',
-                    '/past_meetings/' . rawurlencode($meeting->meetingid));
+                $res = $this->api($account, 'GET', '/meetings/' . rawurlencode($meeting->meetingid));
                 if (!empty($res['uuid'])) {
                     $candidates[] = [$res['uuid'], strtotime($res['start_time'] ?? 'now')];
                 }
             } catch (\moodle_exception $e) {
-                // If BOTH endpoints failed, this is a real error (likely missing
-                // meeting:read scope) — surface it instead of a vague null.
-                throw $e;
+                unset($e);
+            }
+        }
+
+        // 3) Last resort: the past-meeting details endpoint. We let a real API
+        //    failure here propagate so a genuine scope/plan problem shows as a
+        //    Zoom API error (with detail) rather than a vague "no instance".
+        if (empty($candidates)) {
+            $res = $this->api($account, 'GET', '/past_meetings/' . rawurlencode($meeting->meetingid));
+            if (!empty($res['uuid'])) {
+                $candidates[] = [$res['uuid'], strtotime($res['start_time'] ?? 'now')];
             }
         }
 
