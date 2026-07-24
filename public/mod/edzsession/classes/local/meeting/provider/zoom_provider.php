@@ -135,20 +135,48 @@ class zoom_provider implements meeting_provider {
         if ($meeting->meetingid === '') {
             return null;
         }
+
+        $candidates = [];
+
+        // 1) Recurring meetings: list all ended instances and their UUIDs.
+        //    Returns an empty list for a single (non-recurring) meeting, so we
+        //    fall through to (2) in that case.
         try {
             $res = $this->api($account, 'GET',
                 '/past_meetings/' . rawurlencode($meeting->meetingid) . '/instances');
-        } catch (\Throwable $e) {
-            return null; // No past instances yet (meeting not ended / not processed).
+            foreach (($res['meetings'] ?? []) as $inst) {
+                if (!empty($inst['uuid'])) {
+                    $candidates[] = [$inst['uuid'], strtotime($inst['start_time'] ?? 'now')];
+                }
+            }
+        } catch (\moodle_exception $e) {
+            // Keep going — the single-meeting endpoint below is the fallback and
+            // will surface a real scope/auth error if that is the actual problem.
+            unset($e);
         }
+
+        // 2) Single meeting fallback: the most recent ended instance's UUID.
+        //    We deliberately let a real API failure here propagate, so a genuine
+        //    scope/plan problem shows as a Zoom API error rather than "no instance".
+        if (empty($candidates)) {
+            try {
+                $res = $this->api($account, 'GET',
+                    '/past_meetings/' . rawurlencode($meeting->meetingid));
+                if (!empty($res['uuid'])) {
+                    $candidates[] = [$res['uuid'], strtotime($res['start_time'] ?? 'now')];
+                }
+            } catch (\moodle_exception $e) {
+                // If BOTH endpoints failed, this is a real error (likely missing
+                // meeting:read scope) — surface it instead of a vague null.
+                throw $e;
+            }
+        }
+
+        // Pick the instance whose start time is closest to the occurrence.
         $best = null;
         $bestdiff = PHP_INT_MAX;
-        foreach (($res['meetings'] ?? []) as $inst) {
-            $uuid = $inst['uuid'] ?? '';
-            if ($uuid === '') {
-                continue;
-            }
-            $diff = abs(strtotime($inst['start_time'] ?? 'now') - $starttime);
+        foreach ($candidates as [$uuid, $st]) {
+            $diff = abs($st - $starttime);
             if ($diff < $bestdiff) {
                 $bestdiff = $diff;
                 $best = $uuid;
