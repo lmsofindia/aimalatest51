@@ -38,7 +38,7 @@ $context = context_module::instance($cm->id);
 require_capability('mod/edzsession:view', $context);
 
 // Log the view + trigger completion-on-view.
-$event = \core\event\course_module_viewed::create([
+$event = \mod_edzsession\event\course_module_viewed::create([
     'objectid' => $edzsession->id,
     'context' => $context,
 ]);

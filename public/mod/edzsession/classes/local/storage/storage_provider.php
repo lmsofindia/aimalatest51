@@ -40,6 +40,14 @@ interface storage_provider {
     /** @return bool true when credentials are present and correctly shaped. */
     public function is_configured(): bool;
 
+    /**
+     * Actively verify the provider connection (make a lightweight live call).
+     * Used by the admin "Test connections" screen.
+     *
+     * @return \mod_edzsession\local\connection_result
+     */
+    public function test_connection(): \mod_edzsession\local\connection_result;
+
     // ---- Capability flags (pipeline branches on THESE, never on the name) --
 
     /** Provider fetches the source URL itself (server-to-server pull upload). */

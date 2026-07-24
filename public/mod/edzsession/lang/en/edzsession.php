@@ -152,6 +152,31 @@ $string['recording_pending'] = 'Not available yet';
 $string['recording_processing'] = 'Processing…';
 $string['recording_failed'] = 'Recording failed';
 
+// Test connections.
+$string['testconnections'] = 'Test connections';
+$string['testconnections_desc'] = 'Check that each meeting account and storage provider can actually connect with the credentials you have entered.';
+$string['test_connection'] = 'Test connection';
+$string['test_runall'] = 'Test all connections';
+$string['test_runhint'] = 'Click "Test all connections" to run live checks against each configured provider.';
+$string['test_col_target'] = 'Target';
+$string['test_col_type'] = 'Type';
+$string['test_col_status'] = 'Status';
+$string['test_col_detail'] = 'Detail';
+$string['test_type_meeting'] = 'Meeting account ({$a})';
+$string['test_type_storage'] = 'Storage provider';
+$string['test_pass'] = 'Connected';
+$string['test_fail'] = 'Failed';
+$string['test_na'] = 'Not tested';
+$string['test_default'] = 'Default';
+$string['test_ok_as'] = 'Connected as {$a}';
+$string['test_failed'] = 'Connection failed';
+$string['test_notconfigured'] = 'Not configured';
+$string['test_none'] = 'No storage provider selected — nothing to test.';
+$string['test_s3_skeleton'] = 'Settings present; live test not available (S3 skeleton).';
+$string['test_vimeo_quota'] = 'Free upload quota: {$a}';
+$string['test_nothing'] = 'No meeting accounts or storage providers are configured yet.';
+$string['backtoaccounts'] = 'Back to meeting accounts';
+
 // Manage / reconcile.
 $string['managelink'] = 'Manage attendance & recordings';
 $string['manage_title'] = 'Manage: {$a}';

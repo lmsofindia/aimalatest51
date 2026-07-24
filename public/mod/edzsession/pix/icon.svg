@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Colored fallback icon (used where the monochrome monologo is not applied). -->
+  <rect x="1.5" y="1.5" width="21" height="21" rx="5" fill="#0f6cbf"/>
+  <path fill="#ffffff" d="M6 8h8c.55 0 1 .45 1 1v1.9l3.1-2.4c.33-.26.8-.02.8.4v6.2c0 .42-.47.66-.8.4L15 13.1V15c0 .55-.45 1-1 1H6c-.55 0-1-.45-1-1V9c0-.55.45-1 1-1zm2 2.6a.85.85 0 1 0 0-1.7.85.85 0 0 0 0 1.7z"/>
+</svg>
