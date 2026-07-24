@@ -31,13 +31,16 @@ class discovery {
         $now = time();
         $since = $now - ($lookbackdays * DAYSECS);
 
-        $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.storageprovider AS actstorage
+        // No remoteuuid requirement: we resolve the instance UUID from Zoom, so
+        // recordings are discovered even without a webhook configured.
+        $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.storageprovider AS actstorage,
+                       e.remotemeetingid AS parentmeetingid
                   FROM {edzsession_occurrence} o
                   JOIN {edzsession} e ON e.id = o.edzsessionid
                  WHERE o.starttime > :since
                    AND (o.starttime + (o.duration * 60)) < :now
                    AND e.accountid IS NOT NULL
-                   AND o.remoteuuid IS NOT NULL";
+                   AND e.remotemeetingid IS NOT NULL";
         $rows = $DB->get_records_sql($sql, ['since' => $since, 'now' => $now]);
 
         $enqueued = 0;
@@ -51,8 +54,22 @@ class discovery {
             try {
                 $account = account_vault::get((int) $occ->accountid);
                 $provider = provider_manager::get_meeting($occ->meetingprovider);
-                $meeting = new \mod_edzsession\local\meeting\remote_meeting(
-                    (string) $occ->remotemeetingid, '', $occ->remoteuuid);
+                $meetingid = (string) ($occ->remotemeetingid ?: $occ->parentmeetingid);
+
+                // Resolve + persist the real occurrence UUID if missing.
+                $uuid = $occ->remoteuuid;
+                if (empty($uuid)) {
+                    $probe = new \mod_edzsession\local\meeting\remote_meeting($meetingid, '', null);
+                    $uuid = $provider->resolve_occurrence_uuid($probe, (int) $occ->starttime, $account);
+                    if (!empty($uuid)) {
+                        $DB->set_field('edzsession_occurrence', 'remoteuuid', $uuid, ['id' => $occ->id]);
+                    }
+                }
+                if (empty($uuid)) {
+                    continue; // Instance not available yet; try again next run.
+                }
+
+                $meeting = new \mod_edzsession\local\meeting\remote_meeting($meetingid, '', $uuid);
                 foreach ($provider->list_recordings($meeting, $account) as $asset) {
                     if (!$asset->is_video()) {
                         continue; // Only offload the main video; transcript = caption (P5).
