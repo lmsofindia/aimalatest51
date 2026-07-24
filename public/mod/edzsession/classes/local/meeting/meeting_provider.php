@@ -40,6 +40,17 @@ interface meeting_provider {
     public function delete_meeting(remote_meeting $meeting, account $account): void;
     public function get_join_url(remote_meeting $meeting, \stdClass $user): string;
 
+    /**
+     * A freshly-generated HOST start URL (carries host authorisation, e.g. a
+     * Zoom ZAK token). Generated at click time and never stored/logged, because
+     * the token is sensitive and expires. Only handed to host-capable users.
+     *
+     * @param remote_meeting $meeting
+     * @param account $account
+     * @return string
+     */
+    public function get_host_start_url(remote_meeting $meeting, account $account): string;
+
     // ---- Attendance -------------------------------------------------------
 
     /** @return participant_record[] deduped is the engine's job; return raw segments. */

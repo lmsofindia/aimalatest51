@@ -108,6 +108,17 @@ class zoom_provider implements meeting_provider {
         return $meeting->joinurl;
     }
 
+    public function get_host_start_url(remote_meeting $meeting, account $account): string {
+        // Re-fetch the meeting so Zoom mints a fresh start_url (the embedded ZAK
+        // token in the create-time start_url expires ~2h, so we never store it).
+        $res = $this->api($account, 'GET', '/meetings/' . $meeting->meetingid);
+        $starturl = $res['start_url'] ?? '';
+        if ($starturl === '') {
+            throw new \moodle_exception('nohoststarturl', 'mod_edzsession');
+        }
+        return $starturl;
+    }
+
     // ---- Attendance -------------------------------------------------------
 
     public function fetch_participants(remote_meeting $meeting, account $account): array {

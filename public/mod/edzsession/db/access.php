@@ -51,6 +51,14 @@ $capabilities = [
         'archetypes' => ['teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
     ],
 
+    // Start the meeting AS HOST (gets Zoom's start_url / host authorisation).
+    // Anyone without this sees only "Join" and joins as a participant.
+    'mod/edzsession:host' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_MODULE,
+        'archetypes' => ['teacher' => CAP_ALLOW, 'editingteacher' => CAP_ALLOW, 'manager' => CAP_ALLOW],
+    ],
+
     // Manage the multi-account credential vault (site level).
     'mod/edzsession:manageaccounts' => [
         'riskbitmask' => RISK_CONFIG,
