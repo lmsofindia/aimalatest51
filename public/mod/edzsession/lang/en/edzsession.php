@@ -200,6 +200,21 @@ $string['reconcile_notenrolled'] = 'That user is not enrolled in this course.';
 $string['reconcile_repoll'] = 'Re-poll attendance';
 $string['reconcile_repolled'] = 'Attendance re-polled.';
 $string['reconcile_repollfailed'] = 'Re-poll failed: {$a}';
+// Recordings on the manage page.
+$string['rec_heading'] = 'Recording';
+$string['rec_none'] = 'No recording has been fetched for this session yet. Use "Sync recording" to pull it from the meeting provider.';
+$string['rec_sync'] = 'Sync recording';
+$string['rec_sync_title'] = 'Syncing recording';
+$string['rec_synced'] = 'Recording sync complete.';
+$string['rec_syncfailed'] = 'Recording sync failed: {$a}';
+$string['rec_storagenone'] = 'This activity has no recording storage provider selected, so recordings are not offloaded. Set a storage provider in the activity settings or the site defaults.';
+$string['rec_found'] = 'Zoom returned {$a->files} recording file(s), {$a->videos} video(s).';
+$string['rec_col_status'] = 'Status';
+$string['rec_col_link'] = 'Recording';
+$string['rec_state_ready'] = 'Ready';
+$string['rec_state_failed'] = 'Failed';
+$string['rec_state_processing'] = 'Processing';
+$string['rec_watch'] = 'Watch recording';
 
 // Tasks.
 $string['task_discover'] = 'Discover new session recordings';
