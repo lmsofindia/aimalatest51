@@ -1,0 +1,48 @@
+mod_edzsession — TEST CHECKLIST
+================================
+Legend: [ ] pending  [x] pass  [!] fail/needs work
+
+PHASE 1 — INSTALL & ARCHITECTURE (this build)
+---------------------------------------------
+[ ] Copy mod/edzsession to MOODLE/mod/ and run Notifications — installs with NO errors.
+[ ] version.php parses; component = mod_edzsession; requires matches target Moodle.
+[ ] db/install.xml loads; all 8 tables created with correct keys/indexes.
+[ ] source_uuid UNIQUE index exists on edzsession_recording.
+[ ] Settings page (Plugins > Activity modules > EDZ Session) renders.
+[ ] Storage dropdown lists: Vimeo, S3, None. Meeting dropdown lists: Zoom.
+[ ] Selecting Vimeo shows Vimeo settings (PAT, folder, embed domain, privacy, deletion).
+[ ] Selecting S3 shows S3 settings (region/bucket/keys/endpoint/cdnbase) — proves 2nd provider slots in with no core edit.
+[ ] provider_manager::storage_providers() returns both drivers; get_storage('vimeo') returns a storage_provider.
+[ ] null_storage_provider backs 'none' — no null errors when default = none.
+[ ] Adding an "EDZ Session" activity to a course loads mod_form without error.
+[ ] Privacy: privacy provider class loads; PHPUnit privacy test does not fatal.
+[ ] purge_caches + reload — no cache definition errors (db/caches.php valid).
+[ ] CODE CHECK: grep core files (lib.php, view.php, pipeline) for 'vimeo'/'zoom' string literals — MUST be none (only via providers).
+[ ] Adding a dummy provider class + one line in provider_manager makes it appear in the dropdown (extensibility smoke test).
+
+UPGRADE PATH
+------------
+[ ] Fresh install at 0.1.0 works.
+[ ] After any schema change, bump version.php and add matching upgrade.php block; upgrade from 0.1.0 -> new runs clean.
+
+PHASE 2+ (deferred — see technical.md §11)
+------------------------------------------
+[ ] Account vault: add/edit/delete Zoom account; secrets encrypted in DB (verify not plaintext).
+[ ] Zoom S2S OAuth token obtained per account; create meeting; join URL resolves.
+[ ] Occurrence generation from recurrence schedule.
+[ ] poll_attendance pulls participants; segments deduped; % computed on configured basis.
+[ ] Reconcile UI matches/unmatches participants to users.
+[ ] Custom completion marks complete when attendance rule met.
+[ ] Offload pipeline: discovered->...->finalized on a REAL Zoom recording (Vimeo pull).
+[ ] Auto-fallback pull->tus when pull rejected.
+[ ] Idempotency: fire recording.completed webhook twice -> only ONE edzsession_recording row / one upload.
+[ ] source_deleted only after verified + policy + grace.
+[ ] Student view: privacy-locked embed plays; download disabled; domain whitelist enforced.
+[ ] S3 provider filled in: multipart upload + signed CDN embed.
+[ ] Backup/restore of an activity keeps occurrences + settings (not user attendance unless userinfo).
+
+BUILD NOTES
+-----------
+- AMD: after editing amd/src/*.js run `grunt amd` (or minify manually) and sync amd/build/*.min.js.
+- Scheduled tasks run in CLI context: no $USER/$OUTPUT; log via mtrace().
+- Never log provider secrets or Zoom download tokens.
