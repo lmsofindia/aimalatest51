@@ -17,7 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_edzsession';
-$plugin->version   = 2026072405;        // YYYYMMDDXX.
+$plugin->version   = 2026072406;        // YYYYMMDDXX.
 $plugin->requires  = 2024100700;        // Moodle 4.5+ (works on 5.0+).
 $plugin->maturity  = MATURITY_ALPHA;
 $plugin->release   = '0.1.0';
