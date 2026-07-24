@@ -829,6 +829,22 @@ body.pagelayout-login {
 
 // Strip Moodle/Bootstrap layout from login region IDs.
 .edz-login-panel {
+
+    // ── Hide core login form's duplicate logo + heading ────────────────────
+    // Moodle 5.0's core_auth/login template renders its OWN branding inside
+    // .loginform: a logo (#loginlogo > #logoimage), an <h1>Welcome back</h1>,
+    // and a <p>Log in to {sitename}</p> subtitle — all directly above the
+    // form fields. This theme already provides a styled logo (.edz-login-brand)
+    // and welcome copy (.edz-login-welcome) above the panel, so the core copies
+    // appear as a SECOND logo + duplicate "Welcome back" heading. Suppress them
+    // here so only the theme's branding shows. CSS-only — no core template
+    // override required (keeps us version-safe across core updates).
+    #loginlogo,
+    .loginform > h1,
+    .loginform > h1 + p {
+        display: none !important;
+    }
+
     #page-content,
     #region-main-box,
     #region-main {
