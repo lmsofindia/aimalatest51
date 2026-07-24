@@ -85,11 +85,23 @@ if (empty($occurrences)) {
         get_string('col_join', 'mod_edzsession'),
         get_string('col_recording', 'mod_edzsession'),
     ];
+    $canhost = has_capability('mod/edzsession:host', $context);
+    $hasmeeting = !empty($edzsession->remotemeetingid) && !empty($edzsession->accountid);
+
     foreach ($occurrences as $occ) {
-        $join = !empty($occ->joinurl)
-            ? html_writer::link($occ->joinurl, get_string('join', 'mod_edzsession'),
-                ['class' => 'btn btn-primary btn-sm', 'target' => '_blank', 'rel' => 'noopener'])
-            : '-';
+        $occhasmeeting = $hasmeeting || !empty($occ->remotemeetingid);
+        if ($canhost && $occhasmeeting) {
+            // Host: start the meeting as host (fresh token minted server-side).
+            $starturl = new moodle_url('/mod/edzsession/start.php',
+                ['id' => $cm->id, 'occ' => $occ->id, 'sesskey' => sesskey()]);
+            $join = html_writer::link($starturl, get_string('startashost', 'mod_edzsession'),
+                ['class' => 'btn btn-success btn-sm', 'target' => '_blank', 'rel' => 'noopener']);
+        } else if (!empty($occ->joinurl)) {
+            $join = html_writer::link($occ->joinurl, get_string('join', 'mod_edzsession'),
+                ['class' => 'btn btn-primary btn-sm', 'target' => '_blank', 'rel' => 'noopener']);
+        } else {
+            $join = '-';
+        }
         $table->data[] = [
             userdate($occ->starttime),
             s($occ->status),

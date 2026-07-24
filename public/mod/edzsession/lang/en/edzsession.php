@@ -27,6 +27,7 @@ $string['edzsession:addinstance'] = 'Add a new EDZ Session activity';
 $string['edzsession:view'] = 'View an EDZ Session';
 $string['edzsession:reconcile'] = 'Reconcile attendance to users';
 $string['edzsession:viewall'] = 'View all participants\' attendance and recordings';
+$string['edzsession:host'] = 'Start the meeting as host';
 $string['edzsession:manageaccounts'] = 'Manage meeting credential accounts';
 
 // Provider display names.
@@ -148,6 +149,10 @@ $string['col_status'] = 'Status';
 $string['col_join'] = 'Join';
 $string['col_recording'] = 'Recording';
 $string['join'] = 'Join';
+$string['startashost'] = 'Start as host';
+$string['host_nomeeting'] = 'No live meeting has been created for this session yet (check the host account on the activity).';
+$string['host_startfailed'] = 'Could not start as host: {$a}';
+$string['nohoststarturl'] = 'The meeting provider did not return a host start URL.';
 $string['recording_pending'] = 'Not available yet';
 $string['recording_processing'] = 'Processing…';
 $string['recording_failed'] = 'Recording failed';
