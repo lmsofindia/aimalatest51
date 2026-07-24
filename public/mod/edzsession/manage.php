@@ -53,7 +53,7 @@ if ($action === 'assign' && confirm_sesskey()) {
 if ($action === 'repoll' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $occurrenceid = required_param('occurrenceid', PARAM_INT);
-    $sql = "SELECT o.*, e.accountid, e.meetingprovider
+    $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.remotemeetingid AS parentmeetingid
               FROM {edzsession_occurrence} o
               JOIN {edzsession} e ON e.id = o.edzsessionid
              WHERE o.id = :oid";

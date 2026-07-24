@@ -121,10 +121,72 @@ class zoom_provider implements meeting_provider {
 
     // ---- Attendance -------------------------------------------------------
 
+    /**
+     * Resolve the real Zoom occurrence UUID from the meeting id + a target start
+     * time, using the past_meetings/instances endpoint. This removes the reliance
+     * on webhooks: even without one, we can find the exact instance that ran.
+     *
+     * @param remote_meeting $meeting (needs meetingid)
+     * @param int $starttime scheduled occurrence start (unix)
+     * @param account $account
+     * @return string|null the matching instance UUID, or null if none found
+     */
+    public function resolve_occurrence_uuid(remote_meeting $meeting, int $starttime, account $account): ?string {
+        if ($meeting->meetingid === '') {
+            return null;
+        }
+        try {
+            $res = $this->api($account, 'GET',
+                '/past_meetings/' . rawurlencode($meeting->meetingid) . '/instances');
+        } catch (\Throwable $e) {
+            return null; // No past instances yet (meeting not ended / not processed).
+        }
+        $best = null;
+        $bestdiff = PHP_INT_MAX;
+        foreach (($res['meetings'] ?? []) as $inst) {
+            $uuid = $inst['uuid'] ?? '';
+            if ($uuid === '') {
+                continue;
+            }
+            $diff = abs(strtotime($inst['start_time'] ?? 'now') - $starttime);
+            if ($diff < $bestdiff) {
+                $bestdiff = $diff;
+                $best = $uuid;
+            }
+        }
+        return $best;
+    }
+
     public function fetch_participants(remote_meeting $meeting, account $account): array {
-        // Reports API keys on the occurrence UUID and needs DOUBLE url-encoding
-        // when the UUID contains a '/' or starts with '/'.
-        $uuid = $this->double_encode_uuid($meeting->uuid ?? $meeting->meetingid);
+        // Prefer the per-occurrence UUID; only fall back to the meeting id.
+        $raw = ($meeting->uuid !== null && $meeting->uuid !== '') ? $meeting->uuid : $meeting->meetingid;
+        $uuid = $this->double_encode_uuid($raw);
+
+        // past_meetings works on all plans (meeting:read); the report API needs a
+        // Pro plan + report scope. Try past_meetings first, fall back to report.
+        $paths = [
+            "/past_meetings/{$uuid}/participants",
+            "/report/meetings/{$uuid}/participants",
+        ];
+        $lasterror = null;
+        foreach ($paths as $path) {
+            try {
+                return $this->page_participants($account, $path);
+            } catch (\moodle_exception $e) {
+                $lasterror = $e;
+            }
+        }
+        throw $lasterror ?? new \moodle_exception('zoomapierror', 'mod_edzsession');
+    }
+
+    /**
+     * Page through a participants endpoint and map to participant_record[].
+     *
+     * @param account $account
+     * @param string $path
+     * @return participant_record[]
+     */
+    private function page_participants(account $account, string $path): array {
         $records = [];
         $next = '';
         do {
@@ -132,7 +194,7 @@ class zoom_provider implements meeting_provider {
             if ($next !== '') {
                 $params['next_page_token'] = $next;
             }
-            $res = $this->api($account, 'GET', "/report/meetings/{$uuid}/participants", $params);
+            $res = $this->api($account, 'GET', $path, $params);
             foreach (($res['participants'] ?? []) as $p) {
                 $records[] = new participant_record(
                     $p['name'] ?? '',

@@ -35,14 +35,16 @@ class attendance_engine {
         $since = $now - ($lookbackdays * DAYSECS);
 
         // Ended = starttime + scheduled duration < now; not already reconciled.
-        $sql = "SELECT o.*, e.accountid, e.meetingprovider
+        // We no longer require a stored remoteuuid — poll_occurrence resolves it
+        // from Zoom directly, so attendance works without webhooks.
+        $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.remotemeetingid AS parentmeetingid
                   FROM {edzsession_occurrence} o
                   JOIN {edzsession} e ON e.id = o.edzsessionid
                  WHERE o.starttime > :since
                    AND (o.starttime + (o.duration * 60)) < :now
                    AND o.status <> :done
                    AND e.accountid IS NOT NULL
-                   AND o.remoteuuid IS NOT NULL";
+                   AND e.remotemeetingid IS NOT NULL";
         $rows = $DB->get_records_sql($sql, ['since' => $since, 'now' => $now, 'done' => 'attendance_done']);
 
         $processed = 0;
@@ -67,8 +69,30 @@ class attendance_engine {
 
         $account = account_vault::get((int) $occ->accountid);
         $provider = provider_manager::get_meeting($occ->meetingprovider);
-        $meeting = new \mod_edzsession\local\meeting\remote_meeting(
-            (string) ($occ->remotemeetingid ?? ''), '', $occ->remoteuuid);
+
+        // Resolve the meeting id (occurrence row may predate the column being set).
+        $meetingid = (string) ($occ->remotemeetingid ?? '');
+        if ($meetingid === '') {
+            $meetingid = (string) ($occ->parentmeetingid
+                ?? $DB->get_field('edzsession', 'remotemeetingid', ['id' => $occ->edzsessionid]));
+        }
+
+        // Resolve the real per-occurrence UUID if we don't already have one
+        // (this is what makes attendance work without a webhook).
+        $uuid = $occ->remoteuuid;
+        if (empty($uuid)) {
+            $probe = new \mod_edzsession\local\meeting\remote_meeting($meetingid, '', null);
+            $uuid = $provider->resolve_occurrence_uuid($probe, (int) $occ->starttime, $account);
+            if (!empty($uuid)) {
+                $DB->set_field('edzsession_occurrence', 'remoteuuid', $uuid, ['id' => $occ->id]);
+                $occ->remoteuuid = $uuid;
+            }
+        }
+        if (empty($uuid)) {
+            throw new \moodle_exception('nomeetinginstance', 'mod_edzsession');
+        }
+
+        $meeting = new \mod_edzsession\local\meeting\remote_meeting($meetingid, '', $uuid);
         $participants = $provider->fetch_participants($meeting, $account);
 
         // Replace raw segments for this occurrence (idempotent re-poll).

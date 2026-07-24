@@ -53,6 +53,18 @@ interface meeting_provider {
 
     // ---- Attendance -------------------------------------------------------
 
+    /**
+     * Resolve the real per-occurrence meeting UUID from the meeting id + a target
+     * start time (e.g. via a "past instances" API), so attendance/recording
+     * collection works without relying on webhooks.
+     *
+     * @param remote_meeting $meeting
+     * @param int $starttime scheduled occurrence start (unix)
+     * @param account $account
+     * @return string|null
+     */
+    public function resolve_occurrence_uuid(remote_meeting $meeting, int $starttime, account $account): ?string;
+
     /** @return participant_record[] deduped is the engine's job; return raw segments. */
     public function fetch_participants(remote_meeting $meeting, account $account): array;
     public function supports_webhooks(): bool;

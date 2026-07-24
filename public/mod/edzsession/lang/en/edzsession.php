@@ -211,6 +211,7 @@ $string['vimeoapierror'] = 'Vimeo API error';
 $string['vimeouploadfailed'] = 'Vimeo upload failed';
 $string['zoomauthfailed'] = 'Could not authenticate with Zoom for this account';
 $string['zoomapierror'] = 'Zoom API error';
+$string['nomeetinginstance'] = 'No completed Zoom instance found for this session yet. If the meeting just ended, Zoom needs a few minutes to make attendance available — try again shortly. Also confirm the meeting was actually started/hosted.';
 $string['s3notimplemented'] = 'The S3 upload path is not implemented yet (skeleton provider).';
 $string['quotaexceeded'] = 'The storage provider does not have enough free quota for this recording.';
 $string['providerprocessingerror'] = 'The storage provider reported an error while processing the recording.';
