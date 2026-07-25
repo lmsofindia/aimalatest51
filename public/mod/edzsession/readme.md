@@ -25,7 +25,13 @@ See **admin_setup_guide.md** for the full step-by-step. In short:
 ## What works today
 Multi-account Zoom meeting creation, single/weekly recurrence with occurrence generation, attendance polling + reconcile UI + attendance-based completion, and the full recording offload pipeline to Vimeo (pull-preferred, stream fallback) with a signature-verified webhook. Amazon S3 is a working skeleton that proves the pluggable-storage design. See `technical.md §11` for the phase map and what remains (reports, quota dashboard, S3 upload fill-in).
 
-## Adding a new storage provider (the whole point of the architecture)
+## Storage providers
+Three are implemented, all behind the same `storage_provider` interface:
+- **Vimeo** — pull upload (zero-infra) + tus fallback, domain-locked embeds, projects as folders.
+- **Amazon S3 / S3-compatible** — dependency-free SigV4 signing + multipart upload; playback via a CDN base URL (recommended) or presigned URLs; key prefixes as folders.
+- **Google Drive** — service-account (RS256 JWT) + resumable upload into a Workspace **Shared Drive**; `/preview` embeds; Drive folders.
+
+### Adding another storage provider (the whole point of the architecture)
 1. Create `classes/local/storage/provider/<name>_provider.php` implementing `storage_provider`.
 2. Add one line to `provider_manager::STORAGE_DRIVERS`.
 3. Add its lang strings + settings via the provider's own `add_settings()`.
@@ -35,6 +41,7 @@ No edits to the pipeline, DB, or UI. Same recipe for meeting providers (`meeting
 Standard Moodle plugin uninstall. `db/uninstall.php` drops plugin tables; recordings already on the storage provider are **not** deleted by uninstall (by design).
 
 ## Status / changelog
+- **0.1.0 (build 2026072413)** — storage providers: Amazon S3 and Google Drive now fully implemented (dependency-free) alongside Vimeo; storage folder picker in the activity form; attendance overhaul (overview + paginated detail + CSV/PDF export); host start-URL; test-connections dashboard; recording sync + folder re-file.
 - **0.1.0 (build 2026072402)** — Phases 1–4 built:
   - P1 — provider abstraction (storage + meeting interfaces + registry), installable core, full privacy provider.
   - P2 — encrypted multi-account vault, recurrence engine, meeting lifecycle wiring, occurrence generation.

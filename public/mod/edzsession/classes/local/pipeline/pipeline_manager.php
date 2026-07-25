@@ -232,7 +232,15 @@ class pipeline_manager {
                 ? $ctx->edzsession->storagefolderid
                 : $storage->default_folder_id();
             if (!empty($folderid)) {
-                $storage->move_to_folder($asset, $folderid);
+                // Best-effort: the video is already uploaded and playable, so a
+                // failed folder move (e.g. Vimeo "interact" scope missing) must
+                // never fail the recording — log it and keep the working link.
+                try {
+                    $storage->move_to_folder($asset, $folderid);
+                } catch (\Throwable $e) {
+                    self::log($rec->id, states::VERIFIED, states::FINALIZED,
+                        'folder move skipped: ' . $e->getMessage());
+                }
             }
         }
 

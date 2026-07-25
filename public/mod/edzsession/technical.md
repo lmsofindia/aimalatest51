@@ -21,8 +21,8 @@ Two extension points, both built on the **same** pattern (interface + registry +
                      meeting_provider (interface)          storage_provider (interface)
                               │                                    │
               ┌───────────────┴───────────┐        ┌───────────────┼─────────────────────┐
-        zoom_provider   (bbb_provider)*  (teams)*   vimeo_provider  s3_provider   (drive/youtube/bunny)*
-        [implemented]     [future]      [future]    [implemented]   [skeleton]    [future]
+        zoom_provider   (bbb_provider)*  (teams)*   vimeo_provider  s3_provider  drive_provider  (youtube/bunny)*
+        [implemented]     [future]      [future]    [implemented]  [implemented] [implemented]    [future]
 
         * not shipped in this build — interface reserved, adding one is a new class only
 ```
@@ -88,10 +88,24 @@ Supporting value objects (all under `classes/local/storage/`): `upload_request`,
 - Captions: `POST /videos/{id}/texttracks` (VTT from Zoom transcript).
 - All HTTP via Moodle `curl` class; PAT read from encrypted config; rate-limit aware (429 → backoff).
 
-### 2.2 s3_provider (skeleton — proves the abstraction)
-- Declares `supports_pull_upload()=false`, `supports_stream_upload()=true`, `supports_folders()=true` (prefixes), `supports_captions()=true` (sidecar `.vtt`), `supports_delete()=true`, `get_quota()=null`.
-- `begin_upload/push_chunk/finalize_upload` are stubbed with a clearly-marked `// TODO S3 multipart` body and throw `not_implemented_yet` if invoked, but the class **loads, registers, appears in the admin dropdown, and exposes its settings** (region/bucket/keys/endpoint/cdnbase). This is deliberate: it demonstrates a second provider slotting in with no core edits, and gives the next engineer the exact seams to fill.
-- Embed = a signed CDN URL wrapped in a `<video>` tag via `get_embed()`.
+### 2.2 s3_provider (implemented — Amazon S3 / S3-compatible)
+- Capabilities: `supports_pull_upload()=false`, `supports_stream_upload()=true`, `supports_folders()=true` (key prefixes), `supports_captions()=true` (sidecar `.vtt`), `supports_delete()=true`, `get_quota()=null`.
+- **Dependency-free** — implements AWS **Signature Version 4** (header signing + query presign) directly over Moodle `curl`; no AWS SDK / `local_aws` needed.
+- Upload = **multipart**: `begin_upload` → `CreateMultipartUpload` (returns UploadId); `push_chunk` → `UploadPart` (collects ETags; the pipeline feeds 5MB chunks so all but the last part meet the 5MB minimum); `finalize_upload` → `CompleteMultipartUpload`.
+- Addressing: virtual-hosted (`{bucket}.s3.{region}.amazonaws.com`) by default, or path-style when an `endpoint` is configured (Wasabi/MinIO/etc.).
+- `move_to_folder` = CopyObject + DeleteObject (S3 has no move). `apply_privacy` = no-op (objects stay private).
+- `get_embed`: if `cdnbase` set → `<video>` at `cdnbase/key` (durable, recommended); else a **7-day presigned GET** URL (SigV4 query) — note the expiry, hence CDN is recommended for term-long access.
+- Settings: region, bucket, access key, secret key, endpoint (optional), cdnbase. `test_connection` = a `list-type=2&max-keys=0` GET.
+
+### 2.3 drive_provider (implemented — Google Drive / Shared Drive)
+- Capabilities: pull=false, stream=true, folders=true, captions=false, delete=true, quota=null.
+- **Dependency-free auth**: builds the OAuth JWT and RS256-signs it with PHP `openssl_sign` (no Google SDK), exchanges it for an access token (cached in the `tokens` cache), scope `drive`.
+- **Service account + Shared Drive**: a service account has no usable personal Drive storage, so uploads target a Workspace **Shared Drive** (`shareddrive` id is required; the SA email must be a member). All calls set `supportsAllDrives=true` and folder listing uses `corpora=drive&driveId=...`.
+- Upload = **resumable**: `begin_upload` initiates a session (`uploadType=resumable`, returns the session URL from the `Location` header); `push_chunk` PUTs each chunk with a `Content-Range` (5MB chunks are 256KB-aligned as Drive requires); the final chunk's 200/201 returns the file id.
+- `apply_privacy` = create a permission (domain-reader if a Workspace domain is configured, else anyone-with-link reader so `/preview` works). `move_to_folder` = PATCH `addParents`/`removeParents`. `get_embed` = iframe `https://drive.google.com/file/d/{id}/preview`.
+- Settings: service-account JSON, Shared Drive ID, default folder, optional restrict-to-domain. `test_connection` = token + `drives.get`.
+
+Both S3 and Drive are stream-upload providers, so the pipeline's `stream_through` path (download the Zoom recording to a Moodle temp dir, then `push_chunk`) drives them; neither needs a Vimeo-style server-side pull. Both need a live credential test before production (as Zoom/Vimeo did).
 
 ---
 
@@ -206,7 +220,8 @@ Tasks:
 ```
 classes/local/storage/storage_provider.php        interface
 classes/local/storage/provider/vimeo_provider.php implemented
-classes/local/storage/provider/s3_provider.php    skeleton
+classes/local/storage/provider/s3_provider.php    implemented (SigV4 + multipart)
+classes/local/storage/provider/drive_provider.php implemented (JWT + resumable)
 classes/local/storage/null_storage_provider.php   no-op ('none')
 classes/local/storage/{upload_request,upload_handle,stored_asset,
         processing_status,privacy_spec,embed_info,storage_quota}.php  value objects

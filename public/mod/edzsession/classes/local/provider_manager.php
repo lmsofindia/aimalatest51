@@ -33,8 +33,8 @@ class provider_manager {
     const STORAGE_DRIVERS = [
         'vimeo' => \mod_edzsession\local\storage\provider\vimeo_provider::class,
         's3'    => \mod_edzsession\local\storage\provider\s3_provider::class,
-        // 'drive'   => ...   <- future: one line + one class, zero core edits.
-        // 'youtube' => ...
+        'drive' => \mod_edzsession\local\storage\provider\drive_provider::class,
+        // 'youtube' => ...  <- future: one line + one class, zero core edits.
         // 'bunny'   => ...
     ];
 
