@@ -99,6 +99,13 @@ if ($canreconcile) {
 }
 echo html_writer::div($toolbar, 'mb-3');
 
+// Validation: a session that hasn't ended yet has no meaningful attendance.
+if (time() < ((int) $occ->starttime + ((int) $occ->duration * 60))) {
+    echo $OUTPUT->notification(get_string('occ_notheld_detail', 'mod_edzsession'), 'info');
+    echo $OUTPUT->footer();
+    exit;
+}
+
 if ($total == 0) {
     echo $OUTPUT->notification(get_string('noattendanceyet', 'mod_edzsession'), 'info');
     echo $OUTPUT->footer();

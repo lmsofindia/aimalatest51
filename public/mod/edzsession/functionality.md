@@ -62,9 +62,10 @@ The stock `mod_zoom` plugin does not fit because:
 ## 5. Settings inventory (site-level)
 
 - `defaultmeetingprovider` (select — zoom)
-- `defaultstorageprovider` (select — vimeo | s3 | none)
-- Vimeo provider: `pat` (encrypted), `defaultfolder`, `embeddomain`, `privacy`, `deletesource`, `gracehours`
-- S3 provider (skeleton): `region`, `bucket`, `accesskey` (encrypted), `secretkey` (encrypted), `endpoint`, `cdnbase`
+- `defaultstorageprovider` (select — vimeo | s3 | drive | none)
+- Vimeo provider: `pat`, `defaultfolder`, `embeddomain` (needs token scopes incl. `interact` for folders)
+- S3 provider: `region`, `bucket`, `accesskey`, `secretkey`, `endpoint` (optional), `cdnbase` (recommended)
+- Google Drive provider: `serviceaccount` (JSON key), `shareddrive` (required), `defaultfolder`, `domain` (optional)
 - Attendance: `attendancebasis` (meeting_duration | scheduled_duration), `matchstrategy` (email | name | registrantid)
 - Recording: `sourcedeletionpolicy` (never | after_verified | after_verified_grace), `gracehours`, `retentiondays`
 - Zoom accounts are stored in their own table, not config.
@@ -82,7 +83,7 @@ Rules are additive (all enabled must pass) — documented default: any single en
 - Bulk media hosting / bandwidth resale.
 - Payment/licence management.
 - BigBlueButton/Teams meeting implementations (interface only; deferred).
-- S3/Drive/YouTube storage implementations beyond the S3 skeleton (interface + skeleton only).
+- YouTube / Bunny and other storage implementations (Vimeo, Amazon S3 and Google Drive are implemented; others slot in via the same interface).
 
 ## 8. External prerequisites (runtime, not code)
 

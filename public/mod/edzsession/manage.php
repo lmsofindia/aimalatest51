@@ -128,6 +128,7 @@ if ($action === 'syncrec' && confirm_sesskey()) {
             }
 
             $moved = 0;
+            $refileerror = '';
             foreach ($DB->get_records('edzsession_recording', ['occurrenceid' => $occ->id]) as $rec) {
                 if (in_array($rec->state, ['finalized', 'source_deleted'], true)) {
                     try {
@@ -135,12 +136,15 @@ if ($action === 'syncrec' && confirm_sesskey()) {
                             $moved++;
                         }
                     } catch (\Throwable $e) {
-                        debugging('edzsession refile failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                        $refileerror = $e->getMessage();
                     }
                 }
             }
             if ($moved) {
                 echo $OUTPUT->notification(get_string('rec_moved', 'mod_edzsession', $moved), 'success');
+            } else if ($refileerror !== '') {
+                echo $OUTPUT->notification(
+                    get_string('rec_movefailed', 'mod_edzsession', $refileerror), 'warning');
             }
             echo $OUTPUT->notification(get_string('rec_synced', 'mod_edzsession'), 'success');
         }
@@ -190,32 +194,58 @@ $table->attributes['class'] = 'generaltable';
 $table->head = [
     get_string('col_when', 'mod_edzsession'),
     get_string('col_duration', 'mod_edzsession'),
+    get_string('col_status', 'mod_edzsession'),
     get_string('col_present', 'mod_edzsession'),
     get_string('col_avg', 'mod_edzsession'),
     get_string('rec_heading', 'mod_edzsession'),
     get_string('actions'),
 ];
+$now = time();
 foreach ($occurrences as $occ) {
-    $summary = report::occurrence_summary((int) $occ->id);
-    $detailurl = new moodle_url('/mod/edzsession/attendance.php', ['id' => $cm->id, 'occ' => $occ->id]);
+    $endtime = (int) $occ->starttime + ((int) $occ->duration * 60);
+    if ($now < (int) $occ->starttime) {
+        $statebadge = html_writer::span(get_string('occ_upcoming', 'mod_edzsession'), 'badge bg-secondary');
+        $ended = false;
+    } else if ($now < $endtime) {
+        $statebadge = html_writer::span(get_string('occ_inprogress', 'mod_edzsession'), 'badge bg-warning text-dark');
+        $ended = false;
+    } else {
+        $statebadge = html_writer::span(get_string('occ_ended', 'mod_edzsession'), 'badge bg-success');
+        $ended = true;
+    }
 
-    $actions = html_writer::link($detailurl, get_string('viewattendance', 'mod_edzsession'),
-        ['class' => 'btn btn-primary btn-sm mb-1']);
-    if ($canreconcile) {
-        $actions .= ' ' . html_writer::link(
-            new moodle_url($baseurl, ['action' => 'repoll', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
-            get_string('reconcile_repoll', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
-        $actions .= ' ' . html_writer::link(
-            new moodle_url($baseurl, ['action' => 'syncrec', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
-            get_string('rec_sync', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
+    // Attendance/recording only make sense once the session has ended.
+    if ($ended) {
+        $summary = report::occurrence_summary((int) $occ->id);
+        $detailurl = new moodle_url('/mod/edzsession/attendance.php', ['id' => $cm->id, 'occ' => $occ->id]);
+        $actions = html_writer::link($detailurl, get_string('viewattendance', 'mod_edzsession'),
+            ['class' => 'btn btn-primary btn-sm mb-1']);
+        if ($canreconcile) {
+            $actions .= ' ' . html_writer::link(
+                new moodle_url($baseurl, ['action' => 'repoll', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
+                get_string('reconcile_repoll', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
+            $actions .= ' ' . html_writer::link(
+                new moodle_url($baseurl, ['action' => 'syncrec', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
+                get_string('rec_sync', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
+        }
+        $present = $summary->present . ' / ' . $summary->total;
+        $avg = $summary->total > 0 ? format_float($summary->avgpercent, 1) . '%' : '-';
+        $recording = mod_edzsession_recording_badge((int) $occ->id);
+    } else {
+        // Not held yet — no attendance actions to avoid confusion.
+        $actions = html_writer::span(get_string('occ_notheld', 'mod_edzsession'), 'text-muted');
+        $present = '-';
+        $avg = '-';
+        $recording = html_writer::span('-', 'text-muted');
     }
 
     $table->data[] = [
         userdate($occ->starttime),
         get_string('nminutes', 'mod_edzsession', (int) $occ->duration),
-        $summary->present . ' / ' . $summary->total,
-        $summary->total > 0 ? format_float($summary->avgpercent, 1) . '%' : '-',
-        mod_edzsession_recording_badge((int) $occ->id),
+        $statebadge,
+        $present,
+        $avg,
+        $recording,
         $actions,
     ];
 }

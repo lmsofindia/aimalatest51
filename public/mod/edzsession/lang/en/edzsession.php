@@ -37,6 +37,8 @@ $string['provider_vimeo_desc'] = 'Offload recordings to Vimeo. Prefers direct pu
 $string['provider_s3'] = 'Amazon S3 (skeleton)';
 $string['provider_s3_desc'] = 'S3-compatible object storage. Skeleton provider: configuration and embed shape are live; multipart upload is not yet wired.';
 $string['provider_zoom'] = 'Zoom';
+$string['provider_drive'] = 'Google Drive';
+$string['provider_drive_desc'] = 'Store recordings in a Google Workspace Shared Drive via a service account. Files play through Drive\'s embedded preview.';
 
 // Global provider settings.
 $string['settings_providers'] = 'Providers';
@@ -86,7 +88,19 @@ $string['s3_secretkey'] = 'Secret key';
 $string['s3_endpoint'] = 'Endpoint (optional)';
 $string['s3_endpoint_desc'] = 'Custom endpoint for S3-compatible stores (e.g. MinIO, Wasabi). Leave blank for AWS.';
 $string['s3_cdnbase'] = 'CDN base URL';
-$string['s3_cdnbase_desc'] = 'Public/CDN base URL used to build playback links.';
+$string['s3_cdnbase_desc'] = 'Public/CDN base URL (e.g. CloudFront) used to build durable playback links. Recommended — without it, playback uses time-limited presigned URLs.';
+$string['s3apierror'] = 'Amazon S3 API error';
+
+// Google Drive provider settings.
+$string['drive_serviceaccount'] = 'Service account JSON key';
+$string['drive_serviceaccount_desc'] = 'Paste the full JSON key file of a Google Cloud service account that has access to the Shared Drive below. Stored encrypted-at-rest is not applied here — restrict access to this settings page.';
+$string['drive_shareddrive'] = 'Shared Drive ID';
+$string['drive_shareddrive_desc'] = 'The ID of the Google Workspace Shared Drive to store recordings in (a service account cannot use personal Drive storage). Add the service account email as a member of this Shared Drive.';
+$string['drive_defaultfolder'] = 'Default folder';
+$string['drive_defaultfolder_desc'] = 'Folder name inside the Shared Drive for recordings (created if missing).';
+$string['drive_domain'] = 'Restrict playback to domain (optional)';
+$string['drive_domain_desc'] = 'If set, recordings are shared with this Workspace domain only; otherwise they are shared as "anyone with the link can view" so the embed works.';
+$string['driveapierror'] = 'Google Drive API error';
 
 // Account vault.
 $string['manageaccounts'] = 'EDZ Session meeting accounts';
@@ -129,6 +143,8 @@ $string['storageprovider'] = 'Storage provider';
 $string['storageprovider_help'] = 'Where this session\'s recordings are stored. Leave as "Use site default" unless this session needs a different backend. New storage backends can be added by an administrator without changing the activity.';
 $string['usesitedefault'] = 'Use site default';
 $string['storagefolder'] = 'Storage folder';
+$string['storagefolder_root'] = 'Provider root (no folder)';
+$string['storagefolder_ph'] = 'Choose a folder or type a new name';
 $string['storagefolder_help'] = 'Optional folder/project/prefix on the storage provider to place this session\'s recordings into.';
 
 // Completion.
@@ -191,6 +207,11 @@ $string['col_num'] = '#';
 $string['host_unknown'] = 'Not set';
 $string['nminutes'] = '{$a} min';
 $string['viewattendance'] = 'View attendance';
+$string['occ_upcoming'] = 'Upcoming';
+$string['occ_inprogress'] = 'In progress';
+$string['occ_ended'] = 'Ended';
+$string['occ_notheld'] = 'Not held yet';
+$string['occ_notheld_detail'] = 'This session has not taken place yet. Attendance and recordings become available after it ends.';
 $string['backtooverview'] = 'Back to overview';
 $string['export_csv'] = 'Download CSV';
 $string['export_pdf'] = 'Download PDF';
@@ -223,6 +244,7 @@ $string['rec_sync'] = 'Sync recording';
 $string['rec_sync_title'] = 'Syncing recording';
 $string['rec_synced'] = 'Recording sync complete.';
 $string['rec_moved'] = 'Moved {$a} recording(s) into the destination folder.';
+$string['rec_movefailed'] = 'The recording is uploaded and playable, but moving it into the folder failed: {$a}. For Vimeo, add the "interact" scope to your access token to enable folder placement.';
 $string['rec_syncfailed'] = 'Recording sync failed: {$a}';
 $string['rec_storagenone'] = 'This activity has no recording storage provider selected, so recordings are not offloaded. Set a storage provider in the activity settings or the site defaults.';
 $string['rec_found'] = 'Zoom returned {$a->files} recording file(s), {$a->videos} video(s).';

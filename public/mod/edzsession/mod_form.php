@@ -124,8 +124,35 @@ class mod_edzsession_mod_form extends moodleform_mod {
         $mform->setDefault('storageprovider', '');
         $mform->addHelpButton('storageprovider', 'storageprovider', 'mod_edzsession');
 
-        $mform->addElement('text', 'storagefoldername',
-            get_string('storagefolder', 'mod_edzsession'), ['size' => 48]);
+        // Storage folder: offer a dropdown of the provider's existing folders
+        // (with free-typing to create a new one). Falls back to a text field if
+        // the folder list can't be fetched.
+        $folderoptions = null;
+        try {
+            $sp = $this->current->storageprovider ?? '';
+            $storage = provider_manager::storage_for_activity((object) ['storageprovider' => $sp]);
+            if ($storage->supports_folders() && $storage->is_configured()) {
+                $labels = array_values($storage->list_folders());
+                if (!empty($labels)) {
+                    $folderoptions = array_combine($labels, $labels);
+                }
+            }
+        } catch (\Throwable $e) {
+            $folderoptions = null; // Provider unreachable — use the text fallback.
+        }
+
+        if ($folderoptions !== null) {
+            $mform->addElement('autocomplete', 'storagefoldername',
+                get_string('storagefolder', 'mod_edzsession'), $folderoptions, [
+                    'tags' => true,            // Allow typing a new folder name.
+                    'multiple' => false,
+                    'noselectionstring' => get_string('storagefolder_root', 'mod_edzsession'),
+                    'placeholder' => get_string('storagefolder_ph', 'mod_edzsession'),
+                ]);
+        } else {
+            $mform->addElement('text', 'storagefoldername',
+                get_string('storagefolder', 'mod_edzsession'), ['size' => 48]);
+        }
         $mform->setType('storagefoldername', PARAM_TEXT);
         $mform->addHelpButton('storagefoldername', 'storagefolder', 'mod_edzsession');
 

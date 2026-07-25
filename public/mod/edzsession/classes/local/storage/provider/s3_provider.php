@@ -19,21 +19,16 @@ use mod_edzsession\local\storage\storage_quota;
 use mod_edzsession\local\connection_result;
 
 /**
- * AWS S3 storage provider — SKELETON.
+ * Amazon S3 (and S3-compatible) storage provider.
  *
- * This class exists to PROVE the abstraction: it loads, registers in the
- * provider registry, appears in the admin "Storage provider" dropdown, and
- * contributes its own settings page — all WITHOUT a single edit to the
- * pipeline, DB schema, mod_form, or view. The actual multipart upload is the
- * only thing left to fill in (marked TODO), and the exact seams are laid out
- * below so the next engineer can complete it in isolation.
+ * Dependency-free: implements AWS Signature Version 4 signing and multipart
+ * upload directly over Moodle's curl. No transcoding step — an object is ready
+ * the moment it is uploaded. Durable playback uses a configured CDN base URL
+ * (recommended, e.g. CloudFront) or, failing that, a time-limited presigned URL.
  *
- * When the customer wants S3 instead of Vimeo, they select it here — the same
- * offload state machine drives it, because it only ever calls this interface.
- *
- * @package mod_edzsession
- * @copyright 2026 EDZLMS
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_edzsession
+ * @copyright  2026 EDZLMS
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class s3_provider implements storage_provider {
 
@@ -42,42 +37,27 @@ class s3_provider implements storage_provider {
 
     public function __construct() {
         $this->config = (object) [
-            'region'    => get_config('mod_edzsession', 'edzstore_s3_region'),
-            'bucket'    => get_config('mod_edzsession', 'edzstore_s3_bucket'),
-            'accesskey' => get_config('mod_edzsession', 'edzstore_s3_accesskey'),
-            'secretkey' => get_config('mod_edzsession', 'edzstore_s3_secretkey'),
-            'endpoint'  => get_config('mod_edzsession', 'edzstore_s3_endpoint'),
-            'cdnbase'   => get_config('mod_edzsession', 'edzstore_s3_cdnbase'),
+            'region'    => trim((string) get_config('mod_edzsession', 'edzstore_s3_region')),
+            'bucket'    => trim((string) get_config('mod_edzsession', 'edzstore_s3_bucket')),
+            'accesskey' => trim((string) get_config('mod_edzsession', 'edzstore_s3_accesskey')),
+            'secretkey' => trim((string) get_config('mod_edzsession', 'edzstore_s3_secretkey')),
+            'endpoint'  => trim((string) get_config('mod_edzsession', 'edzstore_s3_endpoint')),
+            'cdnbase'   => trim((string) get_config('mod_edzsession', 'edzstore_s3_cdnbase')),
         ];
     }
 
     public static function get_name(): string {
         return 's3';
     }
-
     public static function get_display_name(): string {
         return get_string('provider_s3', 'mod_edzsession');
     }
-
     public function is_configured(): bool {
-        return !empty($this->config->bucket)
-            && !empty($this->config->region)
-            && !empty($this->config->accesskey)
-            && !empty($this->config->secretkey);
+        return $this->config->bucket !== '' && $this->config->region !== ''
+            && $this->config->accesskey !== '' && $this->config->secretkey !== '';
     }
 
-    public function test_connection(): connection_result {
-        if (!$this->is_configured()) {
-            return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
-        }
-        // Skeleton: settings are present but there is no live S3 client to verify
-        // credentials against yet. Report "configured, not verifiable" (neutral).
-        return connection_result::na(
-            get_string('test_s3_skeleton', 'mod_edzsession'),
-            $this->config->bucket . ' @ ' . $this->config->region);
-    }
-
-    // ---- Capabilities: S3 streams (no server-side pull), uses prefixes. ----
+    // ---- Capabilities -----------------------------------------------------
 
     public function supports_pull_upload(): bool {
         return false;
@@ -86,92 +66,142 @@ class s3_provider implements storage_provider {
         return true;
     }
     public function supports_folders(): bool {
-        return true; // key prefixes act as folders.
+        return true; // Key prefixes act as folders.
     }
     public function supports_captions(): bool {
-        return true; // sidecar .vtt object.
+        return true; // Sidecar .vtt object.
     }
     public function supports_delete(): bool {
         return true;
     }
     public function get_quota(): ?storage_quota {
-        return null; // S3 is effectively unbounded; no quota gate.
+        return null; // S3 is effectively unbounded.
     }
 
     public function list_folders(): array {
-        // A real impl would ListObjectsV2 with Delimiter='/' to enumerate prefixes.
-        // For the skeleton we just echo back a configured default prefix.
-        return ['recordings/' => 'recordings/'];
+        // List common prefixes at the bucket root (Delimiter='/').
+        try {
+            $res = $this->request('GET', '', ['list-type' => '2', 'delimiter' => '/']);
+            $out = [];
+            if (preg_match_all('#<Prefix>([^<]+)</Prefix>#', $res['body'], $m)) {
+                foreach ($m[1] as $prefix) {
+                    $label = rtrim($prefix, '/');
+                    if ($label !== '') {
+                        $out[$prefix] = $label;
+                    }
+                }
+            }
+            return $out ?: ['recordings/' => 'recordings'];
+        } catch (\Throwable $e) {
+            return ['recordings/' => 'recordings'];
+        }
     }
 
     public function ensure_folder(string $label): string {
-        // S3 has no real folders; a prefix "exists" implicitly. Normalise it.
-        return rtrim($label, '/') . '/';
+        // S3 prefixes are implicit; just normalise to "<label>/".
+        $label = trim($label, '/');
+        return $label === '' ? '' : $label . '/';
     }
 
     public function default_folder_id(): ?string {
         return 'recordings/';
     }
 
-    // ---- Upload lifecycle: the ONLY part left to implement. ---------------
+    // ---- Upload lifecycle (multipart) -------------------------------------
 
     public function begin_upload(upload_request $req): upload_handle {
-        $this->guard_stub();
-        // TODO S3: CreateMultipartUpload -> return upload_handle with uploadId.
-        //   $key = ($req->folderid ?: 'recordings/') . $this->safe_key($req->title) . '.mp4';
-        //   $uploadid = $this->s3_create_multipart($key, $req->mimetype);
-        //   $h = new upload_handle(upload_handle::MODE_STREAM, $key, $uploadid);
-        //   $h->data['key'] = $key; $h->data['parts'] = [];
-        //   return $h;
-        throw new \moodle_exception('s3notimplemented', 'mod_edzsession');
+        $prefix = $req->folderid ? rtrim($req->folderid, '/') . '/' : '';
+        $key = $prefix . $this->safe_key($req->title) . '-' . $req->recordingid . '.mp4';
+
+        $res = $this->request('POST', $key, ['uploads' => ''], '',
+            ['content-type' => $req->mimetype ?: 'video/mp4']);
+        if (!preg_match('#<UploadId>([^<]+)</UploadId>#', $res['body'], $m)) {
+            throw new \moodle_exception('s3apierror', 'mod_edzsession', '', null,
+                'no UploadId: ' . substr($res['body'], 0, 300));
+        }
+        $handle = new upload_handle(upload_handle::MODE_STREAM, $key, $m[1]);
+        $handle->data['key'] = $key;
+        $handle->data['uploadid'] = $m[1];
+        $handle->data['parts'] = [];
+        return $handle;
     }
 
     public function push_chunk(upload_handle $handle, string $bytes): void {
-        $this->guard_stub();
-        // TODO S3: UploadPart (partNumber = count(parts)+1); collect ETag into
-        //   $handle->data['parts'][] = ['PartNumber'=>$n, 'ETag'=>$etag];
-        throw new \moodle_exception('s3notimplemented', 'mod_edzsession');
+        $partnumber = count($handle->data['parts']) + 1;
+        $res = $this->request('PUT', $handle->data['key'], [
+            'partNumber' => (string) $partnumber,
+            'uploadId' => $handle->data['uploadid'],
+        ], $bytes);
+        $etag = $res['headers']['etag'] ?? '';
+        if ($etag === '') {
+            throw new \moodle_exception('s3apierror', 'mod_edzsession', '', null, 'no ETag on part ' . $partnumber);
+        }
+        $handle->data['parts'][] = ['PartNumber' => $partnumber, 'ETag' => $etag];
+        $handle->offset += strlen($bytes);
     }
 
     public function finalize_upload(upload_handle $handle): stored_asset {
-        $this->guard_stub();
-        // TODO S3: CompleteMultipartUpload($handle->data['key'], $handle->data['parts'])
-        //   return new stored_asset('s3', $handle->data['key'], dirname($handle->data['key']).'/',
-        //                           ['bucket'=>$this->config->bucket]);
-        throw new \moodle_exception('s3notimplemented', 'mod_edzsession');
+        $xml = '<CompleteMultipartUpload>';
+        foreach ($handle->data['parts'] as $p) {
+            $xml .= '<Part><PartNumber>' . $p['PartNumber'] . '</PartNumber>'
+                . '<ETag>' . $p['ETag'] . '</ETag></Part>';
+        }
+        $xml .= '</CompleteMultipartUpload>';
+        $res = $this->request('POST', $handle->data['key'], ['uploadId' => $handle->data['uploadid']], $xml,
+            ['content-type' => 'application/xml']);
+        // AWS may return HTTP 200 with an <Error> body on a failed complete.
+        if (strpos($res['body'], '<Error') !== false) {
+            throw new \moodle_exception('s3apierror', 'mod_edzsession', '', null,
+                'CompleteMultipartUpload failed: ' . substr($res['body'], 0, 400));
+        }
+        return new stored_asset('s3', $handle->data['key'], dirname($handle->data['key']) . '/',
+            ['bucket' => $this->config->bucket]);
     }
 
     public function poll_processing(stored_asset $asset): processing_status {
-        // S3 has no transcode step: as soon as the object exists it is "complete".
         return new processing_status(processing_status::COMPLETE, 100);
     }
 
     public function apply_privacy(stored_asset $asset, privacy_spec $spec): void {
-        // TODO S3: object stays private; access is via signed CDN URLs (see get_embed).
-        // Nothing to toggle on the object itself for the skeleton.
+        // Objects stay private; access is via signed CDN / presigned URLs. Nothing
+        // to toggle on the object here.
     }
 
     public function move_to_folder(stored_asset $asset, string $folderid): void {
-        // TODO S3: CopyObject to new key + DeleteObject old key (S3 has no move).
+        $prefix = rtrim($folderid, '/') . '/';
+        $newkey = $prefix . basename($asset->assetid);
+        if ($newkey === $asset->assetid) {
+            return;
+        }
+        // S3 has no move: copy then delete the original.
+        $this->request('PUT', $newkey, [], '', [
+            'x-amz-copy-source' => '/' . $this->config->bucket . '/' . $this->encode_key($asset->assetid),
+        ]);
+        $this->request('DELETE', $asset->assetid);
+        $asset->assetid = $newkey;
     }
 
     public function attach_caption(stored_asset $asset, string $vtt, string $lang): void {
-        // TODO S3: PutObject sidecar "<key>.<lang>.vtt".
+        $this->request('PUT', $asset->assetid . '.' . $lang . '.vtt', [], $vtt,
+            ['content-type' => 'text/vtt']);
     }
 
     public function get_embed(stored_asset $asset): embed_info {
-        // A real impl returns a time-limited signed CDN URL. Skeleton returns the
-        // (unsigned) CDN path so the shape is demonstrable.
-        $base = rtrim((string) $this->config->cdnbase, '/');
-        $url = $base !== '' ? $base . '/' . ltrim($asset->assetid, '/') : '';
+        if ($this->config->cdnbase !== '') {
+            $url = rtrim($this->config->cdnbase, '/') . '/' . ltrim($asset->assetid, '/');
+        } else {
+            // Fallback: 7-day presigned URL (max for SigV4). CDN is recommended
+            // for durable embeds — see technical.md.
+            $url = $this->presign_get($asset->assetid, 7 * DAYSECS);
+        }
         return new embed_info(embed_info::KIND_VIDEO, $url, ['controls' => true]);
     }
 
     public function delete_asset(stored_asset $asset): void {
-        // TODO S3: DeleteObject($asset->assetid).
+        $this->request('DELETE', $asset->assetid);
     }
 
-    // ---- Settings: self-registered; this is what makes S3 appear in admin. -
+    // ---- Settings + test --------------------------------------------------
 
     public static function add_settings(\admin_settingpage $page): void {
         $p = self::config_prefix();
@@ -198,14 +228,170 @@ class s3_provider implements storage_provider {
         return 'edzstore_s3';
     }
 
-    // ---- Helpers ----------------------------------------------------------
-
-    private function guard_stub(): void {
-        // Keeps behaviour explicit: uploads are not wired yet. The rest of the
-        // provider (registration, settings, embed shape) is fully live.
-        if (!PHPUNIT_TEST) {
-            debugging('s3_provider upload path is a skeleton (see technical.md).', DEBUG_DEVELOPER);
+    public function test_connection(): connection_result {
+        if (!$this->is_configured()) {
+            return connection_result::na(get_string('test_notconfigured', 'mod_edzsession'));
         }
+        try {
+            // List with max-keys=0 to verify credentials + region + access.
+            $this->request('GET', '', ['list-type' => '2', 'max-keys' => '0']);
+            return connection_result::ok(get_string('test_ok_as', 'mod_edzsession',
+                $this->config->bucket . ' @ ' . $this->config->region));
+        } catch (\Throwable $e) {
+            return connection_result::fail(get_string('test_failed', 'mod_edzsession'), $e->getMessage());
+        }
+    }
+
+    // ---- HTTP + SigV4 -----------------------------------------------------
+
+    /**
+     * Perform a signed S3 request.
+     *
+     * @param string $method
+     * @param string $key object key (no leading slash), '' for bucket-level
+     * @param array $query query params
+     * @param string $payload request body
+     * @param array $extraheaders lowercase header => value
+     * @return array ['body'=>string,'headers'=>array,'code'=>int]
+     */
+    private function request(string $method, string $key, array $query = [],
+            string $payload = '', array $extraheaders = []): array {
+        global $CFG;
+        require_once($CFG->libdir . '/filelib.php');
+
+        [$host, $uri] = $this->host_and_uri($key);
+        $amzdate = gmdate('Ymd\THis\Z');
+        $datestamp = gmdate('Ymd');
+        $payloadhash = hash('sha256', $payload);
+
+        $headers = array_change_key_case($extraheaders, CASE_LOWER);
+        $headers['host'] = $host;
+        $headers['x-amz-content-sha256'] = $payloadhash;
+        $headers['x-amz-date'] = $amzdate;
+
+        ksort($headers);
+        $canonicalheaders = '';
+        $signedheaderslist = [];
+        foreach ($headers as $k => $v) {
+            $canonicalheaders .= $k . ':' . trim($v) . "\n";
+            $signedheaderslist[] = $k;
+        }
+        $signedheaders = implode(';', $signedheaderslist);
+
+        $canonicalquery = $this->canonical_query($query);
+        $canonicalrequest = $method . "\n" . $uri . "\n" . $canonicalquery . "\n"
+            . $canonicalheaders . "\n" . $signedheaders . "\n" . $payloadhash;
+
+        $scope = $datestamp . '/' . $this->config->region . '/s3/aws4_request';
+        $stringtosign = "AWS4-HMAC-SHA256\n" . $amzdate . "\n" . $scope . "\n"
+            . hash('sha256', $canonicalrequest);
+        $signingkey = $this->signing_key($datestamp);
+        $signature = hash_hmac('sha256', $stringtosign, $signingkey);
+
+        $authorization = 'AWS4-HMAC-SHA256 Credential=' . $this->config->accesskey . '/' . $scope
+            . ', SignedHeaders=' . $signedheaders . ', Signature=' . $signature;
+
+        $scheme = 'https://';
+        $url = $scheme . $host . $uri . ($canonicalquery !== '' ? '?' . $canonicalquery : '');
+
+        $curl = new \curl();
+        foreach ($headers as $k => $v) {
+            if ($k === 'host') {
+                continue;
+            }
+            $curl->setHeader($k . ': ' . $v);
+        }
+        $curl->setHeader('Authorization: ' . $authorization);
+        $curl->setopt(['CURLOPT_TIMEOUT' => 120, 'CURLOPT_CONNECTTIMEOUT' => 20, 'CURLOPT_HEADER' => false]);
+
+        $method = strtoupper($method);
+        if ($method === 'GET' || $method === 'HEAD') {
+            $response = $curl->get($url);
+        } else if ($method === 'DELETE') {
+            $response = $curl->delete($url);
+        } else if ($method === 'PUT') {
+            // Raw-body PUT: Moodle curl::put() is for file uploads, so use a
+            // custom-request POST which sends the raw payload as the body.
+            $curl->setopt(['CURLOPT_CUSTOMREQUEST' => 'PUT']);
+            $response = $curl->post($url, $payload);
+        } else { // POST.
+            $response = $curl->post($url, $payload);
+        }
+        $info = $curl->get_info();
+        $code = (int) ($info['http_code'] ?? 0);
+        if ($code >= 400) {
+            throw new \moodle_exception('s3apierror', 'mod_edzsession', '', null,
+                "HTTP $code on $method /$key: " . substr((string) $response, 0, 400));
+        }
+        return [
+            'body' => (string) $response,
+            'headers' => array_change_key_case($curl->getResponse() ?: [], CASE_LOWER),
+            'code' => $code,
+        ];
+    }
+
+    /** Resolve [host, uri] for virtual-hosted (AWS) or path-style (endpoint). */
+    private function host_and_uri(string $key): array {
+        $enckey = $this->encode_key($key);
+        if ($this->config->endpoint !== '') {
+            $host = preg_replace('#^https?://#', '', $this->config->endpoint);
+            $host = rtrim($host, '/');
+            $uri = '/' . $this->config->bucket . ($enckey !== '' ? '/' . $enckey : '');
+        } else {
+            $host = $this->config->bucket . '.s3.' . $this->config->region . '.amazonaws.com';
+            $uri = '/' . ($enckey !== '' ? $enckey : '');
+        }
+        return [$host, $uri];
+    }
+
+    /** Percent-encode a key per SigV4 (encode each segment, keep slashes). */
+    private function encode_key(string $key): string {
+        $parts = array_map('rawurlencode', explode('/', $key));
+        return implode('/', $parts);
+    }
+
+    private function canonical_query(array $query): string {
+        $pairs = [];
+        foreach ($query as $k => $v) {
+            $pairs[rawurlencode($k)] = rawurlencode((string) $v);
+        }
+        ksort($pairs, SORT_STRING); // AWS requires byte-ordered keys.
+        $out = [];
+        foreach ($pairs as $k => $v) {
+            $out[] = $k . '=' . $v;
+        }
+        return implode('&', $out);
+    }
+
+    private function signing_key(string $datestamp): string {
+        $kdate = hash_hmac('sha256', $datestamp, 'AWS4' . $this->config->secretkey, true);
+        $kregion = hash_hmac('sha256', $this->config->region, $kdate, true);
+        $kservice = hash_hmac('sha256', 's3', $kregion, true);
+        return hash_hmac('sha256', 'aws4_request', $kservice, true);
+    }
+
+    /** Build a presigned GET URL (query-parameter SigV4). */
+    private function presign_get(string $key, int $expires): string {
+        [$host, $uri] = $this->host_and_uri($key);
+        $amzdate = gmdate('Ymd\THis\Z');
+        $datestamp = gmdate('Ymd');
+        $scope = $datestamp . '/' . $this->config->region . '/s3/aws4_request';
+
+        $query = [
+            'X-Amz-Algorithm' => 'AWS4-HMAC-SHA256',
+            'X-Amz-Credential' => $this->config->accesskey . '/' . $scope,
+            'X-Amz-Date' => $amzdate,
+            'X-Amz-Expires' => (string) $expires,
+            'X-Amz-SignedHeaders' => 'host',
+        ];
+        $canonicalquery = $this->canonical_query($query);
+        $canonicalrequest = "GET\n" . $uri . "\n" . $canonicalquery . "\n"
+            . 'host:' . $host . "\n\nhost\nUNSIGNED-PAYLOAD";
+        $stringtosign = "AWS4-HMAC-SHA256\n" . $amzdate . "\n" . $scope . "\n"
+            . hash('sha256', $canonicalrequest);
+        $signature = hash_hmac('sha256', $stringtosign, $this->signing_key($datestamp));
+
+        return 'https://' . $host . $uri . '?' . $canonicalquery . '&X-Amz-Signature=' . $signature;
     }
 
     private function safe_key(string $title): string {
