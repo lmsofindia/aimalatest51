@@ -148,8 +148,10 @@ class pipeline_manager {
         $title = $ctx->edzsession->name . ' - ' . userdate($occ->starttime, '%Y-%m-%d');
 
         $folderid = null;
-        if ($storage->supports_folders() && !empty($ctx->edzsession->storagefolderid)) {
-            $folderid = $ctx->edzsession->storagefolderid;
+        if ($storage->supports_folders()) {
+            $folderid = !empty($ctx->edzsession->storagefolderid)
+                ? $ctx->edzsession->storagefolderid
+                : $storage->default_folder_id();
         }
 
         // Resolve a fresh, tokenised source URL from the meeting provider using
@@ -225,8 +227,13 @@ class pipeline_manager {
         $spec = new privacy_spec(true, array_filter($domains), true);
         $storage->apply_privacy($asset, $spec);
 
-        if ($storage->supports_folders() && !empty($ctx->edzsession->storagefolderid)) {
-            $storage->move_to_folder($asset, $ctx->edzsession->storagefolderid);
+        if ($storage->supports_folders()) {
+            $folderid = !empty($ctx->edzsession->storagefolderid)
+                ? $ctx->edzsession->storagefolderid
+                : $storage->default_folder_id();
+            if (!empty($folderid)) {
+                $storage->move_to_folder($asset, $folderid);
+            }
         }
 
         $embed = $storage->get_embed($asset);
@@ -369,5 +376,32 @@ class pipeline_manager {
         $adhoc->set_custom_data(['recordingid' => $id]);
         \core\task\manager::queue_adhoc_task($adhoc, true);
         return (int) $id;
+    }
+
+    /**
+     * Re-file an already-uploaded recording into the resolved destination folder
+     * (per-activity folder, else the provider's default folder). Used to move a
+     * recording that finalized before a folder was configured.
+     *
+     * @param \stdClass $rec edzsession_recording row (must have assetid)
+     * @return bool true if it was moved
+     */
+    public static function refile(\stdClass $rec): bool {
+        if (empty($rec->assetid)) {
+            return false;
+        }
+        $ctx = self::context_for($rec);
+        $storage = $ctx->storage;
+        if (!$storage->supports_folders()) {
+            return false;
+        }
+        $folderid = !empty($ctx->edzsession->storagefolderid)
+            ? $ctx->edzsession->storagefolderid
+            : $storage->default_folder_id();
+        if (empty($folderid)) {
+            return false;
+        }
+        $storage->move_to_folder(new stored_asset($rec->storageprovider, (string) $rec->assetid), $folderid);
+        return true;
     }
 }

@@ -37,4 +37,16 @@ class renderer extends \plugin_renderer_base {
         $this->page->requires->js_call_amd('local_edzfaculty/dashboard', 'initOverview');
         return $this->render_from_template('local_edzfaculty/overview', $data);
     }
+
+    /**
+     * Render the per-course report.
+     *
+     * @param renderable\course_report $report
+     * @return string
+     */
+    public function render_course_report(renderable\course_report $report): string {
+        $data = $report->export_for_template($this);
+        $this->page->requires->js_call_amd('local_edzfaculty/dashboard', 'initReport');
+        return $this->render_from_template('local_edzfaculty/course_report', $data);
+    }
 }

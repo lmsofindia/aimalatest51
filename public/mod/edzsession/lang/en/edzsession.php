@@ -182,6 +182,21 @@ $string['test_vimeo_quota'] = 'Free upload quota: {$a}';
 $string['test_nothing'] = 'No meeting accounts or storage providers are configured yet.';
 $string['backtoaccounts'] = 'Back to meeting accounts';
 
+// Overview / attendance detail / export.
+$string['col_host'] = 'Host';
+$string['col_duration'] = 'Duration';
+$string['col_present'] = 'Present';
+$string['col_avg'] = 'Avg attendance';
+$string['col_num'] = '#';
+$string['host_unknown'] = 'Not set';
+$string['nminutes'] = '{$a} min';
+$string['viewattendance'] = 'View attendance';
+$string['backtooverview'] = 'Back to overview';
+$string['export_csv'] = 'Download CSV';
+$string['export_pdf'] = 'Download PDF';
+$string['exported_on'] = 'Exported on';
+$string['rec_state_none'] = 'Not fetched';
+
 // Manage / reconcile.
 $string['managelink'] = 'Manage attendance & recordings';
 $string['manage_title'] = 'Manage: {$a}';
@@ -189,6 +204,7 @@ $string['meeting_error'] = 'The remote meeting could not be created for this act
 $string['meeting_pending'] = 'No meeting account is attached yet, so no live meeting has been created. Occurrences are listed from the schedule.';
 $string['noattendanceyet'] = 'No attendance has been recorded for this session yet.';
 $string['col_participant'] = 'Reported participant';
+$string['col_email'] = 'Email';
 $string['col_user'] = 'Moodle user';
 $string['col_minutes'] = 'Minutes';
 $string['col_percent'] = 'Attended';
@@ -206,6 +222,7 @@ $string['rec_none'] = 'No recording has been fetched for this session yet. Use "
 $string['rec_sync'] = 'Sync recording';
 $string['rec_sync_title'] = 'Syncing recording';
 $string['rec_synced'] = 'Recording sync complete.';
+$string['rec_moved'] = 'Moved {$a} recording(s) into the destination folder.';
 $string['rec_syncfailed'] = 'Recording sync failed: {$a}';
 $string['rec_storagenone'] = 'This activity has no recording storage provider selected, so recordings are not offloaded. Set a storage provider in the activity settings or the site defaults.';
 $string['rec_found'] = 'Zoom returned {$a->files} recording file(s), {$a->videos} video(s).';

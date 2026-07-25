@@ -109,6 +109,10 @@ class s3_provider implements storage_provider {
         return rtrim($label, '/') . '/';
     }
 
+    public function default_folder_id(): ?string {
+        return 'recordings/';
+    }
+
     // ---- Upload lifecycle: the ONLY part left to implement. ---------------
 
     public function begin_upload(upload_request $req): upload_handle {

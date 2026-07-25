@@ -7,8 +7,9 @@
 // any later version. See <http://www.gnu.org/licenses/>.
 
 /**
- * Teacher management page: occurrences, attendance grid, reconcile unmatched
- * participants, and re-poll attendance. Server-side (no AMD) for robustness.
+ * Teacher overview: session header + one card per occurrence with attendance
+ * summary and recording status. Detailed, paginated attendance lives in
+ * attendance.php; CSV/PDF export in export.php.
  *
  * @package    mod_edzsession
  * @copyright  2026 EDZLMS
@@ -18,6 +19,7 @@
 require(__DIR__ . '/../../config.php');
 
 use mod_edzsession\local\attendance\attendance_engine;
+use mod_edzsession\local\attendance\report;
 use mod_edzsession\local\provider_manager;
 use mod_edzsession\local\account_vault;
 use mod_edzsession\local\meeting\remote_meeting;
@@ -41,20 +43,7 @@ $PAGE->set_context($context);
 $PAGE->set_title(format_string($edzsession->name));
 $PAGE->set_heading(format_string($course->fullname));
 
-// ---- Actions -------------------------------------------------------------
-if ($action === 'assign' && confirm_sesskey()) {
-    require_capability('mod/edzsession:reconcile', $context);
-    $attendanceid = required_param('attendanceid', PARAM_INT);
-    $userid = required_param('userid', PARAM_INT);
-    // Guard: the target user must be enrolled here.
-    if ($userid && is_enrolled($context, $userid)) {
-        attendance_engine::assign_user($attendanceid, $userid);
-        redirect($baseurl, get_string('reconcile_assigned', 'mod_edzsession'));
-    }
-    redirect($baseurl, get_string('reconcile_notenrolled', 'mod_edzsession'), null,
-        \core\output\notification::NOTIFY_ERROR);
-}
-
+// ---- Re-poll attendance --------------------------------------------------
 if ($action === 'repoll' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $occurrenceid = required_param('occurrenceid', PARAM_INT);
@@ -67,27 +56,21 @@ if ($action === 'repoll' && confirm_sesskey()) {
         attendance_engine::poll_occurrence($occ);
         redirect($baseurl, get_string('reconcile_repolled', 'mod_edzsession'));
     } catch (\Throwable $e) {
-        // Render the failure inline (not a redirect toast) with the underlying
-        // provider detail, so the exact API error is always visible to the
-        // teacher/admin managing the activity.
         echo $OUTPUT->header();
         echo $OUTPUT->notification(
             get_string('reconcile_repollfailed', 'mod_edzsession', $e->getMessage()), 'error');
-        $detail = '';
         if ($e instanceof \moodle_exception && !empty($e->debuginfo)) {
-            $detail = $e->debuginfo;
-        }
-        if ($detail !== '') {
-            echo html_writer::tag('pre', s($detail),
+            echo html_writer::tag('pre', s($e->debuginfo),
                 ['class' => 'bg-light p-3 border rounded', 'style' => 'white-space:pre-wrap;']);
         }
-        echo html_writer::div(html_writer::link($baseurl,
-            get_string('back'), ['class' => 'btn btn-secondary']), 'mt-2');
+        echo html_writer::div(html_writer::link($baseurl, get_string('back'),
+            ['class' => 'btn btn-secondary']), 'mt-2');
         echo $OUTPUT->footer();
         exit;
     }
 }
 
+// ---- Sync recording (discover + advance pipeline + re-file) ---------------
 if ($action === 'syncrec' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $occurrenceid = required_param('occurrenceid', PARAM_INT);
@@ -110,7 +93,6 @@ if ($action === 'syncrec' && confirm_sesskey()) {
             $provider = provider_manager::get_meeting($occ->meetingprovider);
             $meetingid = (string) ($occ->remotemeetingid ?: $occ->parentmeetingid);
 
-            // Resolve the occurrence UUID if we don't have it.
             $uuid = $occ->remoteuuid;
             if (empty($uuid)) {
                 $uuid = $provider->resolve_occurrence_uuid(
@@ -123,7 +105,6 @@ if ($action === 'syncrec' && confirm_sesskey()) {
                 throw new \moodle_exception('nomeetinginstance', 'mod_edzsession');
             }
 
-            // Discover recordings and enqueue the videos.
             $meeting = new remote_meeting($meetingid, '', $uuid);
             $all = $provider->list_recordings($meeting, $account);
             $videos = array_filter($all, fn($r) => $r->is_video());
@@ -133,7 +114,6 @@ if ($action === 'syncrec' && confirm_sesskey()) {
                 pipeline_manager::enqueue((int) $occ->id, $asset, $storagename);
             }
 
-            // Advance each recording of this occurrence as far as it will go now.
             $recs = $DB->get_records('edzsession_recording', ['occurrenceid' => $occ->id]);
             foreach ($recs as $rec) {
                 for ($i = 0; $i < 12; $i++) {
@@ -142,9 +122,25 @@ if ($action === 'syncrec' && confirm_sesskey()) {
                         break;
                     }
                     if (!pipeline_manager::advance($fresh)) {
-                        break; // Waiting on the provider (e.g. Vimeo transcoding).
+                        break;
                     }
                 }
+            }
+
+            $moved = 0;
+            foreach ($DB->get_records('edzsession_recording', ['occurrenceid' => $occ->id]) as $rec) {
+                if (in_array($rec->state, ['finalized', 'source_deleted'], true)) {
+                    try {
+                        if (pipeline_manager::refile($rec)) {
+                            $moved++;
+                        }
+                    } catch (\Throwable $e) {
+                        debugging('edzsession refile failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                    }
+                }
+            }
+            if ($moved) {
+                echo $OUTPUT->notification(get_string('rec_moved', 'mod_edzsession', $moved), 'success');
             }
             echo $OUTPUT->notification(get_string('rec_synced', 'mod_edzsession'), 'success');
         }
@@ -156,20 +152,25 @@ if ($action === 'syncrec' && confirm_sesskey()) {
                 ['class' => 'bg-light p-3 border rounded', 'style' => 'white-space:pre-wrap;']);
         }
     }
-    echo html_writer::div(html_writer::link($baseurl,
-        get_string('back'), ['class' => 'btn btn-secondary']), 'mt-2');
+    echo html_writer::div(html_writer::link($baseurl, get_string('back'),
+        ['class' => 'btn btn-secondary']), 'mt-2');
     echo $OUTPUT->footer();
     exit;
 }
 
-// ---- Enrolled-user menu for assigning unmatched participants -------------
-$usermenu = [0 => get_string('choose')];
-foreach (get_enrolled_users($context) as $u) {
-    $usermenu[$u->id] = fullname($u) . ' (' . $u->email . ')';
-}
+// ---- Overview ------------------------------------------------------------
+$meta = report::session_meta($cm, $course, $edzsession);
+$canreconcile = has_capability('mod/edzsession:reconcile', $context);
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('manage_title', 'mod_edzsession', format_string($edzsession->name)));
+echo $OUTPUT->heading(get_string('manage_title', 'mod_edzsession', $meta->sessionname));
+
+// Session info strip.
+$info = html_writer::tag('span',
+    html_writer::tag('strong', get_string('col_host', 'mod_edzsession') . ': ') . s($meta->host), ['class' => 'me-3']);
+$info .= html_writer::tag('span',
+    html_writer::tag('strong', get_string('meetingprovider', 'mod_edzsession') . ': ') . s($meta->provider), ['class' => 'me-3']);
+echo html_writer::div($info, 'alert alert-light border');
 
 if ($edzsession->meetingstatus === 'error') {
     echo $OUTPUT->notification(get_string('meeting_error', 'mod_edzsession'), 'error');
@@ -184,116 +185,70 @@ if (empty($occurrences)) {
     exit;
 }
 
-$canreconcile = has_capability('mod/edzsession:reconcile', $context);
-
+$table = new html_table();
+$table->attributes['class'] = 'generaltable';
+$table->head = [
+    get_string('col_when', 'mod_edzsession'),
+    get_string('col_duration', 'mod_edzsession'),
+    get_string('col_present', 'mod_edzsession'),
+    get_string('col_avg', 'mod_edzsession'),
+    get_string('rec_heading', 'mod_edzsession'),
+    get_string('actions'),
+];
 foreach ($occurrences as $occ) {
-    echo $OUTPUT->heading(userdate($occ->starttime), 4);
+    $summary = report::occurrence_summary((int) $occ->id);
+    $detailurl = new moodle_url('/mod/edzsession/attendance.php', ['id' => $cm->id, 'occ' => $occ->id]);
 
-    // Action buttons: re-poll attendance + sync recordings.
+    $actions = html_writer::link($detailurl, get_string('viewattendance', 'mod_edzsession'),
+        ['class' => 'btn btn-primary btn-sm mb-1']);
     if ($canreconcile) {
-        $buttons = $OUTPUT->single_button(
+        $actions .= ' ' . html_writer::link(
             new moodle_url($baseurl, ['action' => 'repoll', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
-            get_string('reconcile_repoll', 'mod_edzsession'), 'get');
-        $buttons .= ' ' . $OUTPUT->single_button(
+            get_string('reconcile_repoll', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
+        $actions .= ' ' . html_writer::link(
             new moodle_url($baseurl, ['action' => 'syncrec', 'occurrenceid' => $occ->id, 'sesskey' => sesskey()]),
-            get_string('rec_sync', 'mod_edzsession'), 'get');
-        echo html_writer::div($buttons, 'mb-2');
+            get_string('rec_sync', 'mod_edzsession'), ['class' => 'btn btn-outline-secondary btn-sm mb-1']);
     }
 
-    // Recording section for this occurrence.
-    echo mod_edzsession_render_recordings((int) $occ->id);
-
-    $attendance = $DB->get_records('edzsession_attendance', ['occurrenceid' => $occ->id], 'attendedpercent DESC');
-    if (empty($attendance)) {
-        echo html_writer::div(get_string('noattendanceyet', 'mod_edzsession'), 'text-muted mb-3');
-        continue;
-    }
-
-    $table = new html_table();
-    $table->head = [
-        get_string('col_participant', 'mod_edzsession'),
-        get_string('col_user', 'mod_edzsession'),
-        get_string('col_minutes', 'mod_edzsession'),
-        get_string('col_percent', 'mod_edzsession'),
-        get_string('col_match', 'mod_edzsession'),
+    $table->data[] = [
+        userdate($occ->starttime),
+        get_string('nminutes', 'mod_edzsession', (int) $occ->duration),
+        $summary->present . ' / ' . $summary->total,
+        $summary->total > 0 ? format_float($summary->avgpercent, 1) . '%' : '-',
+        mod_edzsession_recording_badge((int) $occ->id),
+        $actions,
     ];
-    foreach ($attendance as $a) {
-        $participant = s($a->matchedname) . ($a->matchedemail ? ' <' . s($a->matchedemail) . '>' : '');
-        if ($a->matchstate === 'unmatched' || !$a->userid) {
-            if ($canreconcile) {
-                // Inline assign form.
-                $form = html_writer::start_tag('form',
-                    ['method' => 'post', 'action' => $baseurl->out(false), 'class' => 'form-inline']);
-                $form .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'action', 'value' => 'assign']);
-                $form .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()]);
-                $form .= html_writer::empty_tag('input', ['type' => 'hidden', 'name' => 'attendanceid', 'value' => $a->id]);
-                $form .= html_writer::select($usermenu, 'userid', 0, false);
-                $form .= ' ' . html_writer::empty_tag('input',
-                    ['type' => 'submit', 'value' => get_string('reconcile_assign', 'mod_edzsession'), 'class' => 'btn btn-secondary btn-sm']);
-                $form .= html_writer::end_tag('form');
-                $usercell = $form;
-            } else {
-                $usercell = html_writer::span(get_string('unmatched', 'mod_edzsession'), 'badge bg-warning text-dark');
-            }
-        } else {
-            $u = \core_user::get_user($a->userid);
-            $usercell = $u ? fullname($u) : ('#' . $a->userid);
-        }
-        $table->data[] = [
-            $participant,
-            $usercell,
-            floor($a->joinseconds / 60),
-            format_float($a->attendedpercent, 1) . '%',
-            html_writer::span(s($a->matchstate), 'badge bg-light text-dark'),
-        ];
-    }
-    echo html_writer::table($table);
 }
-
+echo html_writer::table($table);
 echo $OUTPUT->footer();
 
 /**
- * Render the recordings block for one occurrence: state + a watch link once
- * finalized, or the pipeline status / error otherwise.
+ * Compact recording status badge (+ watch link) for the overview row.
  *
  * @param int $occurrenceid
  * @return string HTML
  */
-function mod_edzsession_render_recordings(int $occurrenceid): string {
+function mod_edzsession_recording_badge(int $occurrenceid): string {
     global $DB;
     $recs = $DB->get_records('edzsession_recording', ['occurrenceid' => $occurrenceid], 'timecreated ASC');
     if (empty($recs)) {
-        return html_writer::div(get_string('rec_none', 'mod_edzsession'), 'text-muted mb-3');
+        return html_writer::span(get_string('rec_state_none', 'mod_edzsession'), 'text-muted');
     }
-    $out = html_writer::tag('div', get_string('rec_heading', 'mod_edzsession'), ['class' => 'fw-bold mt-2']);
-    $table = new html_table();
-    $table->head = [
-        get_string('rec_col_status', 'mod_edzsession'),
-        get_string('rec_col_link', 'mod_edzsession'),
-    ];
+    $out = [];
     foreach ($recs as $rec) {
-        if ($rec->state === 'failed') {
-            $status = html_writer::span(get_string('rec_state_failed', 'mod_edzsession'), 'badge bg-danger');
-            if (!empty($rec->lasterror)) {
-                $status .= html_writer::div(s($rec->lasterror), 'small text-danger');
-            }
-        } else if (in_array($rec->state, ['finalized', 'source_deleted'], true)) {
-            $status = html_writer::span(get_string('rec_state_ready', 'mod_edzsession'), 'badge bg-success');
-        } else {
-            $status = html_writer::span(get_string('rec_state_processing', 'mod_edzsession')
-                . ' (' . s($rec->state) . ')', 'badge bg-info');
-        }
-
-        $link = '-';
         if (!empty($rec->embedjson)) {
             $embed = json_decode($rec->embedjson, true) ?: [];
-            $url = $embed['url'] ?? '';
-            if ($url !== '') {
-                $link = html_writer::link($url, get_string('rec_watch', 'mod_edzsession'),
-                    ['class' => 'btn btn-primary btn-sm', 'target' => '_blank', 'rel' => 'noopener']);
+            if (!empty($embed['url'])) {
+                $out[] = html_writer::link($embed['url'], get_string('rec_watch', 'mod_edzsession'),
+                    ['class' => 'btn btn-success btn-sm', 'target' => '_blank', 'rel' => 'noopener']);
+                continue;
             }
         }
-        $table->data[] = [$status, $link];
+        if ($rec->state === 'failed') {
+            $out[] = html_writer::span(get_string('rec_state_failed', 'mod_edzsession'), 'badge bg-danger');
+        } else {
+            $out[] = html_writer::span(get_string('rec_state_processing', 'mod_edzsession'), 'badge bg-info');
+        }
     }
-    return $out . html_writer::table($table);
+    return implode(' ', $out);
 }

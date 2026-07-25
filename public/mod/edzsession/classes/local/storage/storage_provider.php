@@ -76,6 +76,14 @@ interface storage_provider {
     /** Create-or-get a folder by label; @return string folder id. */
     public function ensure_folder(string $label): string;
 
+    /**
+     * The default destination folder id for this provider (from its settings),
+     * used when an activity does not specify its own folder. Null = provider root.
+     *
+     * @return string|null
+     */
+    public function default_folder_id(): ?string;
+
     // ---- Offload lifecycle (return value objects, never bare bools) --------
 
     /** Start an upload: open a pull job or a stream session. */

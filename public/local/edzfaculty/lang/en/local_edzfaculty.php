@@ -196,6 +196,44 @@ $string['risk_ok'] = 'On track';
 $string['risk_watch'] = 'Watch';
 $string['risk_critical'] = 'Critical';
 
+// v2 dashboard.
+$string['searchcourses'] = 'Search your courses…';
+$string['opencoursereport'] = 'Open course report →';
+$string['nocoursematch'] = 'No courses match.';
+$string['nodata'] = 'No data yet.';
+$string['livenow'] = 'Live now';
+$string['inminutes'] = 'In {$a} min';
+
+// Course report.
+$string['coursereporttitle'] = 'Course Report';
+$string['backtodash'] = 'Back to dashboard';
+$string['participants'] = 'Participants';
+$string['activeweek'] = 'Active';
+$string['passrate'] = 'Pass rate';
+$string['contentdeliveredshort'] = 'Content delivered';
+$string['gradedist'] = 'Grade distribution';
+$string['avgattendance'] = 'avg attendance';
+$string['belowthreshold'] = 'students below threshold';
+$string['noattendance'] = 'No attendance data yet.';
+$string['assessmentstatus'] = 'Assessment status';
+$string['assessment'] = 'Assessment';
+$string['submitted'] = 'Submitted';
+$string['graded'] = 'Graded';
+$string['pending'] = 'Pending';
+$string['due'] = 'Due';
+$string['noassessments'] = 'No assessments in this course.';
+$string['needattention'] = 'Students needing attention';
+$string['engagementtrend'] = 'Engagement trend (8 weeks)';
+$string['activeperweek'] = 'Active students per week';
+$string['liveclasses'] = 'Live classes & recordings';
+$string['open'] = 'Open';
+$string['nolive'] = 'No live classes set up.';
+$string['roster'] = 'Class roster';
+$string['searchstudents'] = 'Search students…';
+$string['submissionscol'] = 'Submissions';
+$string['status'] = 'Status';
+$string['noroster'] = 'No students enrolled.';
+
 // Task / privacy.
 $string['task_refresh_cache'] = 'Rebuild faculty dashboard analytics cache';
 $string['privacy:metadata:cache'] = 'Derived per-student analytics shown to their teachers on the faculty dashboard.';
