@@ -56,6 +56,9 @@ class null_storage_provider implements storage_provider {
     public function ensure_folder(string $label): string {
         return '';
     }
+    public function default_folder_id(): ?string {
+        return null;
+    }
     public function begin_upload(upload_request $req): upload_handle {
         throw new \coding_exception('null_storage_provider cannot upload');
     }

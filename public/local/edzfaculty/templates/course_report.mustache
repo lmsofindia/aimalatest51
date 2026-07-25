@@ -1,0 +1,112 @@
+{{!
+    This file is part of the local_edzfaculty plugin for Moodle.
+    Per-course detailed report.
+    @template local_edzfaculty/course_report
+}}
+<div class="edzf" data-region="edzf-report">
+    <script type="application/json" data-region="edzf-data">{{{datajson}}}</script>
+
+    <a class="edzf-backlink" href="{{backurl}}">← {{#str}}backtodash, local_edzfaculty{{/str}}</a>
+    <div class="edzf-rhead">
+        <div><h1>{{name}}</h1><div class="edzf-rcode">{{code}}</div></div>
+        <div class="edzf-racts"><a class="edzf-btn ghost" href="{{messageurl}}">{{#str}}participants, local_edzfaculty{{/str}}</a></div>
+    </div>
+
+    {{! KPI strip }}
+    <div class="edzf-rk">
+        <div class="edzf-rtk"><div class="v">{{kpi.students}}</div><div class="l">{{labels.students}}</div></div>
+        <div class="edzf-rtk"><div class="v">{{kpi.active}}%</div><div class="l">{{#str}}activeweek, local_edzfaculty{{/str}}</div></div>
+        <div class="edzf-rtk"><div class="v">{{kpi.avgscore}}%</div><div class="l">{{#str}}avgscore, local_edzfaculty{{/str}}</div></div>
+        <div class="edzf-rtk"><div class="v">{{kpi.passrate}}%</div><div class="l">{{#str}}passrate, local_edzfaculty{{/str}}</div></div>
+        <div class="edzf-rtk"><div class="v">{{kpi.delivered}}%</div><div class="l">{{#str}}contentdeliveredshort, local_edzfaculty{{/str}}</div></div>
+        <div class="edzf-rtk crit"><div class="v">{{kpi.atrisk}}</div><div class="l">{{#str}}atrisklabel, local_edzfaculty{{/str}}</div></div>
+    </div>
+
+    {{! Grade distribution + attendance }}
+    <div class="edzf-ins">
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}gradedist, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b"><div class="edzf-gd">
+                {{#gradedist}}<div class="edzf-gcol"><div class="edzf-gbx {{cls}}" style="height:{{height}}%"><span>{{count}}</span></div><div class="edzf-gcl">{{label}}</div></div>{{/gradedist}}
+            </div></div>
+        </section>
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}attendance, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b">
+                {{#hasattend}}
+                <div class="edzf-donut" style="background:conic-gradient(var(--edzf-brand) 0 {{attavg}}%, var(--edzf-plane) {{attavg}}% 100%)"><div class="edzf-donut-in"><b>{{attavg}}%</b><span>{{#str}}avgattendance, local_edzfaculty{{/str}}</span></div></div>
+                <div style="text-align:center;font-size:.8rem;color:var(--edzf-ink2)"><b class="edzf-hot">{{attbelow}}</b> {{#str}}belowthreshold, local_edzfaculty{{/str}}</div>
+                {{/hasattend}}
+                {{^hasattend}}<div class="edzf-empty">{{#str}}noattendance, local_edzfaculty{{/str}}</div>{{/hasattend}}
+            </div>
+        </section>
+    </div>
+
+    {{! Assessment status }}
+    <section class="edzf-card">
+        <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}assessmentstatus, local_edzfaculty{{/str}}</h2></div>
+        <div class="edzf-card-b" style="padding:0">
+            {{#hasassessments}}
+            <table class="edzf-table">
+                <thead><tr><th>{{#str}}assessment, local_edzfaculty{{/str}}</th><th class="num">{{#str}}submitted, local_edzfaculty{{/str}}</th><th class="num">{{#str}}graded, local_edzfaculty{{/str}}</th><th class="num">{{#str}}pending, local_edzfaculty{{/str}}</th><th class="num">{{#str}}avgscore, local_edzfaculty{{/str}}</th><th>{{#str}}due, local_edzfaculty{{/str}}</th></tr></thead>
+                <tbody>
+                    {{#assessments}}<tr><td>{{name}}</td><td class="num">{{submitted}}</td><td class="num">{{graded}}</td><td class="num">{{#haspending}}<span class="edzf-hot">{{pending}}</span>{{/haspending}}{{^haspending}}{{pending}}{{/haspending}}</td><td class="num">{{avg}}</td><td>{{due}}</td></tr>{{/assessments}}
+                </tbody>
+            </table>
+            {{/hasassessments}}
+            {{^hasassessments}}<div class="edzf-empty">{{#str}}noassessments, local_edzfaculty{{/str}}</div>{{/hasassessments}}
+        </div>
+    </section>
+
+    {{! At-risk }}
+    <section class="edzf-card">
+        <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}needattention, local_edzfaculty{{/str}}</h2></div>
+        <div class="edzf-card-b" style="padding:0">
+            {{#hasatrisk}}
+            <table class="edzf-table">
+                <thead><tr><th>{{labels.student}}</th><th class="num">{{#str}}attendance, local_edzfaculty{{/str}}</th><th class="num">{{#str}}avgscore, local_edzfaculty{{/str}}</th><th class="num">{{#str}}lastlogin, local_edzfaculty{{/str}}</th><th>{{#str}}whyflagged, local_edzfaculty{{/str}}</th><th></th></tr></thead>
+                <tbody>
+                    {{#atriskrows}}<tr><td><span class="edzf-tav">{{initials}}</span>{{fullname}}</td><td class="num">{{attendance}}%</td><td class="num">{{avgscore}}</td><td class="num">{{lastaccess}}</td><td>{{reasons}}</td><td><button class="edzf-btn sm" data-action="report-nudge" data-userid="{{userid}}" data-courseid="{{courseid}}">{{#str}}nudgesendbtn, local_edzfaculty{{/str}}</button></td></tr>{{/atriskrows}}
+                </tbody>
+            </table>
+            {{/hasatrisk}}
+            {{^hasatrisk}}<div class="edzf-empty">{{#str}}noatrisk, local_edzfaculty{{/str}}</div>{{/hasatrisk}}
+        </div>
+    </section>
+
+    {{! Trend + live classes }}
+    <div class="edzf-ins">
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}engagementtrend, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b">
+                {{#trend.has}}<svg class="edzf-trendsvg" viewBox="0 0 320 90" preserveAspectRatio="none"><polyline fill="rgba(13,122,71,.12)" stroke="none" points="{{trend.area}}"/><polyline fill="none" stroke="var(--edzf-brand)" stroke-width="2.5" points="{{trend.line}}"/></svg><div class="edzf-muted" style="font-size:.72rem">{{#str}}activeperweek, local_edzfaculty{{/str}}</div>{{/trend.has}}
+                {{^trend.has}}<div class="edzf-empty">{{#str}}nodata, local_edzfaculty{{/str}}</div>{{/trend.has}}
+            </div>
+        </section>
+        <section class="edzf-card">
+            <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}liveclasses, local_edzfaculty{{/str}}</h2></div>
+            <div class="edzf-card-b">
+                {{#haslive}}{{#liveclasses}}<div class="edzf-tl"><div class="edzf-tm">{{when}}</div><div class="edzf-tbd"><div class="edzf-tt">{{name}}</div>{{#url}}<a class="edzf-tag zoom" href="{{.}}">{{#str}}open, local_edzfaculty{{/str}}</a>{{/url}}</div></div>{{/liveclasses}}{{/haslive}}
+                {{^haslive}}<div class="edzf-empty">{{#str}}nolive, local_edzfaculty{{/str}}</div>{{/haslive}}
+            </div>
+        </section>
+    </div>
+
+    {{! Roster }}
+    <section class="edzf-card">
+        <div class="edzf-card-h"><h2 class="edzf-h2">{{#str}}roster, local_edzfaculty{{/str}}</h2>
+            <div class="edzf-csearch"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg><input placeholder="{{#str}}searchstudents, local_edzfaculty{{/str}}" data-action="roster-search"></div>
+        </div>
+        <div class="edzf-card-b" style="padding:0">
+            {{#hasroster}}
+            <table class="edzf-table">
+                <thead><tr><th>{{labels.student}}</th><th class="num">{{#str}}attendance, local_edzfaculty{{/str}}</th><th class="num">{{#str}}avgscore, local_edzfaculty{{/str}}</th><th class="num">{{#str}}submissionscol, local_edzfaculty{{/str}}</th><th class="num">{{#str}}lastlogin, local_edzfaculty{{/str}}</th><th>{{#str}}status, local_edzfaculty{{/str}}</th></tr></thead>
+                <tbody>
+                    {{#roster}}<tr data-search="{{fullname}}"><td><span class="edzf-tav">{{initials}}</span>{{fullname}}</td><td class="num">{{attendance}}</td><td class="num">{{avgscore}}</td><td class="num">{{subs}}</td><td class="num">{{lastaccess}}</td><td><span class="edzf-badge {{badgecls}}">{{levellabel}}</span></td></tr>{{/roster}}
+                </tbody>
+            </table>
+            {{/hasroster}}
+            {{^hasroster}}<div class="edzf-empty">{{#str}}noroster, local_edzfaculty{{/str}}</div>{{/hasroster}}
+        </div>
+    </section>
+</div>

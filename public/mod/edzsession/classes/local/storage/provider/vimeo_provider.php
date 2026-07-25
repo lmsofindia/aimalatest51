@@ -129,6 +129,19 @@ class vimeo_provider implements storage_provider {
         return $this->id_from_uri($res['uri'] ?? '');
     }
 
+    public function default_folder_id(): ?string {
+        $name = trim((string) get_config('mod_edzsession', 'edzstore_vimeo_defaultfolder'));
+        if ($name === '') {
+            return null;
+        }
+        try {
+            $id = $this->ensure_folder($name);
+            return $id !== '' ? $id : null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     // ---- Upload lifecycle -------------------------------------------------
 
     public function begin_upload(upload_request $req): upload_handle {

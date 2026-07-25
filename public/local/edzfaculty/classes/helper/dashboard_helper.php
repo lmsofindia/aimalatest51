@@ -76,7 +76,7 @@ class dashboard_helper {
                 'avgscore'  => $avg,
                 'atrisk'    => (int)$atrisk,
                 'delivered' => $delivered,
-                'url'       => (new moodle_url('/course/view.php', ['id' => $cid]))->out(false),
+                'url'       => (new moodle_url('/local/edzfaculty/course_report.php', ['id' => $cid]))->out(false),
             ];
 
             $focusmap[$cid] = $this->focus_stats(
@@ -97,6 +97,17 @@ class dashboard_helper {
 
             $chartlabels[] = format_string($c->shortname);
             $chartvalues[] = $avg;
+        }
+
+        // Section performance horizontal bars (colour-coded).
+        $sectionbars = [];
+        foreach ($chartlabels as $i => $lab) {
+            $pct = (int)$chartvalues[$i];
+            $sectionbars[] = [
+                'name' => $lab,
+                'pct'  => $pct,
+                'cls'  => $pct < 65 ? 'bad' : ($pct < 72 ? 'low' : ''),
+            ];
         }
 
         // "All courses" focus + engagement aggregates.
@@ -138,6 +149,7 @@ class dashboard_helper {
                     'time' => userdate($nextclass->timestart, get_string('strftimetime', 'langconfig')),
                     'url'  => $nextclass->joinurl,
                 ] : null,
+                'nextclasssoon' => $nextclass && abs($nextclass->timestart - time()) <= 3600,
             ],
             'grading'       => $this->grading_rows($queue, $courses),
             'discussions'   => $this->discussion_rows($unanswered, $courses),
@@ -148,6 +160,7 @@ class dashboard_helper {
             'courses'       => $coursecards,
             // Zone 3.
             'chart'         => ['labels' => $chartlabels, 'values' => $chartvalues],
+            'sectionbars'   => $sectionbars,
             'engageall'     => $engageall,
             'engagemap'     => $engagemap,
             'lastupdated'   => $this->last_updated(),
@@ -331,9 +344,12 @@ class dashboard_helper {
      * Timeline rows.
      */
     protected function timeline_rows(array $events, array $courses): array {
+        $now  = time();
         $rows = [];
         foreach ($events as $e) {
             $c = $courses[$e->courseid] ?? null;
+            $soon = ($e->type === 'liveclass' && $e->timestart <= $now + 3600
+                     && ($e->timestart + $e->duration) >= $now);
             $rows[] = [
                 'name'      => $e->name,
                 'section'   => $c ? format_string($c->shortname) : '',
@@ -341,6 +357,8 @@ class dashboard_helper {
                 'islive'    => $e->type === 'liveclass',
                 'isexam'    => $e->type === 'assessment',
                 'joinurl'   => $e->joinurl,
+                'soon'      => $soon,
+                'reltime'   => $soon ? $this->reltime($e->timestart) : '',
             ];
         }
         return $rows;
@@ -353,6 +371,20 @@ class dashboard_helper {
         global $DB;
         $ts = $DB->get_field_sql("SELECT MAX(timemodified) FROM {local_edzfaculty_coursecache}");
         return $ts ? get_string('lastupdated', 'local_edzfaculty', format_time(time() - $ts)) : null;
+    }
+
+    /**
+     * Relative time label for an imminent event.
+     *
+     * @param int $ts
+     * @return string
+     */
+    protected function reltime(int $ts): string {
+        $d = $ts - time();
+        if ($d <= 0) {
+            return get_string('livenow', 'local_edzfaculty');
+        }
+        return get_string('inminutes', 'local_edzfaculty', (int)ceil($d / 60));
     }
 
     /**

@@ -1,20 +1,19 @@
 // This file is part of the local_edzfaculty plugin for Moodle.
 //
 // Faculty dashboard interactivity: tabs, course focus, engagement filter,
-// section chart, at-risk student modal, and manual analytics refresh.
+// My Courses search, at-risk student modal + nudge, and the course report page.
 
 /**
  * @module local_edzfaculty/dashboard
  * @copyright 2026 EDZLEARN
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax, Notification) {
+define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
     'use strict';
 
     var data = {};
 
     /**
-     * Format an integer with thousands separators.
      * @param {number} n
      * @return {string}
      */
@@ -23,7 +22,6 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Trend arrow text.
      * @param {number} t
      * @return {string}
      */
@@ -35,7 +33,6 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Trend css class.
      * @param {number} t
      * @return {string}
      */
@@ -47,7 +44,16 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Tab switching.
+     * @param {string} s
+     * @return {string}
+     */
+    function esc(s) {
+        var div = document.createElement('div');
+        div.textContent = s == null ? '' : String(s);
+        return div.innerHTML;
+    }
+
+    /**
      * @param {HTMLElement} root
      */
     function wireTabs(root) {
@@ -65,7 +71,6 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Apply a Course Focus scope (0 = all).
      * @param {HTMLElement} root
      * @param {number|string} cid
      */
@@ -91,14 +96,9 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
                 }
             });
         }
-        var sel = root.querySelector('#edzf-course');
-        if (sel && String(sel.value) !== String(cid)) {
-            sel.value = String(cid);
-        }
     }
 
     /**
-     * Course Focus selector.
      * @param {HTMLElement} root
      */
     function wireCourseFocus(root) {
@@ -111,51 +111,26 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Course cards drive Course Focus + engagement.
-     * @param {HTMLElement} root
-     */
-    function wireCourseCards(root) {
-        root.querySelectorAll('[data-action="course-card"]').forEach(function(card) {
-            card.addEventListener('click', function(e) {
-                e.preventDefault();
-                var cid = card.getAttribute('data-courseid');
-                applyFocus(root, cid);
-                applyEngagement(root, cid);
-                var focus = root.querySelector('.edzf-focus');
-                if (focus) {
-                    focus.scrollIntoView({behavior: 'smooth', block: 'center'});
-                }
-            });
-        });
-    }
-
-    /**
-     * Build the AI insight string for a scope.
      * @param {number|string} cid
-     * @param {object} e engagement metrics
+     * @param {object} e
      * @return {string}
      */
     function insight(cid, e) {
-        if (!cid) {
-            var labels = data.chart.labels || [];
-            var values = data.chart.values || [];
-            if (labels.length) {
-                var mini = 0;
-                values.forEach(function(v, i) {
-                    if (v < values[mini]) {
-                        mini = i;
-                    }
-                });
-                return labels[mini] + ' is currently your lowest section at ' + values[mini] +
-                    '%. Consider a revision session.';
-            }
+        if (!cid && data.chart && data.chart.labels.length) {
+            var mini = 0;
+            data.chart.values.forEach(function(v, i) {
+                if (v < data.chart.values[mini]) {
+                    mini = i;
+                }
+            });
+            return data.chart.labels[mini] + ' is currently your lowest section at ' +
+                data.chart.values[mini] + '%. Consider a revision session.';
         }
         return 'Active students ' + Math.round(e.active.value) + '%, average score ' +
             Math.round(e.score.value) + '% ' + trendText(e.score.trend) + '.';
     }
 
     /**
-     * Apply an engagement scope.
      * @param {HTMLElement} root
      * @param {number|string} cid
      */
@@ -173,9 +148,6 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
                 t.className = 'edzf-et ' + trendClass(e[k].trend);
             }
         });
-        root.querySelectorAll('.edzf-seg').forEach(function(s) {
-            s.classList.toggle('active', String(s.getAttribute('data-eng')) === String(cid));
-        });
         var ai = root.querySelector('[data-region="eng-ai"]');
         if (ai && data.showai) {
             ai.innerHTML = '<b>' + data.strings.aiinsight + ':</b> ' + insight(cid, e);
@@ -183,75 +155,59 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
     }
 
     /**
-     * Engagement filter pills.
      * @param {HTMLElement} root
      */
     function wireEngagement(root) {
-        root.querySelectorAll('.edzf-seg').forEach(function(seg) {
-            seg.addEventListener('click', function() {
-                applyEngagement(root, seg.getAttribute('data-eng'));
+        var sel = root.querySelector('#edzf-egsel');
+        if (sel) {
+            sel.addEventListener('change', function() {
+                applyEngagement(root, sel.value);
             });
-        });
+        }
     }
 
     /**
-     * Section performance bar chart via core/chartjs.
+     * My Courses live search.
      * @param {HTMLElement} root
      */
-    function renderChart(root) {
-        var canvas = root.querySelector('[data-region="edzf-chart"]');
-        if (!canvas || !data.chart || !data.chart.labels.length) {
+    function wireCourseSearch(root) {
+        var input = root.querySelector('#edzf-csrch');
+        if (!input) {
             return;
         }
-        new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: data.chart.labels,
-                datasets: [{
-                    label: data.strings.score,
-                    data: data.chart.values,
-                    backgroundColor: '#0d7a47',
-                    borderRadius: 4,
-                    maxBarThickness: 46
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {legend: {display: false}},
-                scales: {y: {beginAtZero: true, max: 100, ticks: {callback: function(v) { return v + '%'; }}}}
+        input.addEventListener('input', function() {
+            var q = input.value.toLowerCase().trim();
+            var shown = 0;
+            root.querySelectorAll('.edzf-course').forEach(function(c) {
+                var hit = c.getAttribute('data-search').toLowerCase().indexOf(q) > -1;
+                c.style.display = hit ? '' : 'none';
+                if (hit) {
+                    shown++;
+                }
+            });
+            var empty = root.querySelector('[data-region="cempty"]');
+            if (empty) {
+                empty.style.display = shown ? 'none' : 'block';
             }
         });
     }
 
     /**
-     * At-risk student modal (lightweight, dependency-free).
      * @param {HTMLElement} root
      */
     function wireStudents(root) {
         root.querySelectorAll('[data-action="student"]').forEach(function(row) {
             row.addEventListener('click', function() {
-                openStudent(row);
+                openStudent(row.dataset);
             });
         });
     }
 
     /**
-     * Escape HTML for safe insertion.
-     * @param {string} s
-     * @return {string}
+     * Build and show the student-360 modal (with nudge box).
+     * @param {DOMStringMap} d
      */
-    function esc(s) {
-        var div = document.createElement('div');
-        div.textContent = s == null ? '' : String(s);
-        return div.innerHTML;
-    }
-
-    /**
-     * Build and show the student overview modal (with nudge box).
-     * @param {HTMLElement} row
-     */
-    function openStudent(row) {
-        var d = row.dataset;
+    function openStudent(d) {
         var s = data.strings || {};
         var reasons = [];
         try {
@@ -287,14 +243,14 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
             '</div>';
         document.body.appendChild(overlay);
 
-        var close = function() {
-            document.removeEventListener('keydown', onkey);
-            overlay.remove();
-        };
         var onkey = function(e) {
             if (e.key === 'Escape') {
                 close();
             }
+        };
+        var close = function() {
+            document.removeEventListener('keydown', onkey);
+            overlay.remove();
         };
         document.addEventListener('keydown', onkey);
         overlay.addEventListener('click', function(e) {
@@ -304,55 +260,37 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
         });
         overlay.querySelector('.edzf-mclose').addEventListener('click', close);
         overlay.querySelector('.edzf-mclose').focus();
-
-        overlay.querySelector('[data-action="nudge-send"]').addEventListener('click', function(btn) {
-            var target = btn.currentTarget;
-            var body = overlay.querySelector('.edzf-nudge').value;
-            target.disabled = true;
-            Ajax.call([{
-                methodname: 'local_edzfaculty_send_nudge',
-                args: {studentid: parseInt(d.userid, 10), courseid: parseInt(d.courseid, 10), message: body}
-            }])[0].then(function(res) {
-                Notification.addNotification({message: res.message, type: res.sent ? 'success' : 'warning'});
-                if (res.sent) {
-                    close();
-                }
-                return res;
-            }).catch(Notification.exception).always(function() {
-                target.disabled = false;
-            });
+        overlay.querySelector('[data-action="nudge-send"]').addEventListener('click', function(ev) {
+            sendNudge(ev.currentTarget, d.userid, d.courseid, overlay.querySelector('.edzf-nudge').value, close);
         });
     }
 
     /**
-     * Manual analytics refresh.
-     * @param {HTMLElement} root
+     * @param {HTMLElement} btn
+     * @param {string} userid
+     * @param {string} courseid
+     * @param {string} body
+     * @param {function} onsent
      */
-    function wireRefresh(root) {
-        var btn = root.querySelector('[data-action="refresh"]');
-        if (!btn) {
-            return;
-        }
-        btn.addEventListener('click', function() {
-            btn.disabled = true;
-            Ajax.call([{methodname: 'local_edzfaculty_refresh_cache', args: {}}])[0]
-                .then(function(res) {
-                    Notification.addNotification({
-                        message: res.message,
-                        type: res.queued ? 'info' : 'warning'
-                    });
-                    return res;
-                })
-                .catch(Notification.exception)
-                .always(function() {
-                    btn.disabled = false;
-                });
+    function sendNudge(btn, userid, courseid, body, onsent) {
+        btn.disabled = true;
+        Ajax.call([{
+            methodname: 'local_edzfaculty_send_nudge',
+            args: {studentid: parseInt(userid, 10), courseid: parseInt(courseid, 10), message: body}
+        }])[0].then(function(res) {
+            Notification.addNotification({message: res.message, type: res.sent ? 'success' : 'warning'});
+            if (res.sent && onsent) {
+                onsent();
+            }
+            return res;
+        }).catch(Notification.exception).always(function() {
+            btn.disabled = false;
         });
     }
 
     return {
         /**
-         * Entry point.
+         * Dashboard entry point.
          */
         init: function() {
             var root = document.querySelector('[data-region="edzfaculty"]');
@@ -367,16 +305,14 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
             }
             wireTabs(root);
             wireCourseFocus(root);
-            wireCourseCards(root);
             wireEngagement(root);
-            wireRefresh(root);
+            wireCourseSearch(root);
             wireStudents(root);
-            renderChart(root);
             applyEngagement(root, 0);
         },
 
         /**
-         * Overview table: make rows clickable.
+         * Overview table: clickable rows.
          */
         initOverview: function() {
             document.querySelectorAll('.edzf-trow[data-href]').forEach(function(tr) {
@@ -385,6 +321,36 @@ define(['core/chartjs', 'core/ajax', 'core/notification'], function(Chart, Ajax,
                         return;
                     }
                     window.location.href = tr.getAttribute('data-href');
+                });
+            });
+        },
+
+        /**
+         * Course report page: roster search + nudge buttons.
+         */
+        initReport: function() {
+            var root = document.querySelector('[data-region="edzf-report"]');
+            if (!root) {
+                return;
+            }
+            var el = root.querySelector('[data-region="edzf-data"]');
+            try {
+                data = JSON.parse(el.textContent);
+            } catch (e) {
+                data = {strings: {}};
+            }
+            var input = root.querySelector('[data-action="roster-search"]');
+            if (input) {
+                input.addEventListener('input', function() {
+                    var q = input.value.toLowerCase().trim();
+                    root.querySelectorAll('tr[data-search]').forEach(function(tr) {
+                        tr.style.display = tr.getAttribute('data-search').toLowerCase().indexOf(q) > -1 ? '' : 'none';
+                    });
+                });
+            }
+            root.querySelectorAll('[data-action="report-nudge"]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    sendNudge(btn, btn.getAttribute('data-userid'), btn.getAttribute('data-courseid'), '', null);
                 });
             });
         }
