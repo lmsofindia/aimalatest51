@@ -1,0 +1,246 @@
+{{!
+  Knowledge Base admin template.
+  Loaded by pages/kb_admin.php — AMD module kb_admin.js handles all interactions.
+
+  @package local_edzaiaxisfront
+}}
+<div class="edzai-kb-admin" id="edzai-kb-admin">
+
+  {{! ── Header ─────────────────────────────────────────────────────────────── }}
+  <div class="edzai-kb-header d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h2 class="edzai-kb-title mb-1">
+        <span class="edzai-kb-icon">🗂️</span>
+        {{#str}}kb_admin_title, local_edzaiaxisfront{{/str}}
+      </h2>
+      <p class="text-muted mb-0">{{#str}}kb_admin_desc, local_edzaiaxisfront{{/str}}</p>
+    </div>
+    <button class="btn edzai-btn-primary" id="edzai-kb-add-btn">
+      + {{#str}}kb_add_item, local_edzaiaxisfront{{/str}}
+    </button>
+  </div>
+
+  {{! ── Add Item Panel (hidden by default) ─────────────────────────────────── }}
+  <div class="edzai-kb-add-panel card mb-4 d-none" id="edzai-kb-add-panel">
+    <div class="card-body">
+      <h5 class="card-title mb-3">{{#str}}kb_add_item, local_edzaiaxisfront{{/str}}</h5>
+
+      {{! Tab selector }}
+      <ul class="nav nav-tabs mb-3" id="edzai-kb-add-tabs">
+        <li class="nav-item">
+          <a class="nav-link active edzai-kb-tab-link" href="#" data-tab="url">
+            🔗 {{#str}}kb_tab_url, local_edzaiaxisfront{{/str}}
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link edzai-kb-tab-link" href="#" data-tab="text">
+            📝 {{#str}}kb_tab_text, local_edzaiaxisfront{{/str}}
+          </a>
+        </li>
+      </ul>
+
+      {{! URL ingestion tab }}
+      <div id="edzai-kb-tab-url">
+        <div class="form-group mb-3">
+          <label for="edzai-kb-url" class="form-label font-weight-bold">
+            {{#str}}kb_url_label, local_edzaiaxisfront{{/str}}
+          </label>
+          <input type="url" class="form-control" id="edzai-kb-url"
+                 placeholder="https://your-support-docs.com/article" />
+          <small class="form-text text-muted">{{#str}}kb_url_help, local_edzaiaxisfront{{/str}}</small>
+        </div>
+        <div class="form-group mb-3">
+          <label for="edzai-kb-url-title" class="form-label font-weight-bold">
+            {{#str}}kb_title_label, local_edzaiaxisfront{{/str}}
+            <span class="text-muted font-weight-normal">({{#str}}optional, local_edzaiaxisfront{{/str}})</span>
+          </label>
+          <input type="text" class="form-control" id="edzai-kb-url-title"
+                 placeholder="{{#str}}kb_title_placeholder, local_edzaiaxisfront{{/str}}" />
+        </div>
+        <div class="form-group mb-3">
+          <label for="edzai-kb-url-desc" class="form-label font-weight-bold">
+            {{#str}}kb_desc_label, local_edzaiaxisfront{{/str}}
+            <span class="text-muted font-weight-normal">({{#str}}optional, local_edzaiaxisfront{{/str}})</span>
+          </label>
+          <textarea class="form-control" id="edzai-kb-url-desc" rows="2"
+                    placeholder="{{#str}}kb_desc_placeholder, local_edzaiaxisfront{{/str}}"></textarea>
+        </div>
+        <div class="form-group mb-3">
+          <label for="edzai-kb-url-doctype" class="form-label font-weight-bold">
+            {{#str}}kb_edit_doctype, local_edzaiaxisfront{{/str}}
+          </label>
+          <select class="form-control" id="edzai-kb-url-doctype">
+            <option value="support">{{#str}}kb_doctype_support, local_edzaiaxisfront{{/str}}</option>
+            <option value="policy">{{#str}}kb_doctype_policy, local_edzaiaxisfront{{/str}}</option>
+            <option value="how_to">{{#str}}kb_doctype_how_to, local_edzaiaxisfront{{/str}}</option>
+            <option value="faq">{{#str}}kb_doctype_faq, local_edzaiaxisfront{{/str}}</option>
+            <option value="announcement">{{#str}}kb_doctype_announcement, local_edzaiaxisfront{{/str}}</option>
+            <option value="other">{{#str}}kb_doctype_other, local_edzaiaxisfront{{/str}}</option>
+          </select>
+        </div>
+        <button class="btn edzai-btn-primary" id="edzai-kb-url-submit">
+          {{#str}}kb_ingest_url, local_edzaiaxisfront{{/str}}
+        </button>
+      </div>
+
+      {{! Text + File tab — admin can paste text, upload a file, or both }}
+      <div id="edzai-kb-tab-text" class="d-none">
+
+        {{! Shared: Title + Doc Type }}
+        <div class="form-row mb-3">
+          <div class="col-md-8">
+            <label for="edzai-kb-text-title" class="form-label font-weight-bold">
+              {{#str}}kb_title_label, local_edzaiaxisfront{{/str}}
+            </label>
+            <input type="text" class="form-control" id="edzai-kb-text-title"
+                   placeholder="{{#str}}kb_title_placeholder, local_edzaiaxisfront{{/str}}" />
+          </div>
+          <div class="col-md-4">
+            <label for="edzai-kb-text-doctype" class="form-label font-weight-bold">
+              {{#str}}kb_edit_doctype, local_edzaiaxisfront{{/str}}
+            </label>
+            <select class="form-control" id="edzai-kb-text-doctype">
+              <option value="support">{{#str}}kb_doctype_support, local_edzaiaxisfront{{/str}}</option>
+              <option value="policy">{{#str}}kb_doctype_policy, local_edzaiaxisfront{{/str}}</option>
+              <option value="how_to">{{#str}}kb_doctype_how_to, local_edzaiaxisfront{{/str}}</option>
+              <option value="faq">{{#str}}kb_doctype_faq, local_edzaiaxisfront{{/str}}</option>
+              <option value="announcement">{{#str}}kb_doctype_announcement, local_edzaiaxisfront{{/str}}</option>
+              <option value="other">{{#str}}kb_doctype_other, local_edzaiaxisfront{{/str}}</option>
+            </select>
+          </div>
+        </div>
+
+        {{! Option A: paste text }}
+        <div class="form-group mb-2">
+          <label for="edzai-kb-text-content" class="form-label font-weight-bold">
+            {{#str}}kb_text_content_label, local_edzaiaxisfront{{/str}}
+            <span class="text-muted font-weight-normal">({{#str}}optional, local_edzaiaxisfront{{/str}})</span>
+          </label>
+          <textarea class="form-control" id="edzai-kb-text-content" rows="7"
+                    placeholder="{{#str}}kb_text_content_placeholder, local_edzaiaxisfront{{/str}}"></textarea>
+          <small class="form-text text-muted">{{#str}}kb_text_help, local_edzaiaxisfront{{/str}}</small>
+        </div>
+
+        {{! Option B: upload file }}
+        <div class="form-group mb-3">
+          <label for="edzai-kb-file" class="form-label font-weight-bold">
+            {{#str}}kb_file_upload_label, local_edzaiaxisfront{{/str}}
+            <span class="text-muted font-weight-normal">({{#str}}optional, local_edzaiaxisfront{{/str}})</span>
+          </label>
+          <input type="file" class="form-control-file" id="edzai-kb-file"
+                 accept=".pdf,.txt,.doc,.docx" />
+          <small class="form-text text-muted">{{#str}}kb_file_help, local_edzaiaxisfront{{/str}}</small>
+        </div>
+
+        {{! Single submit button }}
+        <button class="btn edzai-btn-primary" id="edzai-kb-text-submit">
+          {{#str}}kb_ingest_text, local_edzaiaxisfront{{/str}}
+        </button>
+      </div>
+
+      {{! Status feedback }}
+      <div class="edzai-kb-add-status mt-3 d-none" id="edzai-kb-add-status"></div>
+    </div>
+  </div>
+
+  {{! ── KB Items Table ──────────────────────────────────────────────────────── }}
+  <div class="card">
+    <div class="card-header d-flex align-items-center justify-content-between">
+      <span class="font-weight-bold">{{#str}}kb_items_title, local_edzaiaxisfront{{/str}}</span>
+      <div class="d-flex gap-2">
+        <button class="btn btn-sm btn-outline-warning" id="edzai-kb-backfill-btn"
+          title="{{#str}}kb_backfill_help, local_edzaiaxisfront{{/str}}">
+          🔧 {{#str}}kb_backfill_label, local_edzaiaxisfront{{/str}}
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" id="edzai-kb-refresh-btn">
+          ↻ {{#str}}refresh, local_edzaiaxisfront{{/str}}
+        </button>
+      </div>
+    </div>
+    <div class="card-body p-0">
+      <div class="edzai-kb-loading p-4 text-center text-muted" id="edzai-kb-loading">
+        <div class="spinner-border spinner-border-sm mr-2"></div>
+        {{#str}}loading, local_edzaiaxisfront{{/str}}
+      </div>
+      <div class="edzai-kb-empty p-4 text-center text-muted d-none" id="edzai-kb-empty">
+        <p class="mb-1">📭 {{#str}}kb_no_items, local_edzaiaxisfront{{/str}}</p>
+        <small>{{#str}}kb_no_items_desc, local_edzaiaxisfront{{/str}}</small>
+      </div>
+      <table class="table table-hover mb-0 d-none" id="edzai-kb-table">
+        <thead class="thead-light">
+          <tr>
+            <th>{{#str}}kb_col_title, local_edzaiaxisfront{{/str}}</th>
+            <th>{{#str}}kb_col_source, local_edzaiaxisfront{{/str}}</th>
+            <th>{{#str}}kb_col_status, local_edzaiaxisfront{{/str}}</th>
+            <th>{{#str}}kb_col_added, local_edzaiaxisfront{{/str}}</th>
+            <th class="text-right">{{#str}}kb_col_actions, local_edzaiaxisfront{{/str}}</th>
+          </tr>
+        </thead>
+        <tbody id="edzai-kb-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  {{! ── Edit KB Item Modal ──────────────────────────────────────────────────── }}
+  <div class="modal fade" id="edzai-kb-edit-modal" tabindex="-1" role="dialog"
+       aria-labelledby="edzai-kb-edit-modal-label" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="edzai-kb-edit-modal-label">
+            {{#str}}kb_edit_title, local_edzaiaxisfront{{/str}}
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edzai-kb-edit-id" />
+          <div class="form-group">
+            <label for="edzai-kb-edit-title-input" class="font-weight-bold">
+              {{#str}}kb_title_label, local_edzaiaxisfront{{/str}}
+            </label>
+            <input type="text" class="form-control" id="edzai-kb-edit-title-input" />
+          </div>
+          <div class="form-group">
+            <label for="edzai-kb-edit-doctype" class="font-weight-bold">
+              {{#str}}kb_edit_doctype, local_edzaiaxisfront{{/str}}
+            </label>
+            <select class="form-control" id="edzai-kb-edit-doctype">
+              <option value="support">{{#str}}kb_doctype_support, local_edzaiaxisfront{{/str}}</option>
+              <option value="policy">{{#str}}kb_doctype_policy, local_edzaiaxisfront{{/str}}</option>
+              <option value="how_to">{{#str}}kb_doctype_how_to, local_edzaiaxisfront{{/str}}</option>
+              <option value="faq">{{#str}}kb_doctype_faq, local_edzaiaxisfront{{/str}}</option>
+              <option value="announcement">{{#str}}kb_doctype_announcement, local_edzaiaxisfront{{/str}}</option>
+              <option value="other">{{#str}}kb_doctype_other, local_edzaiaxisfront{{/str}}</option>
+            </select>
+          </div>
+          {{! Content area — shown for non-URL KB items }}
+          <div class="form-group d-none" id="edzai-kb-edit-content-group">
+            <label for="edzai-kb-edit-content" class="font-weight-bold">
+              {{#str}}kb_text_content_label, local_edzaiaxisfront{{/str}}
+            </label>
+            <textarea class="form-control" id="edzai-kb-edit-content" rows="8"
+              placeholder="{{#str}}kb_edit_content_placeholder, local_edzaiaxisfront{{/str}}"></textarea>
+            <small class="form-text text-muted" id="edzai-kb-edit-content-help">
+              {{#str}}kb_edit_content_help, local_edzaiaxisfront{{/str}}
+            </small>
+            <div class="d-none alert alert-warning mt-2 mb-0 p-2" id="edzai-kb-edit-no-content-warning">
+              <small>{{#str}}kb_edit_no_content_warning, local_edzaiaxisfront{{/str}}</small>
+            </div>
+          </div>
+          <div class="d-none alert" id="edzai-kb-edit-status"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            {{#str}}cancel, local_edzaiaxisfront{{/str}}
+          </button>
+          <button type="button" class="btn edzai-btn-primary" id="edzai-kb-edit-save">
+            {{#str}}savechanges, local_edzaiaxisfront{{/str}}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

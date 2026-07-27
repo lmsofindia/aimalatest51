@@ -72,6 +72,46 @@ class block_corpwelcome extends block_base {
             $bgcolor = clean_param($this->config->bgcolor, PARAM_TEXT);
         }
 
+        // ── Optional background image (hero style) ────────────────────────────
+        // Admin-uploaded image stored in this block instance's file area. When
+        // present it replaces the flat accent colour behind the hero header,
+        // with a dark scrim on top to keep the white text readable.
+        $bgimageurl = '';
+        if (!empty($this->context)) {
+            $fs    = get_file_storage();
+            $files = $fs->get_area_files($this->context->id, 'block_corpwelcome',
+                'backgroundimage', 0, 'itemid, filepath, filename', false);
+            if ($files) {
+                $file       = reset($files);
+                $bgimageurl = moodle_url::make_pluginfile_url(
+                    $file->get_contextid(),
+                    $file->get_component(),
+                    $file->get_filearea(),
+                    $file->get_itemid(),
+                    $file->get_filepath(),
+                    $file->get_filename()
+                )->out(false);
+            }
+        }
+
+        // Overlay darkness (0–80%). Default 40% when an image is set.
+        $overlay = 0.4;
+        if (isset($this->config->overlaydarkness) && $this->config->overlaydarkness !== '') {
+            $overlay = max(0, min(90, (int)$this->config->overlaydarkness)) / 100;
+        }
+
+        // Build the hero background style: image + scrim, or flat colour.
+        $hasbgimage = ($blocktheme === 'hero' && $bgimageurl !== '');
+        if ($hasbgimage) {
+            $herostyle = sprintf(
+                'background-color: %s; background-image: linear-gradient(rgba(0,0,0,%s), '
+                . 'rgba(0,0,0,%s)), url(\'%s\'); background-size: cover; background-position: center;',
+                $bgcolor, $overlay, $overlay, $bgimageurl
+            );
+        } else {
+            $herostyle = 'background: ' . $bgcolor . ';';
+        }
+
         // ── Time label ────────────────────────────────────────────────────────
         $daynames  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
         $dayofweek = strtoupper($daynames[(int)date('w')]);
@@ -208,6 +248,8 @@ class block_corpwelcome extends block_base {
             'categories'          => array_values($catdata),
             'hascategories'       => !empty($catdata),
             'bgcolor'             => $bgcolor,
+            'herostyle'           => $herostyle,
+            'hasbgimage'          => $hasbgimage,
             'instanceid'          => $this->instance->id,
         ];
 
@@ -216,6 +258,38 @@ class block_corpwelcome extends block_base {
 
         $this->content->text = $OUTPUT->render_from_template($template, $data);
         return $this->content;
+    }
+
+    /**
+     * Persist the uploaded background image into this block instance's file area.
+     */
+    public function instance_config_save($data, $nolongerused = false) {
+        $config = clone($data);
+        if (!empty($data->backgroundimage) && !empty($this->context)) {
+            file_save_draft_area_files(
+                $data->backgroundimage,
+                $this->context->id,
+                'block_corpwelcome',
+                'backgroundimage',
+                0,
+                ['subdirs' => 0, 'maxfiles' => 1, 'maxbytes' => 2097152, 'accepted_types' => ['web_image']]
+            );
+        }
+        // The draft itemid is only needed to move files; don't persist the stale
+        // value in config — the image is always re-read from the file area.
+        unset($config->backgroundimage);
+        parent::instance_config_save($config, $nolongerused);
+    }
+
+    /**
+     * Remove the background image file area when the block instance is deleted.
+     */
+    public function instance_delete() {
+        if (!empty($this->context)) {
+            $fs = get_file_storage();
+            $fs->delete_area_files($this->context->id, 'block_corpwelcome', 'backgroundimage');
+        }
+        return true;
     }
 
     private function get_streak(int $userid): int {

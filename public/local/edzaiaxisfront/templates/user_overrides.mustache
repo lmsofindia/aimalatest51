@@ -1,0 +1,98 @@
+{{!
+    Per-user token limit override management page.
+    user_overrides.js loads data and handles all interactions.
+
+    @template local_edzaiaxisfront/user_overrides
+    @copyright 2026 Edz LMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="edzai-user-overrides" id="edzai-user-overrides">
+
+    {{! Page header }}
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2>{{#str}}user_overrides_title, local_edzaiaxisfront{{/str}}</h2>
+            <p class="text-muted">{{#str}}user_overrides_desc, local_edzaiaxisfront{{/str}}</p>
+        </div>
+        <div class="d-flex gap-2" style="gap:8px;">
+            <button class="btn btn-outline-warning" id="edzai-btn-sync-settings" type="button">
+                <i class="fa fa-refresh"></i> Sync rate limits to axis-ai
+            </button>
+            <a href="{{{reports_url}}}" class="btn btn-outline-secondary">
+                <i class="fa fa-bar-chart"></i> {{#str}}reports_title, local_edzaiaxisfront{{/str}}
+            </a>
+        </div>
+    </div>
+
+    {{! Site defaults display }}
+    <div class="alert alert-info mb-4">
+        <strong>{{#str}}user_overrides_site_defaults, local_edzaiaxisfront{{/str}}:</strong>
+        Messages/session: {{site_defaults.chat_session_msg_limit}} &nbsp;|&nbsp;
+        Messages/day: {{site_defaults.chat_daily_msg_limit}} &nbsp;|&nbsp;
+        Messages/month: {{site_defaults.chat_monthly_msg_limit}} &nbsp;|&nbsp;
+        Tokens/month: {{site_defaults.token_monthly_limit}}
+        <small class="d-block mt-1 text-muted">
+            {{#str}}user_overrides_defaults_note, local_edzaiaxisfront{{/str}}
+        </small>
+    </div>
+
+    {{! Add new override — user search }}
+    <div class="card mb-4">
+        <div class="card-header">
+            <strong>{{#str}}user_overrides_add, local_edzaiaxisfront{{/str}}</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-inline">
+                <div class="form-group mr-3 position-relative">
+                    <label class="mr-2">{{#str}}user_overrides_search_user, local_edzaiaxisfront{{/str}}</label>
+                    <input type="text" class="form-control" id="edzai-user-search-input"
+                           placeholder="Type name or username…" autocomplete="off" style="width:260px">
+                    <input type="hidden" id="edzai-user-search-id">
+                    <span id="edzai-user-search-name" class="ml-2 font-weight-bold text-success"></span>
+                    <div id="edzai-user-search-results"
+                         class="dropdown-menu w-100" style="position:absolute;top:100%;left:0;max-height:200px;overflow-y:auto;z-index:999;">
+                    </div>
+                </div>
+                <button class="btn btn-success" id="edzai-btn-add-override">
+                    <i class="fa fa-plus"></i> {{#str}}user_overrides_set_limits, local_edzaiaxisfront{{/str}}
+                </button>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                {{#str}}user_overrides_search_note, local_edzaiaxisfront{{/str}}
+            </small>
+        </div>
+    </div>
+
+    {{! Existing overrides table }}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <strong>{{#str}}user_overrides_existing, local_edzaiaxisfront{{/str}}</strong>
+            <button class="btn btn-sm btn-outline-secondary" onclick="location.reload()">
+                <i class="fa fa-refresh"></i>
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 generaltable" id="edzai-overrides-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>{{#str}}user_overrides_col_user, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_session, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_daily, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_monthly_msg, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_monthly_tokens, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_note, local_edzaiaxisfront{{/str}}</th>
+                        <th>{{#str}}user_overrides_col_actions, local_edzaiaxisfront{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody id="edzai-overrides-tbody">
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fa fa-spinner fa-spin fa-2x text-muted"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>

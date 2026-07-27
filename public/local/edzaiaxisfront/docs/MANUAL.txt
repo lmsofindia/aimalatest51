@@ -1,0 +1,643 @@
+===============================================================================
+  AXIS AI LEARNING TOOLS — TEACHER & ADMIN MANUAL
+  Moodle Plugin: local_edzaiaxisfront
+  Version: 2026
+===============================================================================
+
+This manual covers everything a teacher or administrator needs to know to
+use the Axis AI Learning Tools plugin. No technical knowledge is required.
+
+-------------------------------------------------------------------------------
+TABLE OF CONTENTS
+-------------------------------------------------------------------------------
+  ADMIN SECTION
+    A1. First-Time Setup
+    A2. Site-Wide Feature Flags
+    A3. Token Usage Reports
+    A4. Per-User Token Overrides
+    A5. Knowledge Base (Support Chat Content)
+
+  TEACHER SECTION
+    T1. Overview — What Does This Plugin Do?
+    T2. Opening the Course AI Manager
+    T3. The 5-Step AI Setup Wizard
+    T4. Understanding AI Statuses
+    T5. Managing AI Outputs (Preview, Edit, Show/Hide)
+    T6. Regenerating Content
+    T7. What Students See
+
+  STUDENT / CHATBOT SECTION
+    S1. The Floating AI Assistant
+    S2. Study with AI
+    S3. Support Chat
+    S4. My Analysis
+
+  TIPS & TROUBLESHOOTING
+    X1. Common Issues
+    X2. Best Practices for Content
+    X3. Contact & Support
+
+===============================================================================
+  ADMIN SECTION
+===============================================================================
+
+-------------------------------------------------------------------------------
+A1. FIRST-TIME SETUP
+-------------------------------------------------------------------------------
+
+Before teachers can use any AI features, an administrator must connect the
+plugin to the Axis AI service.
+
+STEPS:
+  1. Log in to Moodle as a Site Administrator.
+  2. Go to: Site Administration > Axis AI > Settings
+  3. Enter the Axis AI Base URL
+     (e.g. https://ai.yourdomain.com — no trailing slash)
+  4. Enter your API Key (provided by your Axis AI subscription).
+  5. Click Save.
+  6. The plugin will automatically register your Moodle site as a "tenant"
+     with the Axis AI service. You will see a green success notice.
+  7. Enable the site-wide features you want to make available (see A2).
+
+NOTE: The API key is stored securely and is not displayed again after saving.
+If you need to change it, simply paste a new key and save.
+
+-------------------------------------------------------------------------------
+A2. SITE-WIDE FEATURE FLAGS
+-------------------------------------------------------------------------------
+
+These settings control which AI output types are available across the entire
+Moodle site. Teachers cannot enable features that are disabled here.
+
+Location: Site Administration > Axis AI > Settings > Enabled AI Features
+
+Available features:
+  - AI Summary         Short paragraph overview of the content
+  - Glossary           Key terms and definitions
+  - Flashcards         Flip-card study tool
+  - Quiz               Interactive self-assessment quiz
+  - FAQ                Frequently asked questions
+  - Infographic        Visual summary (HTML)
+
+To disable a feature site-wide, uncheck it and save. All existing outputs
+for that type will remain in the database but will not be shown to anyone.
+
+Chat features:
+  - Study with AI      Students can chat with the AI about course content
+  - Support Chat       Students can ask general questions from the knowledge base
+  - My Analysis        Students can see their learning progress dashboard
+
+IMPORTANT: Disabling a chat feature here immediately removes it from the
+chatbot panel for all users. Re-enabling it restores access instantly.
+
+-------------------------------------------------------------------------------
+A3. TOKEN USAGE REPORTS
+-------------------------------------------------------------------------------
+
+Monitor how much AI usage is happening across your site.
+
+Location: Site Administration > Axis AI > Token Usage Report
+
+What you see:
+  - Month picker (last 12 months)
+  - Summary cards: Total tokens used / Site limit / Usage %
+  - Per-user table: username, messages sent, tokens used, limit, usage bar
+  - Colour coding: green = under 70%, amber = 70-90%, red = over 90%
+  - Click "View Daily" for any user to see their day-by-day breakdown
+
+EXPORTING:
+  - Click "Export CSV" to download the full month's data as a spreadsheet.
+    The CSV includes all users even if they have zero usage.
+
+NOTES:
+  - Token counts are updated in real time as users chat.
+  - The "Limit" column shows the effective limit for that user — either their
+    personal override (see A4) or the site default.
+  - Usage percentages are calculated against the monthly token limit.
+
+-------------------------------------------------------------------------------
+A4. PER-USER TOKEN OVERRIDES
+-------------------------------------------------------------------------------
+
+Increase or restrict AI access for individual users without changing the
+site-wide settings for everyone.
+
+Location: Site Administration > Axis AI > User Overrides
+
+USE CASE: A power user requests 10,000 tokens for the month (the site default
+is 3,000). You can grant this without affecting any other user.
+
+ADDING AN OVERRIDE:
+  1. Go to User Overrides page.
+  2. In the "Find User" box, start typing the user's name, username, or email.
+  3. Select the user from the dropdown.
+  4. Click "Set Limits…"
+  5. A dialog box appears with 5 fields:
+       - Messages per session  (leave blank = use site default)
+       - Messages per day      (leave blank = use site default)
+       - Messages per month    (leave blank = use site default)
+       - Tokens per month      (e.g. 10000)
+       - Admin note            (optional — for your reference)
+  6. Click Save. Changes take effect immediately.
+
+EDITING AN OVERRIDE:
+  - Find the user in the "Users with Custom Limits" table.
+  - Click the edit (pencil) icon in their row.
+  - Modify values and save.
+
+REMOVING AN OVERRIDE:
+  - Click the delete (bin) icon in the user's row.
+  - Confirm the deletion. The user reverts to site defaults immediately.
+
+NOTE: Blank fields in the override dialog mean "use site default for this
+limit". You can override just one limit (e.g. only increase monthly tokens)
+while leaving the others at the site default.
+
+-------------------------------------------------------------------------------
+A5. KNOWLEDGE BASE (SUPPORT CHAT CONTENT)
+-------------------------------------------------------------------------------
+
+The Support Chat answers student questions using your knowledge base —
+a collection of documents, FAQs, and policy pages you have approved.
+
+Location: Site Administration > Axis AI > Settings (scroll to Knowledge Base)
+
+ADDING A DOCUMENT:
+  1. Paste the full URL of the page you want to add
+     (e.g. https://yoursite.com/student-faq or a direct PDF link).
+  2. Click "Ingest". The system fetches the page, splits it into chunks,
+     and stores it in the AI vector store.
+  3. Status changes: Pending → Processing → Ready (may take 1-2 minutes).
+
+MANAGING DOCUMENTS:
+  - Documents appear in the Knowledge Base list with their title and status.
+  - Toggle a document inactive to temporarily exclude it from Support Chat
+    (useful for outdated documents you want to keep for reference).
+  - Click Delete to permanently remove a document.
+
+WHAT STUDENTS SEE:
+  When a student uses Support Chat, the AI searches your active KB documents
+  and answers from that content. If no relevant document is found, the AI
+  says it could not find an answer and suggests contacting support.
+
+BEST PRACTICE: Add your student handbook, enrolment FAQs, IT help articles,
+and course catalogue summaries for the best Support Chat experience.
+
+===============================================================================
+  TEACHER SECTION
+===============================================================================
+
+-------------------------------------------------------------------------------
+T1. OVERVIEW — WHAT DOES THIS PLUGIN DO?
+-------------------------------------------------------------------------------
+
+The Axis AI plugin reads your course content (PDF, video, SCORM, web page)
+and automatically generates a set of learning tools for your students:
+
+  SUMMARY       — A short, clear overview of the content. Editable by you.
+  GLOSSARY      — Key terms with definitions your students can search.
+  FLASHCARDS    — Digital flip-cards for self-study and memorisation.
+  QUIZ          — AI-generated quiz questions tagged by difficulty and topic.
+  FAQ           — Anticipated student questions with answers.
+  INFOGRAPHIC   — A visual summary highlighting the key points.
+  CHAT          — Students can ask the AI about the content in natural language.
+
+All of these appear to students as a collapsible "AI Tools" panel on the
+side of the activity page — they do not change the activity itself.
+
+You stay in control:
+  - Choose which AI tools to enable per activity.
+  - Preview every piece of AI content before students see it.
+  - Edit the summary if the AI gets something wrong.
+  - Show or hide any output type with one click.
+  - Regenerate specific outputs if the content changes.
+
+-------------------------------------------------------------------------------
+T2. OPENING THE COURSE AI MANAGER
+-------------------------------------------------------------------------------
+
+  1. Go to your course.
+  2. In the navigation menu, click "Course AI Manager"
+     (or go to: Site Admin > Axis AI if you have admin access).
+  3. You will see a list of all supported activities in your course.
+
+Activity status colours:
+  GREY   = Not configured yet (AI not set up for this activity)
+  BLUE   = Processing (AI is working on this activity)
+  GREEN  = Ready (AI content is available)
+  ORANGE = Partial (some outputs ready, others still processing)
+  RED    = Error (something went wrong — hover for the error message)
+
+Supported activity types:
+  - Resource (PDF, video file)
+  - URL (YouTube, Vimeo, PeerTube, web page)
+  - SCORM package (Storyline 360, Rise, generic)
+  - Page (Moodle Page activity)
+  - Book (Moodle Book activity)
+
+NOT supported: Forum, Assignment, Quiz, Lesson (these are action activities
+that do not have "content" for the AI to read).
+
+-------------------------------------------------------------------------------
+T3. THE 5-STEP AI SETUP WIZARD
+-------------------------------------------------------------------------------
+
+Click "Set Up AI" (or "Reconfigure") next to any activity in the Course AI
+Manager to open the wizard.
+
+STEP 1 — ACTIVITY OVERVIEW
+  The wizard shows you the activity name, type, and a link to view it.
+  Review that you have chosen the right activity. Click Next.
+
+STEP 2 — CONTENT PREVIEW
+  The plugin analyses the activity and shows you what it found:
+  - Type (PDF, YouTube video, SCORM, etc.)
+  - Source URL or file path
+  - Estimated content length
+  Click "Confirm Content" to proceed. If the wrong file or URL is detected,
+  check the activity settings in Moodle first, then return to this wizard.
+
+STEP 3 — CHOOSE AI FEATURES
+  Select which AI outputs to generate for this activity.
+  Only features enabled by your administrator appear here.
+
+  Recommendations by content type:
+    PDF course notes:    Summary + Glossary + Flashcards + FAQ
+    Video lecture:       Summary + Quiz + Flashcards + Chat
+    SCORM (e-learning):  Summary + Glossary + Quiz + Chat
+    Web page reading:    Summary + FAQ + Chat
+
+  Advanced settings (click to expand):
+    - Language (default: auto-detect from content)
+    - Number of flashcards (default: 20)
+    - Number of quiz questions (default: 30)
+    - Quiz difficulty distribution (easy/medium/hard)
+    - Bloom's Taxonomy levels to target in quiz
+
+STEP 4 — STUDENT VISIBILITY
+  For each selected output, choose whether students see it immediately after
+  generation, or whether you want to review it first (hidden by default).
+
+  Tip: Start with "Hidden" on the first run so you can review quality before
+  students access the content. You can enable outputs any time from the
+  Course AI Manager.
+
+STEP 5 — CONFIRM & GENERATE
+  Review your choices and click "Generate AI Content".
+  The wizard closes and the activity shows "Processing" status.
+  Processing time depends on content length:
+    Short PDF (10 pages):   1-2 minutes
+    Long PDF (100 pages):   5-10 minutes
+    30-minute video:        3-5 minutes
+    SCORM (50 slides):      2-4 minutes
+
+  You can leave the page — processing continues in the background.
+  The Course AI Manager page refreshes automatically.
+
+-------------------------------------------------------------------------------
+T4. UNDERSTANDING AI STATUSES
+-------------------------------------------------------------------------------
+
+NOT CONFIGURED
+  No AI has been set up for this activity yet. Click "Set Up AI".
+
+QUEUED
+  The request has been sent to the AI service and is waiting in the queue.
+  Typical wait: under 30 seconds.
+
+PROCESSING
+  The AI is actively working. A progress bar shows how far along it is.
+  You will see individual tasks completing (e.g. "Summary done", "Glossary done").
+
+PARTIAL
+  Some outputs have been generated but others are still processing or failed.
+  Check the individual output panels for details.
+
+READY
+  All requested outputs have been generated successfully.
+  Students can now see any outputs you have made visible.
+
+ERROR
+  Something went wrong. Hover over the status badge to see the error message.
+  Common causes:
+  - The URL is no longer accessible (check the activity settings)
+  - The video is private or region-restricted
+  - The SCORM package is corrupted
+  - The content is too short for the AI to work with (minimum ~200 words)
+
+-------------------------------------------------------------------------------
+T5. MANAGING AI OUTPUTS
+-------------------------------------------------------------------------------
+
+Once an activity is "Ready", click "Manage Outputs" to open the output panel.
+
+PREVIEWING OUTPUTS
+  Each output type has a preview section. Click any tab to see what students
+  will see. This includes summary text, all glossary terms, the flashcard
+  deck, quiz questions, FAQ, and the infographic.
+
+EDITING THE SUMMARY
+  1. Click the Edit (pencil) icon on the Summary panel.
+  2. A rich text editor opens with the AI-generated text.
+  3. Make your changes and click Save.
+  4. Your edited version is marked with a lock icon to protect it from
+     being overwritten if you regenerate the content later.
+
+  Note: You can only edit the Summary directly. Flashcards, glossary terms,
+  and quiz questions can be managed (hidden/deleted) but not edited inline
+  in this version.
+
+SHOWING OR HIDING OUTPUTS
+  Each output type has a visibility toggle (eye icon):
+  - Open eye = visible to students (green)
+  - Closed eye = hidden from students (grey)
+
+  Click the toggle to instantly show or hide that output for all students.
+  No page reload needed. Use this to release outputs gradually as you
+  review them.
+
+EXAMPLE WORKFLOW:
+  1. Run AI generation with all outputs hidden.
+  2. Review Summary → edit if needed → toggle visible.
+  3. Review Flashcards → check for errors → toggle visible.
+  4. Review Quiz → spot-check questions → toggle visible.
+  5. Glossary and FAQ look fine → toggle both visible.
+  6. Decide infographic is not relevant → leave it hidden.
+
+MANAGING INDIVIDUAL FLASHCARDS AND QUIZ QUESTIONS
+  Coming in a future version: you will be able to hide or delete individual
+  cards/questions from the pool while keeping the rest visible.
+
+-------------------------------------------------------------------------------
+T6. REGENERATING CONTENT
+-------------------------------------------------------------------------------
+
+If you update the course content (new PDF version, edited page), you can
+regenerate specific AI outputs without starting from scratch.
+
+  1. Open "Manage Outputs" for the activity.
+  2. Click "Regenerate…" (circular arrow icon).
+  3. Choose which outputs to regenerate:
+       [ ] Summary
+       [ ] Glossary
+       [ ] Flashcards
+       [ ] Quiz
+       [ ] FAQ
+       [ ] Infographic
+  4. Click "Start Regeneration".
+
+NOTES:
+  - Regeneration does NOT overwrite a summary you have manually edited,
+    unless you check "Allow overwrite of edited summary".
+  - Student visibility settings are preserved — regenerated outputs keep
+    the same show/hide state.
+  - Regeneration goes through the same queue as first-time generation.
+
+WHEN TO REGENERATE:
+  - You have uploaded a new version of the course PDF.
+  - You have corrected errors in a Moodle Page or Book.
+  - You have replaced the video with an updated recording.
+  - The AI quality was poor on the first run (try regenerating — results
+    can vary).
+
+-------------------------------------------------------------------------------
+T7. WHAT STUDENTS SEE
+-------------------------------------------------------------------------------
+
+On any course activity that has been set up with AI content, students see
+a tab on the right side of the page labelled "AI Tools" (or a small icon).
+
+When clicked, a side panel slides in with tabs for each visible output type.
+
+SUMMARY TAB
+  Students read the AI-generated (or teacher-edited) summary. No interaction.
+
+GLOSSARY TAB
+  Students see all terms in alphabetical order. They can search by typing
+  in the search box to filter terms instantly.
+
+FLASHCARDS TAB
+  Students flip through cards one by one (click to reveal the answer).
+  They can shuffle the deck, filter by difficulty, and tap a Hint button.
+  A counter shows their progress through the deck.
+
+QUIZ TAB
+  Students choose how many questions (5/10/15/20) and the difficulty level,
+  then start the quiz. They answer one question at a time, see immediate
+  feedback (correct/incorrect + explanation), and get a score ring at the end.
+
+FAQ TAB
+  Searchable list of questions and answers. Students click a question to
+  expand the answer (accordion-style).
+
+INFOGRAPHIC TAB
+  A visual HTML infographic is displayed. Students can scroll within it.
+
+CHAT TAB
+  Students can ask the AI questions about this specific activity's content.
+  The AI searches the content and gives a contextual answer.
+  There are two sub-modes:
+    Study with AI — AI answers from the course content (this activity)
+    Support      — AI answers from the general knowledge base
+
+IMPORTANT: The AI Tools panel is separate from the Moodle grade book and
+completion tracking. Students' quiz scores inside the AI panel are for
+self-study only and do not affect their Moodle grades.
+
+===============================================================================
+  STUDENT / CHATBOT SECTION
+===============================================================================
+
+(This section is for reference only — share relevant parts with students
+as needed.)
+
+-------------------------------------------------------------------------------
+S1. THE FLOATING AI ASSISTANT
+-------------------------------------------------------------------------------
+
+Every logged-in student sees a small chat bubble icon in the bottom-right
+corner of every page in Moodle. This is the Axis AI Assistant.
+
+Click the icon to open the welcome panel. You will see:
+  - A greeting with your name
+  - Quick stats: courses enrolled, badges earned, login streak, points
+  - Three big buttons: Study with AI / Support / My Analysis
+
+Clicking a button expands the panel into a three-column layout:
+  Left column  = navigation (courses, threads, events)
+  Middle       = main content (chat or analysis cards)
+  Right column = tips, encouragement, your stats (can be collapsed)
+
+You can close the assistant at any time with the X button, or minimise it
+using the dash button. Pressing Escape also closes it.
+
+-------------------------------------------------------------------------------
+S2. STUDY WITH AI
+-------------------------------------------------------------------------------
+
+PURPOSE: Chat with the AI about your course content. Ask it to explain
+topics, quiz you, summarise a section, or create revision notes.
+
+HOW TO USE:
+  1. Click "Study with AI" from the welcome panel.
+  2. Your enrolled courses appear in the left column.
+     Courses with AI content show a blue "AI" badge.
+  3. Click a course to see the available AI-enabled activities.
+  4. Click an activity to start a chat session.
+  5. The AI greets you and suggests some starting questions.
+  6. Type your question and press Enter (or click Send).
+
+TABS in the middle column:
+  LEARN    — Explain concepts, summarise, answer questions
+  PRACTICE — Socratic style: the AI asks YOU questions to test understanding
+
+EXAMPLE QUESTIONS TO TRY:
+  "Can you explain the main concept from slide 3?"
+  "Quiz me on this topic with 5 questions"
+  "What are the key differences between X and Y?"
+  "Give me a summary in simple language"
+  "Create 5 flashcards for the most important terms"
+
+NEW THREAD: Click "New Study Thread" in the left column to start a fresh
+conversation. Previous threads are saved so you can continue them later.
+
+-------------------------------------------------------------------------------
+S3. SUPPORT CHAT
+-------------------------------------------------------------------------------
+
+PURPOSE: Get answers to general questions about your courses, Moodle,
+enrolment, certificates, IT issues, and policies.
+
+HOW TO USE:
+  1. Click "Support" from the welcome panel.
+  2. A chat opens in the middle column.
+  3. Type your question and press Enter.
+  4. The AI searches the knowledge base and replies.
+
+If the AI cannot find an answer, it will say so and suggest you contact
+your support team directly.
+
+THREAD HISTORY: Your previous Support threads appear in the left column.
+Click any thread to review the conversation.
+
+-------------------------------------------------------------------------------
+S4. MY ANALYSIS
+-------------------------------------------------------------------------------
+
+PURPOSE: See an overview of your learning progress at a glance.
+
+HOW TO USE:
+  1. Click "My Analysis" from the welcome panel.
+  2. Your dashboard loads with four metric cards:
+       MY COURSES   — Total enrolled / completed / in progress
+       CERTIFICATES — Badges and certificates earned
+       POINTS       — XP points and level (if your site uses gamification)
+       MY PROGRESS  — Percentage of all activities completed
+  3. An average grade is shown if you have graded activities.
+  4. A streak banner appears if you have logged in on consecutive days.
+
+LEFT COLUMN shows:
+  - Upcoming events (deadlines, sessions) — sorted by nearest first
+    (events within 3 days are highlighted in orange)
+  - Recent AI chat threads
+
+NOTE: My Analysis data comes entirely from Moodle and is updated in real
+time. No data is sent to external services for this section.
+
+===============================================================================
+  TIPS & TROUBLESHOOTING
+===============================================================================
+
+-------------------------------------------------------------------------------
+X1. COMMON ISSUES
+-------------------------------------------------------------------------------
+
+ISSUE: Activity stays on "Processing" for more than 15 minutes.
+FIX:   Check the Axis AI service status (ask your administrator).
+       Try clicking "Regenerate" for the specific outputs.
+       If the error persists, check that the content URL is accessible.
+
+ISSUE: AI content is in the wrong language.
+FIX:   In the wizard (step 3, Advanced), change the Language setting.
+       Regenerate all outputs. For multilingual sites, run the wizard
+       once per language if needed.
+
+ISSUE: Students cannot see any AI Tools panel.
+FIX:   Check that:
+       a) The activity status is "Ready" in the Course AI Manager.
+       b) At least one output type is set to visible (not hidden).
+       c) Site-wide features are enabled (Admin > Axis AI > Settings).
+
+ISSUE: Summary quality is poor.
+FIX:   The AI needs sufficient content to work with (at least 200-300 words
+       or 2+ minutes of video). Very short content produces limited results.
+       Edit the summary manually and lock it to prevent overwriting.
+
+ISSUE: The chatbot does not appear for a student.
+FIX:   The chatbot only shows for logged-in, non-guest users.
+       Check that the student is enrolled and logged in properly.
+       Also check that the "Chatbot" feature is enabled in Admin settings.
+
+ISSUE: Quiz questions seem inaccurate or off-topic.
+FIX:   This can happen with very dense or technical content. Use "Regenerate"
+       to try again (results can vary between runs). Report persistent
+       quality issues to your Axis AI service provider.
+
+ISSUE: A student reports their chat is blocked (rate limit exceeded).
+FIX:   The student has reached their monthly limit. Go to Admin > User Overrides
+       and increase their token or message limit for this month.
+
+-------------------------------------------------------------------------------
+X2. BEST PRACTICES FOR CONTENT
+-------------------------------------------------------------------------------
+
+FOR PDFS:
+  - Text-based PDFs work best. Scanned image PDFs are not supported.
+  - Keep PDFs to a maximum of 200 pages per activity for best results.
+  - Ensure the PDF is publicly accessible (or use a direct file link in Moodle).
+
+FOR VIDEOS:
+  - Public YouTube, Vimeo, or PeerTube videos with available transcripts
+    produce the best AI quality.
+  - Unlisted videos work if the link is accessible.
+  - Private videos or those with disabled captions will fail.
+
+FOR SCORM:
+  - Storyline 360 and Rise packages are fully supported.
+  - Ensure the SCORM is published and uploaded correctly to Moodle.
+  - Very large packages (500+ slides) may take 10-15 minutes to process.
+
+FOR MOODLE PAGES:
+  - Write at least 300 words of content — short pages produce limited results.
+  - Embedded images are ignored; only text is used.
+
+GENERAL TIPS:
+  - Run the AI wizard only once the content is finalised.
+    Regeneration costs additional API tokens.
+  - Use the visibility toggles to drip-release AI content gradually
+    rather than showing everything at once.
+  - Brief students on how to use the AI tools effectively (see Section S).
+  - Review AI outputs before enabling them — the AI can occasionally
+    misunderstand technical jargon or context-specific references.
+
+-------------------------------------------------------------------------------
+X3. CONTACT & SUPPORT
+-------------------------------------------------------------------------------
+
+For plugin technical issues:
+  Contact your Moodle system administrator.
+
+For Axis AI service issues (downtime, billing, model quality):
+  Contact your Axis AI service provider at: support@edzlms.com
+
+For feedback or feature requests:
+  Use the thumbs-down icon in any AI output to flag quality issues.
+  These are logged for review by the site administrator.
+
+===============================================================================
+  END OF MANUAL
+===============================================================================
+  Axis AI Learning Tools — local_edzaiaxisfront
+  © 2026 Edz LMS. All rights reserved.
+  Version: 2026.1 | Last updated: March 2026
+===============================================================================

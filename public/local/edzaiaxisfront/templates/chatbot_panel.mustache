@@ -1,0 +1,386 @@
+{{!
+    Chatbot panel — floating shell injected by local_edzaiaxisfront_before_footer().
+    AMD module local_edzaiaxisfront/chatbot fills all dynamic content.
+
+    Structure:
+      #axis-chatbot-root
+        .axis-trigger          — floating action button
+        .axis-backdrop         — click-to-close overlay
+        .axis-panel            — entire chatbot panel
+          .axis-panel-header   — gradient header (mode-specific colour)
+          .axis-panel-body
+            .axis-welcome      — greeting + 3 mode buttons (default view)
+            .axis-threepanel   — 3-column layout once mode is selected
+              .axis-left
+              .axis-middle
+              .axis-right  (collapsible)
+
+    @package   local_edzaiaxisfront
+    @copyright 2026 Edz LMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div id="axis-chatbot-root" data-userid="{{userid}}" data-sesskey="{{sesskey}}">
+
+    {{! ── Floating trigger button ─────────────────────────────────────────── }}
+    <button class="axis-trigger" id="axis-trigger-btn" aria-label="{{#str}}chatbot_open_label, local_edzaiaxisfront{{/str}}" title="{{#str}}chatbot_open_label, local_edzaiaxisfront{{/str}}">
+        <span class="axis-trigger-icon axis-trigger-icon--open">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <circle cx="9" cy="10" r="1" fill="currentColor" stroke="none"/>
+                <circle cx="12" cy="10" r="1" fill="currentColor" stroke="none"/>
+                <circle cx="15" cy="10" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+        </span>
+        <span class="axis-trigger-icon axis-trigger-icon--close" hidden>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </span>
+        <span class="axis-trigger-badge" id="axis-unread-badge" hidden>0</span>
+    </button>
+
+    {{! ── Click-to-close backdrop ─────────────────────────────────────────── }}
+    <div class="axis-backdrop" id="axis-backdrop" hidden aria-hidden="true"></div>
+
+    {{! ── Main panel ──────────────────────────────────────────────────────── }}
+    <div class="axis-panel" id="axis-panel" hidden role="dialog" aria-modal="true" aria-label="{{#str}}chatbot_panel_label, local_edzaiaxisfront{{/str}}">
+
+        {{! ── Panel header ────────────────────────────────────────────────── }}
+        <div class="axis-panel-header" id="axis-panel-header">
+            <div class="axis-panel-header-left">
+                <div class="axis-header-avatar" aria-hidden="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+                        <circle cx="16" cy="16" r="15" fill="rgba(255,255,255,0.2)"/>
+                        <path d="M8 20 Q16 10 24 20" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+                        <circle cx="11" cy="15" r="2" fill="white"/>
+                        <circle cx="21" cy="15" r="2" fill="white"/>
+                    </svg>
+                </div>
+                <div class="axis-header-text">
+                    <span class="axis-header-title" id="axis-header-title">{{#str}}chatbot_welcome_title, local_edzaiaxisfront{{/str}}</span>
+                    <span class="axis-header-subtitle" id="axis-header-subtitle">{{#str}}chatbot_header_subtitle, local_edzaiaxisfront{{/str}}</span>
+                </div>
+            </div>
+            <div class="axis-panel-header-right">
+                {{! Back button (shown during mode navigation) }}
+                <button class="axis-header-btn axis-btn-back" id="axis-btn-back" hidden title="Back" aria-label="Back">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <polyline points="15 18 9 12 15 6"/>
+                    </svg>
+                </button>
+                {{! Left sidebar toggle (shown in three-panel mode) }}
+                <button class="axis-header-btn axis-btn-left-toggle" id="axis-btn-left-toggle" hidden title="Toggle sidebar" aria-label="Toggle sidebar">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="9" y1="3" x2="9" y2="21"/>
+                    </svg>
+                </button>
+                {{! Right panel toggle (shown in three-panel mode) }}
+                <button class="axis-header-btn axis-btn-right-toggle" id="axis-btn-right-toggle" hidden title="Toggle insights panel" aria-label="Toggle insights panel">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <line x1="15" y1="3" x2="15" y2="21"/>
+                    </svg>
+                </button>
+                <button class="axis-header-btn axis-btn-minimise" id="axis-btn-minimise" title="Minimise" aria-label="Minimise">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                        <line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </button>
+                <button class="axis-header-btn axis-btn-close" id="axis-btn-close" title="Close" aria-label="Close">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        {{! ── Panel body ──────────────────────────────────────────────────── }}
+        <div class="axis-panel-body" id="axis-panel-body">
+
+            {{! ── WELCOME VIEW (default — before mode selected) ───────────── }}
+            <div class="axis-welcome" id="axis-welcome-view">
+
+                {{! Skeleton — shown while init data loads }}
+                <div class="axis-welcome-skeleton" id="axis-welcome-skeleton">
+                    <div class="axis-skeleton-avatar"></div>
+                    <div class="axis-skeleton-line axis-skeleton-line--wide"></div>
+                    <div class="axis-skeleton-line axis-skeleton-line--narrow"></div>
+                    <div class="axis-skeleton-pills">
+                        <div class="axis-skeleton-pill"></div>
+                        <div class="axis-skeleton-pill"></div>
+                        <div class="axis-skeleton-pill"></div>
+                    </div>
+                    <div class="axis-skeleton-btns">
+                        <div class="axis-skeleton-btn"></div>
+                        <div class="axis-skeleton-btn"></div>
+                        <div class="axis-skeleton-btn"></div>
+                    </div>
+                </div>
+
+                {{! Actual welcome content — shown once init data returns }}
+                <div class="axis-welcome-content" id="axis-welcome-content" hidden>
+                    <div class="axis-welcome-greeting">
+                        <div class="axis-welcome-emoji" aria-hidden="true">👋</div>
+                        <h2 class="axis-welcome-name" id="axis-welcome-name">{{#str}}chatbot_welcome_hello, local_edzaiaxisfront{{/str}}</h2>
+                        <p class="axis-welcome-tagline" id="axis-welcome-tagline">{{#str}}chatbot_welcome_tagline, local_edzaiaxisfront{{/str}}</p>
+                    </div>
+
+                    <div class="axis-welcome-stats" id="axis-welcome-stats" aria-label="{{#str}}chatbot_your_stats, local_edzaiaxisfront{{/str}}">
+                        <div class="axis-stat-pill" id="axis-stat-courses">
+                            <span class="axis-stat-icon" aria-hidden="true">📚</span>
+                            <span class="axis-stat-val" id="axis-stat-courses-val">—</span>
+                            <span class="axis-stat-lbl">{{#str}}chatbot_stat_courses, local_edzaiaxisfront{{/str}}</span>
+                        </div>
+                        <div class="axis-stat-pill" id="axis-stat-badges">
+                            <span class="axis-stat-icon" aria-hidden="true">🏅</span>
+                            <span class="axis-stat-val" id="axis-stat-badges-val">—</span>
+                            <span class="axis-stat-lbl">{{#str}}chatbot_stat_badges, local_edzaiaxisfront{{/str}}</span>
+                        </div>
+                        <div class="axis-stat-pill" id="axis-stat-streak">
+                            <span class="axis-stat-icon" aria-hidden="true">🔥</span>
+                            <span class="axis-stat-val" id="axis-stat-streak-val">—</span>
+                            <span class="axis-stat-lbl">{{#str}}chatbot_stat_streak, local_edzaiaxisfront{{/str}}</span>
+                        </div>
+                        <div class="axis-stat-pill" id="axis-stat-points">
+                            <span class="axis-stat-icon" aria-hidden="true">⭐</span>
+                            <span class="axis-stat-val" id="axis-stat-points-val">—</span>
+                            <span class="axis-stat-lbl" id="axis-stat-points-lbl">{{#str}}chatbot_stat_points, local_edzaiaxisfront{{/str}}</span>
+                        </div>
+                    </div>
+
+                    <p class="axis-welcome-choose">{{#str}}chatbot_choose_mode, local_edzaiaxisfront{{/str}}</p>
+
+                    <div class="axis-mode-btns" role="group" aria-label="{{#str}}chatbot_choose_mode, local_edzaiaxisfront{{/str}}">
+
+                        <button class="axis-mode-btn axis-mode-btn--study" id="axis-mode-study" data-mode="study">
+                            <span class="axis-mode-btn-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                </svg>
+                            </span>
+                            <span class="axis-mode-btn-text">
+                                <strong>{{#str}}chatbot_mode_study, local_edzaiaxisfront{{/str}}</strong>
+                                <small>{{#str}}chatbot_mode_study_sub, local_edzaiaxisfront{{/str}}</small>
+                            </span>
+                            <span class="axis-mode-btn-arrow" aria-hidden="true">→</span>
+                        </button>
+
+                        <button class="axis-mode-btn axis-mode-btn--support" id="axis-mode-support" data-mode="support">
+                            <span class="axis-mode-btn-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                                </svg>
+                            </span>
+                            <span class="axis-mode-btn-text">
+                                <strong>{{#str}}chatbot_mode_support, local_edzaiaxisfront{{/str}}</strong>
+                                <small>{{#str}}chatbot_mode_support_sub, local_edzaiaxisfront{{/str}}</small>
+                            </span>
+                            <span class="axis-mode-btn-arrow" aria-hidden="true">→</span>
+                        </button>
+
+                        <button class="axis-mode-btn axis-mode-btn--analysis" id="axis-mode-analysis" data-mode="analysis">
+                            <span class="axis-mode-btn-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <line x1="18" y1="20" x2="18" y2="10"/>
+                                    <line x1="12" y1="20" x2="12" y2="4"/>
+                                    <line x1="6" y1="20" x2="6" y2="14"/>
+                                </svg>
+                            </span>
+                            <span class="axis-mode-btn-text">
+                                <strong>{{#str}}chatbot_mode_analysis, local_edzaiaxisfront{{/str}}</strong>
+                                <small>{{#str}}chatbot_mode_analysis_sub, local_edzaiaxisfront{{/str}}</small>
+                            </span>
+                            <span class="axis-mode-btn-arrow" aria-hidden="true">→</span>
+                        </button>
+
+                    </div>
+                </div>
+            </div>
+            {{! /axis-welcome-view }}
+
+            {{! ── THREE-PANEL VIEW (shown when mode is selected) ──────────── }}
+            <div class="axis-threepanel" id="axis-threepanel" hidden>
+
+                {{! LEFT PANEL }}
+                <div class="axis-left" id="axis-left" role="complementary" aria-label="{{#str}}chatbot_left_panel, local_edzaiaxisfront{{/str}}">
+                    <div class="axis-left-inner" id="axis-left-inner">
+                        {{! Content injected by JS depending on mode }}
+                    </div>
+                </div>
+
+                {{! MIDDLE PANEL }}
+                <div class="axis-middle" id="axis-middle" role="main">
+
+                    {{! Sub-tabs (Study mode only) }}
+                    <div class="axis-subtabs" id="axis-subtabs" hidden>
+                        <button class="axis-subtab axis-subtab--active" data-subtab="learn" id="axis-subtab-learn">
+                            {{#str}}chatbot_subtab_learn, local_edzaiaxisfront{{/str}}
+                        </button>
+                        <button class="axis-subtab" data-subtab="practice" id="axis-subtab-practice" hidden>
+                            {{#str}}chatbot_subtab_practice, local_edzaiaxisfront{{/str}}
+                        </button>
+                    </div>
+
+                    {{! Chat area }}
+                    <div class="axis-chat-area" id="axis-chat-area">
+
+                        {{! Empty / placeholder state }}
+                        <div class="axis-chat-placeholder" id="axis-chat-placeholder">
+                            <div class="axis-placeholder-icon" id="axis-placeholder-icon" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+                                    <circle cx="32" cy="32" r="30" fill="rgba(30,42,56,0.06)"/>
+                                    <path d="M20 40 Q32 20 44 40" stroke="var(--axis-accent)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                    <circle cx="25" cy="30" r="3" fill="var(--axis-accent)" opacity="0.7"/>
+                                    <circle cx="39" cy="30" r="3" fill="var(--axis-accent)" opacity="0.7"/>
+                                </svg>
+                            </div>
+                            <p class="axis-placeholder-text" id="axis-placeholder-text">{{#str}}chatbot_select_course_prompt, local_edzaiaxisfront{{/str}}</p>
+                            {{! Activity picker — injected by JS when a course with multiple CMs is selected }}
+                            <div class="axis-cm-picker-area" id="axis-cm-picker-area" hidden></div>
+                        </div>
+
+                        {{! Message thread }}
+                        <div class="axis-messages" id="axis-messages" role="log" aria-live="polite" aria-label="{{#str}}chatbot_messages_region, local_edzaiaxisfront{{/str}}" hidden>
+                            {{! Messages injected by JS }}
+                        </div>
+
+                        {{! Typing indicator }}
+                        <div class="axis-typing" id="axis-typing" hidden aria-live="polite" aria-label="{{#str}}chatbot_typing_label, local_edzaiaxisfront{{/str}}">
+                            <div class="axis-typing-bubble">
+                                <span class="axis-dot"></span>
+                                <span class="axis-dot"></span>
+                                <span class="axis-dot"></span>
+                            </div>
+                        </div>
+
+                        {{! Suggestion chips — OUTSIDE placeholder so they survive hide($placeholder) }}
+                        <div class="axis-suggestion-chips" id="axis-suggestion-chips" hidden>
+                            {{! Chips injected by JS }}
+                        </div>
+
+                    </div>
+                    {{! /axis-chat-area }}
+
+                    {{! Analysis content (My Analysis mode) }}
+                    <div class="axis-analysis-area" id="axis-analysis-area" hidden>
+
+                        <div class="axis-analysis-skeleton" id="axis-analysis-skeleton">
+                            <div class="axis-skeleton-card"></div>
+                            <div class="axis-skeleton-card"></div>
+                            <div class="axis-skeleton-card"></div>
+                            <div class="axis-skeleton-card"></div>
+                        </div>
+
+                        <div class="axis-analysis-content" id="axis-analysis-content" hidden>
+                            <div class="axis-metric-grid">
+
+                                <div class="axis-metric-card axis-metric-card--courses" id="axis-metric-courses">
+                                    <div class="axis-metric-icon" aria-hidden="true">📚</div>
+                                    <div class="axis-metric-body">
+                                        <div class="axis-metric-value" id="axis-metric-courses-total">—</div>
+                                        <div class="axis-metric-label">{{#str}}chatbot_metric_courses, local_edzaiaxisfront{{/str}}</div>
+                                        <div class="axis-metric-sub" id="axis-metric-courses-sub"></div>
+                                    </div>
+                                </div>
+
+                                <div class="axis-metric-card axis-metric-card--certs" id="axis-metric-certs">
+                                    <div class="axis-metric-icon" aria-hidden="true">🏅</div>
+                                    <div class="axis-metric-body">
+                                        <div class="axis-metric-value" id="axis-metric-certs-val">—</div>
+                                        <div class="axis-metric-label">{{#str}}chatbot_metric_certs, local_edzaiaxisfront{{/str}}</div>
+                                        <div class="axis-metric-sub" id="axis-metric-certs-sub"></div>
+                                    </div>
+                                </div>
+
+                                <div class="axis-metric-card axis-metric-card--points" id="axis-metric-points">
+                                    <div class="axis-metric-icon" aria-hidden="true">⭐</div>
+                                    <div class="axis-metric-body">
+                                        <div class="axis-metric-value" id="axis-metric-points-val">—</div>
+                                        <div class="axis-metric-label" id="axis-metric-points-lbl">{{#str}}chatbot_metric_points, local_edzaiaxisfront{{/str}}</div>
+                                        <div class="axis-metric-sub" id="axis-metric-points-sub"></div>
+                                    </div>
+                                </div>
+
+                                <div class="axis-metric-card axis-metric-card--progress" id="axis-metric-progress">
+                                    <div class="axis-metric-icon" aria-hidden="true">📈</div>
+                                    <div class="axis-metric-body">
+                                        <div class="axis-metric-value" id="axis-metric-progress-val">—</div>
+                                        <div class="axis-metric-label">{{#str}}chatbot_metric_progress, local_edzaiaxisfront{{/str}}</div>
+                                        <div class="axis-metric-progress-bar">
+                                            <div class="axis-metric-progress-fill" id="axis-metric-progress-fill" style="width:0%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            {{! Grade info }}
+                            <div class="axis-analysis-grades" id="axis-analysis-grades" hidden>
+                                <div class="axis-analysis-section-title">{{#str}}chatbot_avg_grade, local_edzaiaxisfront{{/str}}</div>
+                                <div class="axis-grade-display" id="axis-grade-display"></div>
+                            </div>
+
+                            {{! Streak banner }}
+                            <div class="axis-streak-banner" id="axis-streak-banner" hidden>
+                                <span class="axis-streak-fire" aria-hidden="true">🔥</span>
+                                <span class="axis-streak-text" id="axis-streak-text"></span>
+                            </div>
+
+                        </div>
+                        {{! /axis-analysis-content }}
+
+                    </div>
+                    {{! /axis-analysis-area }}
+
+                    {{! Chat input bar (hidden during analysis mode) }}
+                    <div class="axis-chat-input-bar" id="axis-chat-input-bar" hidden>
+                        <div class="axis-chat-input-wrap">
+                            <textarea
+                                class="axis-chat-input"
+                                id="axis-chat-input"
+                                placeholder="{{#str}}chatbot_input_placeholder, local_edzaiaxisfront{{/str}}"
+                                rows="1"
+                                maxlength="2000"
+                                aria-label="{{#str}}chatbot_input_aria, local_edzaiaxisfront{{/str}}"
+                            ></textarea>
+                            <button class="axis-send-btn" id="axis-send-btn" disabled aria-label="{{#str}}chatbot_send, local_edzaiaxisfront{{/str}}" title="{{#str}}chatbot_send, local_edzaiaxisfront{{/str}}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="22" y1="2" x2="11" y2="13"/>
+                                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="axis-input-meta">
+                            <span class="axis-input-hint" id="axis-input-hint">{{#str}}chatbot_input_hint, local_edzaiaxisfront{{/str}}</span>
+                            <span class="axis-char-count" id="axis-char-count" hidden></span>
+                        </div>
+                    </div>
+
+                </div>
+                {{! /axis-middle }}
+
+                {{! RIGHT PANEL (collapsible via header button) }}
+                <div class="axis-right" id="axis-right">
+                    <div class="axis-right-inner" id="axis-right-inner">
+                        {{! Content injected by JS }}
+                    </div>
+                </div>
+
+            </div>
+            {{! /axis-threepanel }}
+
+        </div>
+        {{! /axis-panel-body }}
+
+    </div>
+    {{! /axis-panel }}
+
+</div>
+{{! /axis-chatbot-root }}

@@ -11,7 +11,7 @@
 <div class="cwh-wrap" data-instanceid="{{instanceid}}" style="--cwh-accent: {{bgcolor}};">
 
     {{! ── Accent hero header ─────────────────────────────────────────────── }}
-    <div class="cwh-hero" style="background: {{bgcolor}};">
+    <div class="cwh-hero{{#hasbgimage}} cwh-hero--image{{/hasbgimage}}" style="{{herostyle}}">
         <div class="cwh-hero-top">
             <p class="cwh-daylabel">{{daylabel}}</p>
             {{#hasstreak}}
