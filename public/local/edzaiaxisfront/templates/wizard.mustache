@@ -1,0 +1,162 @@
+{{!
+    5-step generation wizard template.
+    Rendered by pages/wizard.php.
+    wizard.js drives all step transitions and form state.
+
+    @template local_edzaiaxisfront/wizard
+    @copyright 2026 Edz LMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="edzai-wizard" id="edzai-wizard">
+
+    {{! Step indicator bar }}
+    <div class="edzai-steps d-flex justify-content-between mb-4">
+        {{#steps}}
+        <div class="edzai-step-indicator text-center flex-fill {{#active}}active{{/active}}"
+             data-step="{{num}}">
+            <div class="edzai-step-circle">{{num}}</div>
+            <small>{{label}}</small>
+        </div>
+        {{/steps}}
+    </div>
+
+    {{! Step 1: Select Activities }}
+    <div class="edzai-step-panel" data-step="1">
+        <h4>{{#str}}wizard_step1_heading, local_edzaiaxisfront{{/str}}</h4>
+        <p class="text-muted">{{#str}}wizard_step1_desc, local_edzaiaxisfront{{/str}}</p>
+        <div id="edzai-step1-cms" class="mb-3">
+            <div class="text-center py-3">
+                <i class="fa fa-spinner fa-spin fa-2x text-muted"></i>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between">
+            <a href="{{{dashboard_url}}}" class="btn btn-outline-secondary">
+                {{#str}}cancel, core{{/str}}
+            </a>
+            <button class="btn btn-primary" id="edzai-btn-step1-next">
+                {{#str}}wizard_next, local_edzaiaxisfront{{/str}} →
+            </button>
+        </div>
+    </div>
+
+    {{! Step 2: Select Outputs }}
+    <div class="edzai-step-panel d-none" data-step="2">
+        <h4>{{#str}}wizard_step2_heading, local_edzaiaxisfront{{/str}}</h4>
+        <p class="text-muted">{{#str}}wizard_step2_desc, local_edzaiaxisfront{{/str}}</p>
+        <div id="edzai-step2-features" class="mb-3"></div>
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-secondary" id="edzai-btn-step2-back">← {{#str}}wizard_back, local_edzaiaxisfront{{/str}}</button>
+            <button class="btn btn-primary" id="edzai-btn-step2-next">{{#str}}wizard_next, local_edzaiaxisfront{{/str}} →</button>
+        </div>
+    </div>
+
+    {{! Step 3: Configure Parameters }}
+    <div class="edzai-step-panel d-none" data-step="3">
+        <h4>{{#str}}wizard_step3_heading, local_edzaiaxisfront{{/str}}</h4>
+        <p class="text-muted">{{#str}}wizard_step3_desc, local_edzaiaxisfront{{/str}}</p>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edzai-language">{{#str}}param_language, local_edzaiaxisfront{{/str}}</label>
+                    <input type="text" class="form-control" id="edzai-language"
+                           placeholder="e.g. en, fr, ar (leave blank to auto-detect)">
+                </div>
+                <div class="form-group">
+                    <label for="edzai-output-language">{{#str}}param_output_language, local_edzaiaxisfront{{/str}}</label>
+                    <input type="text" class="form-control" id="edzai-output-language"
+                           placeholder="e.g. en (leave blank = same as input)">
+                </div>
+                <div class="form-group">
+                    <label for="edzai-focus-areas">{{#str}}param_focus_areas, local_edzaiaxisfront{{/str}}</label>
+                    <input type="text" class="form-control" id="edzai-focus-areas"
+                           placeholder="e.g. definitions, case studies (optional)">
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="edzai-quiz-count">{{#str}}param_quiz_count, local_edzaiaxisfront{{/str}}</label>
+                    <input type="number" class="form-control" id="edzai-quiz-count" value="10" min="3" max="50">
+                </div>
+                <div class="form-group">
+                    <label for="edzai-flashcard-count">{{#str}}param_flashcard_count, local_edzaiaxisfront{{/str}}</label>
+                    <input type="number" class="form-control" id="edzai-flashcard-count" value="20" min="5" max="100">
+                </div>
+                <div class="form-group">
+                    <label for="edzai-chunk-size">{{#str}}param_chunk_size, local_edzaiaxisfront{{/str}}</label>
+                    <input type="number" class="form-control" id="edzai-chunk-size" value="1000" min="200" max="4000">
+                </div>
+            </div>
+        </div>
+
+        {{! Bloom's Taxonomy Distribution }}
+        <div class="edzai-blooms-section mt-3">
+            <h5>{{#str}}blooms_heading, local_edzaiaxisfront{{/str}}</h5>
+            <p class="text-muted small">{{#str}}blooms_desc, local_edzaiaxisfront{{/str}}</p>
+            <p class="mb-2">
+                {{#str}}blooms_total, local_edzaiaxisfront{{/str}}:
+                <strong id="edzai-blooms-total" class="text-success">100%</strong>
+            </p>
+            {{#blooms_levels}}
+            <div class="edzai-blooms-row d-flex align-items-center mb-2">
+                <label class="mb-0 mr-3" style="width:90px;">{{label}}</label>
+                <input type="range" class="edzai-blooms-slider flex-fill mx-2"
+                       data-level="{{key}}" min="0" max="100" value="{{default}}">
+                <span class="edzai-blooms-val" style="width:40px;">{{default}}%</span>
+            </div>
+            {{/blooms_levels}}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-outline-secondary" id="edzai-btn-step3-back">← {{#str}}wizard_back, local_edzaiaxisfront{{/str}}</button>
+            <button class="btn btn-primary" id="edzai-btn-step3-next">{{#str}}wizard_next, local_edzaiaxisfront{{/str}} →</button>
+        </div>
+    </div>
+
+    {{! Step 4: Review }}
+    <div class="edzai-step-panel d-none" data-step="4">
+        <h4>{{#str}}wizard_step4_heading, local_edzaiaxisfront{{/str}}</h4>
+        <div id="edzai-step4-review" class="mb-4"></div>
+        <div class="alert alert-info">
+            {{#str}}wizard_step4_info, local_edzaiaxisfront{{/str}}
+        </div>
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-secondary" id="edzai-btn-step4-back">← {{#str}}wizard_back, local_edzaiaxisfront{{/str}}</button>
+            <button class="btn btn-success btn-lg" id="edzai-btn-submit">
+                <i class="fa fa-magic"></i> {{#str}}wizard_generate, local_edzaiaxisfront{{/str}}
+            </button>
+        </div>
+    </div>
+
+    {{! Step 5: Monitor }}
+    <div class="edzai-step-panel d-none" data-step="5">
+        <h4>{{#str}}wizard_step5_heading, local_edzaiaxisfront{{/str}}</h4>
+        <p class="text-muted">{{#str}}wizard_step5_desc, local_edzaiaxisfront{{/str}}</p>
+
+        <div id="edzai-step5-jobs" class="mb-4"></div>
+
+        <div id="edzai-step5-done" class="alert alert-success d-none">
+            <i class="fa fa-check-circle"></i>
+            {{#str}}wizard_done, local_edzaiaxisfront{{/str}}
+        </div>
+
+        <div class="text-center mt-3">
+            <button class="btn btn-primary" id="edzai-btn-step5-dashboard">
+                {{#str}}wizard_back_dashboard, local_edzaiaxisfront{{/str}}
+            </button>
+        </div>
+    </div>
+
+</div>
+
+<style>
+.edzai-step-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: #dee2e6;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: bold; margin-bottom: 4px;
+}
+.edzai-step-indicator.active .edzai-step-circle  { background: #007bff; color: #fff; }
+.edzai-step-indicator.completed .edzai-step-circle { background: #28a745; color: #fff; }
+</style>

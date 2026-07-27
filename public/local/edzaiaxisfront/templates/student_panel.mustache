@@ -1,0 +1,319 @@
+{{!
+    Student AI Panel — injected by local_edzaiaxisfront_after_config() on mod view pages.
+    Rendered as a collapsible side-drawer / bottom-panel on SCORM, resource, page, url, book views.
+    AMD module local_edzaiaxisfront/student_panel populates content dynamically.
+
+    Context variables supplied by lib.php:
+      cmid, cmname, courseid, wwwroot, sesskey,
+      has_study_chat, has_support_chat
+
+    @package   local_edzaiaxisfront
+    @copyright 2026 Edz LMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+
+<div id="axis-student-panel"
+     class="axis-student-panel"
+     data-cmid="{{cmid}}"
+     data-courseid="{{courseid}}"
+     data-sesskey="{{sesskey}}"
+     role="complementary"
+     aria-label="{{#str}}student_panel_label, local_edzaiaxisfront{{/str}}"
+     hidden>
+
+    {{! ── Toggle tab visible on right edge of screen ─────────────────── }}
+    <button class="axis-sp-toggle" id="axis-sp-toggle"
+            aria-expanded="false"
+            aria-controls="axis-student-panel"
+            title="{{#str}}student_panel_open, local_edzaiaxisfront{{/str}}">
+        <span class="axis-sp-toggle-icon" aria-hidden="true">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                <path d="M12 20h9"/>
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+            </svg>
+        </span>
+        <span class="axis-sp-toggle-label">{{#str}}student_panel_tab_label, local_edzaiaxisfront{{/str}}</span>
+    </button>
+
+    {{! ── Panel inner ─────────────────────────────────────────────────── }}
+    <div class="axis-sp-inner" id="axis-sp-inner">
+
+        {{! Header }}
+        <div class="axis-sp-header">
+            <div class="axis-sp-header-left">
+                <span class="axis-sp-header-icon" aria-hidden="true">✨</span>
+                <span class="axis-sp-header-title">{{cmname}} — AI Tools</span>
+            </div>
+            <button class="axis-sp-close" id="axis-sp-close"
+                    aria-label="{{#str}}student_panel_close, local_edzaiaxisfront{{/str}}"
+                    title="{{#str}}student_panel_close, local_edzaiaxisfront{{/str}}">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        {{! Loading skeleton }}
+        <div class="axis-sp-skeleton" id="axis-sp-skeleton">
+            <div class="axis-sp-skel-tabs">
+                <div class="axis-sp-skel-tab"></div>
+                <div class="axis-sp-skel-tab"></div>
+                <div class="axis-sp-skel-tab"></div>
+            </div>
+            <div class="axis-sp-skel-body">
+                <div class="axis-skeleton-line axis-skeleton-line--wide"></div>
+                <div class="axis-skeleton-line"></div>
+                <div class="axis-skeleton-line axis-skeleton-line--narrow"></div>
+            </div>
+        </div>
+
+        {{! Not ready state }}
+        <div class="axis-sp-not-ready" id="axis-sp-not-ready" hidden>
+            <div class="axis-sp-empty-icon" aria-hidden="true">⏳</div>
+            <p class="axis-sp-empty-msg">{{#str}}student_panel_not_ready, local_edzaiaxisfront{{/str}}</p>
+            <p class="axis-sp-empty-sub">{{#str}}student_panel_not_ready_sub, local_edzaiaxisfront{{/str}}</p>
+        </div>
+
+        {{! Error state }}
+        <div class="axis-sp-error" id="axis-sp-error" hidden role="alert">
+            <div class="axis-sp-empty-icon" aria-hidden="true">⚠️</div>
+            <p class="axis-sp-empty-msg" id="axis-sp-error-msg">{{#str}}student_panel_error, local_edzaiaxisfront{{/str}}</p>
+        </div>
+
+        {{! Main content — revealed once outputs load }}
+        <div class="axis-sp-content" id="axis-sp-content" hidden>
+
+            {{! Tab nav }}
+            <div class="axis-sp-tabs" role="tablist" aria-label="{{#str}}student_panel_tabs_label, local_edzaiaxisfront{{/str}}" id="axis-sp-tabs">
+                {{! Tabs injected by student_panel.js based on available_features }}
+            </div>
+
+            {{! ── SUMMARY tab ──────────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-summary" role="tabpanel" aria-labelledby="axis-sp-tab-summary" hidden>
+                <div class="axis-sp-summary-body" id="axis-sp-summary-body">
+                    {{! Injected by JS }}
+                </div>
+            </div>
+
+            {{! ── GLOSSARY tab ────────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-glossary" role="tabpanel" aria-labelledby="axis-sp-tab-glossary" hidden>
+                <div class="axis-sp-glossary-search">
+                    <input type="search"
+                           class="axis-sp-search-input"
+                           id="axis-sp-glossary-search"
+                           placeholder="{{#str}}student_panel_search_terms, local_edzaiaxisfront{{/str}}"
+                           aria-label="{{#str}}student_panel_search_terms, local_edzaiaxisfront{{/str}}">
+                </div>
+                <dl class="axis-sp-glossary-list" id="axis-sp-glossary-list" role="list">
+                    {{! Injected by JS }}
+                </dl>
+            </div>
+
+            {{! ── FLASHCARDS tab ──────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-flashcards" role="tabpanel" aria-labelledby="axis-sp-tab-flashcards" hidden>
+                <div class="axis-sp-flashcard-controls">
+                    <button class="axis-sp-btn axis-sp-btn--secondary" id="axis-sp-fc-shuffle"
+                            aria-label="{{#str}}student_panel_fc_shuffle, local_edzaiaxisfront{{/str}}">
+                        🔀 {{#str}}student_panel_fc_shuffle, local_edzaiaxisfront{{/str}}
+                    </button>
+                    <span class="axis-sp-fc-counter" id="axis-sp-fc-counter" aria-live="polite">1 / 1</span>
+                </div>
+
+                <div class="axis-sp-flashcard-stage" id="axis-sp-fc-stage" aria-live="polite">
+                    <div class="axis-sp-flashcard" id="axis-sp-flashcard" role="button" tabindex="0"
+                         aria-label="{{#str}}student_panel_fc_flip_hint, local_edzaiaxisfront{{/str}}">
+                        <div class="axis-sp-fc-inner">
+                            <div class="axis-sp-fc-front">
+                                <div class="axis-sp-fc-label">{{#str}}student_panel_fc_question, local_edzaiaxisfront{{/str}}</div>
+                                <div class="axis-sp-fc-text" id="axis-sp-fc-front-text"></div>
+                                <div class="axis-sp-fc-hint" id="axis-sp-fc-hint" hidden></div>
+                            </div>
+                            <div class="axis-sp-fc-back">
+                                <div class="axis-sp-fc-label">{{#str}}student_panel_fc_answer, local_edzaiaxisfront{{/str}}</div>
+                                <div class="axis-sp-fc-text" id="axis-sp-fc-back-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="axis-sp-fc-nav">
+                    <button class="axis-sp-btn" id="axis-sp-fc-prev" aria-label="{{#str}}student_panel_fc_prev, local_edzaiaxisfront{{/str}}">← Prev</button>
+                    <button class="axis-sp-btn" id="axis-sp-fc-hint-btn">💡 Hint</button>
+                    <button class="axis-sp-btn" id="axis-sp-fc-next" aria-label="{{#str}}student_panel_fc_next, local_edzaiaxisfront{{/str}}">Next →</button>
+                </div>
+
+                <div class="axis-sp-fc-difficulty-filter">
+                    <span>Filter:</span>
+                    <button class="axis-sp-filter-btn axis-sp-filter-btn--active" data-diff="all">All</button>
+                    <button class="axis-sp-filter-btn" data-diff="easy">Easy</button>
+                    <button class="axis-sp-filter-btn" data-diff="medium">Medium</button>
+                    <button class="axis-sp-filter-btn" data-diff="hard">Hard</button>
+                </div>
+            </div>
+
+            {{! ── QUIZ tab ────────────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-quiz" role="tabpanel" aria-labelledby="axis-sp-tab-quiz" hidden>
+
+                {{! Quiz idle state (before start) }}
+                <div class="axis-sp-quiz-idle" id="axis-sp-quiz-idle">
+                    <p class="axis-sp-quiz-intro" id="axis-sp-quiz-intro">{{#str}}student_panel_quiz_intro, local_edzaiaxisfront{{/str}}</p>
+                    <div class="axis-sp-quiz-settings">
+                        <label class="axis-sp-quiz-label">
+                            {{#str}}student_panel_quiz_count, local_edzaiaxisfront{{/str}}
+                            <select class="axis-sp-quiz-select" id="axis-sp-quiz-count">
+                                <option value="5">5</option>
+                                <option value="10" selected>10</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                            </select>
+                        </label>
+                        <label class="axis-sp-quiz-label">
+                            {{#str}}student_panel_quiz_diff, local_edzaiaxisfront{{/str}}
+                            <select class="axis-sp-quiz-select" id="axis-sp-quiz-diff">
+                                <option value="all">All levels</option>
+                                <option value="easy">Easy</option>
+                                <option value="medium">Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </label>
+                    </div>
+                    <button class="axis-sp-btn axis-sp-btn--primary axis-sp-btn--full" id="axis-sp-quiz-start">
+                        {{#str}}student_panel_quiz_start, local_edzaiaxisfront{{/str}}
+                    </button>
+                </div>
+
+                {{! Quiz active state }}
+                <div class="axis-sp-quiz-active" id="axis-sp-quiz-active" hidden>
+                    <div class="axis-sp-quiz-progress">
+                        <span id="axis-sp-quiz-q-num">1 / 10</span>
+                        <div class="axis-sp-quiz-bar">
+                            <div class="axis-sp-quiz-bar-fill" id="axis-sp-quiz-bar-fill" style="width:0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="axis-sp-quiz-question" id="axis-sp-quiz-question" aria-live="polite">
+                        {{! Question text injected by JS }}
+                    </div>
+
+                    <div class="axis-sp-quiz-options" id="axis-sp-quiz-options" role="group"
+                         aria-label="{{#str}}student_panel_quiz_options_label, local_edzaiaxisfront{{/str}}">
+                        {{! Options injected by JS }}
+                    </div>
+
+                    <div class="axis-sp-quiz-feedback" id="axis-sp-quiz-feedback" hidden aria-live="assertive">
+                        <div class="axis-sp-quiz-result" id="axis-sp-quiz-result"></div>
+                        <div class="axis-sp-quiz-explanation" id="axis-sp-quiz-explanation"></div>
+                        <button class="axis-sp-btn axis-sp-btn--primary" id="axis-sp-quiz-next-q">
+                            {{#str}}student_panel_quiz_next, local_edzaiaxisfront{{/str}}
+                        </button>
+                    </div>
+                </div>
+
+                {{! Quiz result state }}
+                <div class="axis-sp-quiz-result-panel" id="axis-sp-quiz-result-panel" hidden aria-live="polite">
+                    <div class="axis-sp-quiz-score-ring">
+                        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle class="axis-sp-ring-bg"  cx="50" cy="50" r="40" fill="none" stroke-width="10"/>
+                            <circle class="axis-sp-ring-fill" cx="50" cy="50" r="40" fill="none" stroke-width="10"
+                                    id="axis-sp-ring-fill" stroke-dasharray="251.2" stroke-dashoffset="251.2"/>
+                        </svg>
+                        <div class="axis-sp-quiz-score-text" id="axis-sp-quiz-score-text" aria-live="polite">0%</div>
+                    </div>
+                    <p class="axis-sp-quiz-score-label" id="axis-sp-quiz-score-label"></p>
+                    <div class="axis-sp-quiz-score-breakdown" id="axis-sp-quiz-score-breakdown"></div>
+                    <button class="axis-sp-btn axis-sp-btn--primary" id="axis-sp-quiz-retry">
+                        {{#str}}student_panel_quiz_retry, local_edzaiaxisfront{{/str}}
+                    </button>
+                </div>
+
+            </div>
+
+            {{! ── FAQ tab ─────────────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-faq" role="tabpanel" aria-labelledby="axis-sp-tab-faq" hidden>
+                <div class="axis-sp-faq-search">
+                    <input type="search"
+                           class="axis-sp-search-input"
+                           id="axis-sp-faq-search"
+                           placeholder="{{#str}}student_panel_search_faq, local_edzaiaxisfront{{/str}}"
+                           aria-label="{{#str}}student_panel_search_faq, local_edzaiaxisfront{{/str}}">
+                </div>
+                <div class="axis-sp-faq-list" id="axis-sp-faq-list">
+                    {{! FAQ accordion items injected by JS }}
+                </div>
+            </div>
+
+            {{! ── INFOGRAPHIC tab ─────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-infographic" role="tabpanel" aria-labelledby="axis-sp-tab-infographic" hidden>
+                <div class="axis-sp-infographic-body" id="axis-sp-infographic-body">
+                    {{! Raw HTML infographic content injected by JS }}
+                </div>
+            </div>
+
+            {{! ── CHAT tab ────────────────────────────────────────────── }}
+            <div class="axis-sp-tab-panel" id="axis-sp-panel-chat" role="tabpanel" aria-labelledby="axis-sp-tab-chat" hidden>
+
+                {{! Chat mode selector }}
+                <div class="axis-sp-chat-modes" id="axis-sp-chat-modes">
+                    {{#has_study_chat}}
+                    <button class="axis-sp-chat-mode-btn axis-sp-chat-mode-btn--active" data-chat-mode="study" id="axis-sp-chat-mode-study">
+                        📚 {{#str}}student_panel_chat_study, local_edzaiaxisfront{{/str}}
+                    </button>
+                    {{/has_study_chat}}
+                    {{#has_support_chat}}
+                    <button class="axis-sp-chat-mode-btn" data-chat-mode="support" id="axis-sp-chat-mode-support">
+                        ❓ {{#str}}student_panel_chat_support, local_edzaiaxisfront{{/str}}
+                    </button>
+                    {{/has_support_chat}}
+                </div>
+
+                {{! Chat messages area }}
+                <div class="axis-sp-chat-area" id="axis-sp-chat-area">
+                    <div class="axis-sp-messages" id="axis-sp-messages" role="log" aria-live="polite" aria-label="{{#str}}student_panel_chat_messages, local_edzaiaxisfront{{/str}}">
+                        {{! Messages injected by JS }}
+                    </div>
+                    <div class="axis-sp-typing" id="axis-sp-typing" hidden aria-live="polite">
+                        <div class="axis-typing-bubble">
+                            <span class="axis-dot"></span>
+                            <span class="axis-dot"></span>
+                            <span class="axis-dot"></span>
+                        </div>
+                    </div>
+                </div>
+
+                {{! Suggestion chips }}
+                <div class="axis-sp-suggestion-chips" id="axis-sp-suggestion-chips" hidden>
+                    {{! Injected by JS }}
+                </div>
+
+                {{! Input bar }}
+                <div class="axis-sp-chat-input-bar">
+                    <textarea class="axis-sp-chat-input"
+                              id="axis-sp-chat-input"
+                              placeholder="{{#str}}student_panel_chat_placeholder, local_edzaiaxisfront{{/str}}"
+                              rows="1"
+                              maxlength="2000"
+                              aria-label="{{#str}}student_panel_chat_input_aria, local_edzaiaxisfront{{/str}}"></textarea>
+                    <button class="axis-sp-send-btn" id="axis-sp-send-btn" disabled
+                            aria-label="{{#str}}student_panel_chat_send, local_edzaiaxisfront{{/str}}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                    </button>
+                </div>
+
+            </div>
+            {{! /axis-sp-panel-chat }}
+
+        </div>
+        {{! /axis-sp-content }}
+
+    </div>
+    {{! /axis-sp-inner }}
+
+</div>
+{{! /axis-student-panel }}

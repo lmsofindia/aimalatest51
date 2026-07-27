@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/edzaiaxisfront/db" VERSION="2026032900"
+    COMMENT="Axis AI Front — Moodle-side storage for AI-generated content and job tracking"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd">
+
+  <TABLES>
+
+    <!-- ── 1. cm_config ────────────────────────────────────────────────────────
+         Per course-module AI configuration.
+         One row per CM that has been configured for AI generation.
+         axis_content_item_id links to the axis-ai content_items table (UUID stored as VARCHAR).
+    -->
+    <TABLE NAME="local_edzaiaxisfront_cm_config" COMMENT="Per-CM AI configuration and axis-ai content_item linkage">
+      <FIELDS>
+        <FIELD NAME="id"                    TYPE="int"     LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"                  TYPE="int"     LENGTH="10" NOTNULL="true" COMMENT="course_modules.id"/>
+        <FIELD NAME="courseid"              TYPE="int"     LENGTH="10" NOTNULL="true" COMMENT="course.id"/>
+        <FIELD NAME="axis_content_item_id"  TYPE="char"    LENGTH="36" NOTNULL="false" COMMENT="axis-ai content_items UUID (null until first ingest)"/>
+        <FIELD NAME="status"                TYPE="char"    LENGTH="20" NOTNULL="true" DEFAULT="not_configured" COMMENT="not_configured|pending|processing|partial|ready|error"/>
+        <!-- Bitmask of which features are ENABLED at site level AND by teacher for this CM -->
+        <!-- Stored as JSON: {"summary":1,"glossary":1,"flashcards":1,"quiz":1,"faq":0,"infographic":0} -->
+        <FIELD NAME="enabled_features"      TYPE="text"                NOTNULL="false" COMMENT="JSON: which output types teacher has enabled"/>
+        <!-- Bitmask of which features are VISIBLE to students (teacher can hide without deleting) -->
+        <FIELD NAME="visible_features"      TYPE="text"                NOTNULL="false" COMMENT="JSON: which output types are visible to students"/>
+        <!-- Bitmask of which features have been successfully generated -->
+        <FIELD NAME="generated_features"    TYPE="text"                NOTNULL="false" COMMENT="JSON: which output types have completed generation"/>
+        <!-- Generation config: language, custom_instructions, quiz params, bloom distribution -->
+        <FIELD NAME="generation_config"     TYPE="text"                NOTNULL="false" COMMENT="JSON: generation params (language, quiz settings, bloom distribution, etc.)"/>
+        <FIELD NAME="error_message"         TYPE="text"                NOTNULL="false" COMMENT="Last error message if status=error"/>
+        <FIELD NAME="last_synced"           TYPE="int"     LENGTH="10" NOTNULL="false" COMMENT="Unix timestamp of last successful sync from axis-ai"/>
+        <FIELD NAME="timecreated"           TYPE="int"     LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"          TYPE="int"     LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid"     UNIQUE="true" FIELDS="cmid"/>
+        <INDEX NAME="idx_courseid" UNIQUE="false" FIELDS="courseid"/>
+        <INDEX NAME="idx_status"   UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 2. outputs ──────────────────────────────────────────────────────────
+         Cached AI outputs for simple text-based types: summary, faq, infographic.
+         One row per (cmid, output_type). Updated on generation and teacher edit.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_outputs" COMMENT="Cached AI outputs (summary, faq, infographic HTML)">
+      <FIELDS>
+        <FIELD NAME="id"              TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"            TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="output_type"     TYPE="char" LENGTH="30" NOTNULL="true" COMMENT="summary|faq|infographic|objectives|mindmap"/>
+        <FIELD NAME="content"         TYPE="text"             NOTNULL="false" COMMENT="The AI-generated (or teacher-edited) content"/>
+        <FIELD NAME="axis_output_id"  TYPE="char" LENGTH="36" NOTNULL="false" COMMENT="axis-ai ai_outputs UUID this mirrors"/>
+        <FIELD NAME="is_teacher_edited" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" COMMENT="1 if teacher has edited content locally"/>
+        <FIELD NAME="is_visible"      TYPE="int"  LENGTH="1"  NOTNULL="true" DEFAULT="1" COMMENT="0 = hidden from students by teacher"/>
+        <FIELD NAME="language"        TYPE="char" LENGTH="10" NOTNULL="false" COMMENT="BCP-47 language of the content"/>
+        <FIELD NAME="word_count"      TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timecreated"     TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"    TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid_type"  UNIQUE="true"  FIELDS="cmid, output_type"/>
+        <INDEX NAME="idx_visible"    UNIQUE="false" FIELDS="is_visible"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 3. flashcards ───────────────────────────────────────────────────────
+         Flashcard pool per CM. Mirrors axis-ai flashcard_items.
+         All cards stored here; student sees a random/sequential subset.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_flashcards" COMMENT="Flashcard pool per CM">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"          TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="axis_item_id"  TYPE="char" LENGTH="36" NOTNULL="false" COMMENT="axis-ai flashcard_items UUID"/>
+        <FIELD NAME="front"         TYPE="text"             NOTNULL="true"  COMMENT="Front of card (question/term)"/>
+        <FIELD NAME="back"          TYPE="text"             NOTNULL="true"  COMMENT="Back of card (answer/definition)"/>
+        <FIELD NAME="hint"          TYPE="text"             NOTNULL="false"/>
+        <FIELD NAME="difficulty"    TYPE="char" LENGTH="10" NOTNULL="false" COMMENT="easy|medium|hard"/>
+        <FIELD NAME="topic"         TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="position"      TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0" COMMENT="Sort order"/>
+        <FIELD NAME="is_active"     TYPE="int"  LENGTH="1"  NOTNULL="true"  DEFAULT="1" COMMENT="0 = hidden by teacher"/>
+        <FIELD NAME="source"        TYPE="char" LENGTH="20" NOTNULL="false" DEFAULT="generated" COMMENT="generated|manual"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"  TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid"      UNIQUE="false" FIELDS="cmid"/>
+        <INDEX NAME="idx_active"    UNIQUE="false" FIELDS="cmid, is_active"/>
+        <INDEX NAME="idx_axis_id"   UNIQUE="false" FIELDS="axis_item_id"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 4. glossary ─────────────────────────────────────────────────────────
+         Glossary term pool per CM. Mirrors axis-ai glossary_terms.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_glossary" COMMENT="Glossary term pool per CM">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"          TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="axis_term_id"  TYPE="char" LENGTH="36" NOTNULL="false" COMMENT="axis-ai glossary_terms UUID"/>
+        <FIELD NAME="term"          TYPE="char" LENGTH="512" NOTNULL="true"/>
+        <FIELD NAME="definition"    TYPE="text"              NOTNULL="true"/>
+        <FIELD NAME="context_note"  TYPE="text"              NOTNULL="false" COMMENT="Optional context sentence from the content"/>
+        <FIELD NAME="position"      TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="is_active"     TYPE="int"  LENGTH="1"   NOTNULL="true"  DEFAULT="1"/>
+        <FIELD NAME="source"        TYPE="char" LENGTH="20"  NOTNULL="false" DEFAULT="generated"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"  TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid"     UNIQUE="false" FIELDS="cmid"/>
+        <INDEX NAME="idx_active"   UNIQUE="false" FIELDS="cmid, is_active"/>
+        <INDEX NAME="idx_axis_id"  UNIQUE="false" FIELDS="axis_term_id"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 5. quiz_questions ────────────────────────────────────────────────────
+         Quiz question pool per CM. Mirrors axis-ai quiz_questions.
+         Teachers can add manual questions (source=manual).
+    -->
+    <TABLE NAME="local_edzaiaxisfront_quiz_questions" COMMENT="Quiz question pool per CM">
+      <FIELDS>
+        <FIELD NAME="id"              TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"            TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="axis_question_id" TYPE="char" LENGTH="36" NOTNULL="false" COMMENT="axis-ai quiz_questions UUID"/>
+        <FIELD NAME="question_text"   TYPE="text"              NOTNULL="true"/>
+        <FIELD NAME="question_type"   TYPE="char" LENGTH="20"  NOTNULL="true" DEFAULT="multichoice" COMMENT="multichoice|truefalse|shortanswer|essay"/>
+        <FIELD NAME="options_json"    TYPE="text"              NOTNULL="false" COMMENT="JSON array of {text, is_correct, feedback}"/>
+        <FIELD NAME="correct_answer"  TYPE="text"              NOTNULL="false" COMMENT="For shortanswer/essay types"/>
+        <FIELD NAME="explanation"     TYPE="text"              NOTNULL="false"/>
+        <FIELD NAME="difficulty"      TYPE="char" LENGTH="10"  NOTNULL="false" COMMENT="easy|medium|hard"/>
+        <FIELD NAME="blooms_level"    TYPE="char" LENGTH="20"  NOTNULL="false" COMMENT="remember|understand|apply|analyze|evaluate|create"/>
+        <FIELD NAME="topic_primary"   TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="topic_secondary" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="is_active"       TYPE="int"  LENGTH="1"   NOTNULL="true"  DEFAULT="1" COMMENT="0 = excluded from student sessions"/>
+        <FIELD NAME="source"          TYPE="char" LENGTH="20"  NOTNULL="false" DEFAULT="generated" COMMENT="generated|manual"/>
+        <FIELD NAME="timecreated"     TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"    TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid"      UNIQUE="false" FIELDS="cmid"/>
+        <INDEX NAME="idx_active"    UNIQUE="false" FIELDS="cmid, is_active"/>
+        <INDEX NAME="idx_axis_id"   UNIQUE="false" FIELDS="axis_question_id"/>
+        <INDEX NAME="idx_difficulty" UNIQUE="false" FIELDS="cmid, difficulty"/>
+        <INDEX NAME="idx_blooms"    UNIQUE="false" FIELDS="cmid, blooms_level"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 6. jobs ─────────────────────────────────────────────────────────────
+         Tracks axis-ai Celery jobs. Moodle scheduled task polls job status
+         and updates cm_config + outputs when complete.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_jobs" COMMENT="Axis-AI background job tracking">
+      <FIELDS>
+        <FIELD NAME="id"            TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="cmid"          TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="NULL for KB jobs"/>
+        <FIELD NAME="courseid"      TYPE="int"  LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="axis_job_id"   TYPE="char" LENGTH="36" NOTNULL="true"  COMMENT="axis-ai processing_jobs UUID"/>
+        <FIELD NAME="job_type"      TYPE="char" LENGTH="30" NOTNULL="true"  COMMENT="full_pipeline|kb_ingest|structured_ingest|generate_outputs|regenerate"/>
+        <FIELD NAME="status"        TYPE="char" LENGTH="20" NOTNULL="true"  DEFAULT="queued" COMMENT="queued|processing|completed|failed|cancelled"/>
+        <FIELD NAME="progress"      TYPE="int"  LENGTH="3"  NOTNULL="true"  DEFAULT="0" COMMENT="0-100"/>
+        <FIELD NAME="progress_msg"  TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="tasks_json"    TYPE="text"              NOTNULL="false" COMMENT="JSON list of output types this job will generate"/>
+        <FIELD NAME="error_message" TYPE="text"              NOTNULL="false"/>
+        <FIELD NAME="requested_by"  TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="Moodle userid who triggered this job"/>
+        <FIELD NAME="timecreated"   TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timecompleted" TYPE="int"  LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="timemodified"  TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_cmid"         UNIQUE="false" FIELDS="cmid"/>
+        <INDEX NAME="idx_axis_job_id"  UNIQUE="true"  FIELDS="axis_job_id"/>
+        <INDEX NAME="idx_status"       UNIQUE="false" FIELDS="status"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 7. chat_sessions ────────────────────────────────────────────────────
+         Moodle-side record of each chat session.
+         Lightweight — full conversation stored in axis-ai.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_chat_sessions" COMMENT="Chat session registry (lightweight mirror of axis-ai sessions)">
+      <FIELDS>
+        <FIELD NAME="id"               TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"           TYPE="int"  LENGTH="10" NOTNULL="true"  COMMENT="Moodle user.id"/>
+        <FIELD NAME="cmid"             TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="NULL for support/KB sessions"/>
+        <FIELD NAME="courseid"         TYPE="int"  LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="axis_session_id"  TYPE="char" LENGTH="36" NOTNULL="true"  COMMENT="axis-ai chat_sessions UUID"/>
+        <FIELD NAME="chat_mode"        TYPE="char" LENGTH="20" NOTNULL="true"  DEFAULT="study" COMMENT="study|support|learning"/>
+        <FIELD NAME="thread_name"      TYPE="char" LENGTH="255" NOTNULL="false" COMMENT="User-set or auto-generated thread name"/>
+        <FIELD NAME="message_count"    TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="tokens_used"      TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="is_active"        TYPE="int"  LENGTH="1"  NOTNULL="true"  DEFAULT="1"/>
+        <FIELD NAME="timecreated"      TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"     TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_userid"         UNIQUE="false" FIELDS="userid"/>
+        <INDEX NAME="idx_cmid_user"      UNIQUE="false" FIELDS="cmid, userid"/>
+        <INDEX NAME="idx_axis_session"   UNIQUE="true"  FIELDS="axis_session_id"/>
+        <INDEX NAME="idx_mode"           UNIQUE="false" FIELDS="chat_mode"/>
+      </INDEXES>
+    </TABLE>
+
+    <TABLE NAME="local_edzaiaxisfront_chat_messages" COMMENT="Stored chat messages per session (user + assistant turns)">
+      <FIELDS>
+        <FIELD NAME="id"               TYPE="int"  LENGTH="10"  NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="sessionid"        TYPE="int"  LENGTH="10"  NOTNULL="true"  COMMENT="local_edzaiaxisfront_chat_sessions.id"/>
+        <FIELD NAME="userid"           TYPE="int"  LENGTH="10"  NOTNULL="true"  COMMENT="Moodle user.id"/>
+        <FIELD NAME="role"             TYPE="char" LENGTH="16"  NOTNULL="true"  DEFAULT="user" COMMENT="user|assistant"/>
+        <FIELD NAME="message"          TYPE="text"              NOTNULL="true"  COMMENT="Message body"/>
+        <FIELD NAME="tokens_used"      TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timecreated"      TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_session"        UNIQUE="false" FIELDS="sessionid"/>
+        <INDEX NAME="idx_user_time"      UNIQUE="false" FIELDS="userid, timecreated"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 8. token_usage ──────────────────────────────────────────────────────
+         Per-user token consumption tracking in Moodle.
+         Used to display usage to admins and enforce limits before calling axis-ai.
+         Granularity: one row per (userid, day). Aggregated for monthly totals.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_token_usage" COMMENT="Daily token usage per user (for admin dashboards and pre-flight limit checks)">
+      <FIELDS>
+        <FIELD NAME="id"           TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"       TYPE="int"  LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="day_date"     TYPE="char" LENGTH="10" NOTNULL="true" COMMENT="YYYY-MM-DD"/>
+        <FIELD NAME="month_year"   TYPE="char" LENGTH="7"  NOTNULL="true" COMMENT="YYYY-MM"/>
+        <FIELD NAME="tokens_day"   TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Total tokens consumed on this day"/>
+        <FIELD NAME="tokens_month" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Running monthly total (sum of tokens_day rows for same month_year)"/>
+        <FIELD NAME="msg_count"    TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0" COMMENT="Number of chat messages sent on this day"/>
+        <FIELD NAME="timecreated"  TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+        <FIELD NAME="timemodified" TYPE="int"  LENGTH="10" NOTNULL="true" DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_user_day"    UNIQUE="true"  FIELDS="userid, day_date"/>
+        <INDEX NAME="idx_user_month"  UNIQUE="false" FIELDS="userid, month_year"/>
+        <INDEX NAME="idx_month"       UNIQUE="false" FIELDS="month_year"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 9. user_limits ──────────────────────────────────────────────────────
+         Per-user rate limit overrides. Admin sets these to give specific users
+         higher or lower limits than the site-wide defaults.
+         NULL on any field = fall back to site default (from plugin settings).
+         Synced to axis-ai UserTokenOverride table on save.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_user_limits" COMMENT="Per-user rate limit overrides">
+      <FIELDS>
+        <FIELD NAME="id"                    TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid"                TYPE="int"  LENGTH="10" NOTNULL="true" COMMENT="Moodle user.id this override applies to"/>
+        <FIELD NAME="chat_session_msg_limit" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="NULL = use site default"/>
+        <FIELD NAME="chat_daily_msg_limit"   TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="chat_monthly_msg_limit" TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="token_monthly_limit"    TYPE="int" LENGTH="10" NOTNULL="false"/>
+        <FIELD NAME="note"                   TYPE="char" LENGTH="500" NOTNULL="false" COMMENT="Admin note explaining this override"/>
+        <FIELD NAME="set_by_userid"          TYPE="int"  LENGTH="10" NOTNULL="false" COMMENT="Moodle userid of admin who set this"/>
+        <FIELD NAME="timecreated"            TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"           TYPE="int"  LENGTH="10" NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_userid" UNIQUE="true" FIELDS="userid"/>
+      </INDEXES>
+    </TABLE>
+
+    <!-- ── 10. kb_items ────────────────────────────────────────────────────────
+         Moodle-side record of admin-uploaded support KB documents.
+         Mirrors axis-ai kb_items table. Admin uploads PDFs here;
+         plugin calls /kb/ingest and stores the axis-ai kb_item_id.
+    -->
+    <TABLE NAME="local_edzaiaxisfront_kb_items" COMMENT="Support Knowledge Base documents (mirrors axis-ai kb_items)">
+      <FIELDS>
+        <FIELD NAME="id"               TYPE="int"  LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="axis_kb_item_id"  TYPE="char" LENGTH="36" NOTNULL="false" COMMENT="axis-ai kb_items UUID"/>
+        <FIELD NAME="title"            TYPE="char" LENGTH="512" NOTNULL="true"/>
+        <FIELD NAME="doc_type"         TYPE="char" LENGTH="30"  NOTNULL="true" DEFAULT="support" COMMENT="support|policy|how_to|faq|announcement|other"/>
+        <FIELD NAME="content"          TYPE="text"              NOTNULL="false" COMMENT="Plain-text content for text-paste KB items (enables edit + re-index)"/>
+        <FIELD NAME="source_url"       TYPE="text"              NOTNULL="false" COMMENT="Original URL or file:// path"/>
+        <FIELD NAME="status"           TYPE="char" LENGTH="20"  NOTNULL="true" DEFAULT="pending" COMMENT="pending|processing|ready|error|deleted"/>
+        <FIELD NAME="axis_job_id"      TYPE="char" LENGTH="36"  NOTNULL="false" COMMENT="Processing job UUID (for status polling)"/>
+        <FIELD NAME="is_active"        TYPE="int"  LENGTH="1"   NOTNULL="true"  DEFAULT="1"/>
+        <FIELD NAME="uploaded_by"      TYPE="int"  LENGTH="10"  NOTNULL="false" COMMENT="Moodle userid of admin who uploaded this"/>
+        <FIELD NAME="timecreated"      TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+        <FIELD NAME="timemodified"     TYPE="int"  LENGTH="10"  NOTNULL="true"  DEFAULT="0"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="idx_axis_kb_item"  UNIQUE="false" FIELDS="axis_kb_item_id"/>
+        <INDEX NAME="idx_status"        UNIQUE="false" FIELDS="status"/>
+        <INDEX NAME="idx_active"        UNIQUE="false" FIELDS="is_active"/>
+      </INDEXES>
+    </TABLE>
+
+  </TABLES>
+</XMLDB>

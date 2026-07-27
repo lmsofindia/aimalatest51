@@ -680,6 +680,21 @@
     padding: 1.375rem 1.5rem 1.25rem;
     color: #ffffff;
 }
+/* Image-background mode: give the white text a soft shadow so it stays legible
+   over any uploaded photo, and lift the progress track contrast. */
+.cwh-hero--image {
+    background-repeat: no-repeat;
+    min-height: 220px;
+}
+.cwh-hero--image .cwh-daylabel,
+.cwh-hero--image .cwh-heading,
+.cwh-hero--image .cwh-progress-labels,
+.cwh-hero--image .cwh-progress-sub {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+}
+.cwh-hero--image .cwh-progress-track {
+    background: rgba(255, 255, 255, .35);
+}
 .cwh-hero-top {
     display: flex;
     align-items: center;

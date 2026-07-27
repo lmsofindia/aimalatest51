@@ -1,0 +1,89 @@
+{{!
+    Admin token usage report template.
+    admin_reports.js loads data and renders the table body dynamically.
+
+    @template local_edzaiaxisfront/admin_reports
+    @copyright 2026 Edz LMS
+    @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+<div class="edzai-admin-reports" id="edzai-admin-reports">
+
+    {{! Page header }}
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div>
+            <h2>{{#str}}reports_title, local_edzaiaxisfront{{/str}}</h2>
+            <p class="text-muted">{{#str}}reports_desc, local_edzaiaxisfront{{/str}}</p>
+        </div>
+        <a href="{{{overrides_url}}}" class="btn btn-outline-secondary">
+            <i class="fa fa-sliders"></i> {{#str}}user_overrides_title, local_edzaiaxisfront{{/str}}
+        </a>
+    </div>
+
+    {{! Filter bar }}
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="form-inline">
+                <div class="form-group mr-3">
+                    <label for="edzai-report-month" class="mr-2">{{#str}}reports_month, local_edzaiaxisfront{{/str}}</label>
+                    <select class="form-control" id="edzai-report-month">
+                        {{#months}}
+                        <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                        {{/months}}
+                    </select>
+                </div>
+                <div class="form-group mr-3">
+                    <label for="edzai-report-search" class="mr-2">{{#str}}reports_search, local_edzaiaxisfront{{/str}}</label>
+                    <input type="text" class="form-control" id="edzai-report-search"
+                           value="{{search}}" placeholder="Name, username or email…">
+                </div>
+                <button class="btn btn-primary" id="edzai-report-apply">
+                    <i class="fa fa-filter"></i> {{#str}}reports_apply, local_edzaiaxisfront{{/str}}
+                </button>
+                <a href="{{{export_url}}}" id="edzai-export-link" class="btn btn-outline-secondary ml-2">
+                    <i class="fa fa-download"></i> {{#str}}reports_export_csv, local_edzaiaxisfront{{/str}}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {{! Site summary stats — populated by JS }}
+    <div id="edzai-report-stats"></div>
+
+    {{! Usage table }}
+    <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0 generaltable" id="edzai-report-table">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="edzai-sortable" data-col="fullname" style="cursor:pointer">
+                            {{#str}}reports_col_user, local_edzaiaxisfront{{/str}} <i class="fa fa-sort"></i>
+                        </th>
+                        <th>{{#str}}reports_col_username, local_edzaiaxisfront{{/str}}</th>
+                        <th class="edzai-sortable text-right" data-col="tokens_month" style="cursor:pointer">
+                            {{#str}}reports_col_tokens, local_edzaiaxisfront{{/str}} <i class="fa fa-sort-desc"></i>
+                        </th>
+                        <th>{{#str}}reports_col_limit, local_edzaiaxisfront{{/str}}</th>
+                        <th style="min-width:150px">{{#str}}reports_col_usage, local_edzaiaxisfront{{/str}}</th>
+                        <th class="edzai-sortable" data-col="last_activity" style="cursor:pointer">
+                            {{#str}}reports_col_last, local_edzaiaxisfront{{/str}} <i class="fa fa-sort"></i>
+                        </th>
+                        <th>{{#str}}reports_col_actions, local_edzaiaxisfront{{/str}}</th>
+                    </tr>
+                </thead>
+                <tbody id="edzai-report-table-body">
+                    <tr>
+                        <td colspan="7" class="text-center py-4">
+                            <i class="fa fa-spinner fa-spin fa-2x text-muted"></i>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <p class="text-muted mt-3 small">
+        <i class="fa fa-info-circle"></i>
+        {{#str}}reports_note, local_edzaiaxisfront{{/str}}
+    </p>
+
+</div>

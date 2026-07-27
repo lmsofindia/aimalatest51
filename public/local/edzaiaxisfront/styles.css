@@ -1,0 +1,5516 @@
+/**
+ * Edz AI Axis — Global Chatbot & Student Panel Styles
+ *
+ * Design system:
+ *   Primary gradient : #667eea → #764ba2
+ *   Study accent     : #4facfe → #00f2fe
+ *   Support accent   : #f093fb → #f5576c
+ *   Analysis accent  : #4CAF50 → #45B7D1
+ *   Surface          : rgba(255,255,255,0.95) with backdrop-filter blur
+ *   Radius           : 16px panels, 12px cards, 8px inputs
+ *   Shadow           : layered soft shadows
+ *
+ * @package local_edzaiaxisfront
+ */
+
+/* ── CSS Custom Properties ─────────────────────────────────────────────────── */
+:root {
+  --edzai-primary-1: #667eea;
+  --edzai-primary-2: #764ba2;
+  --edzai-study-1: #4facfe;
+  --edzai-study-2: #00f2fe;
+  --edzai-support-1: #f093fb;
+  --edzai-support-2: #f5576c;
+  --edzai-analysis-1: #43e97b;
+  --edzai-analysis-2: #38f9d7;
+  --edzai-surface: rgba(255, 255, 255, 0.97);
+  --edzai-surface-dark: rgba(30, 30, 50, 0.97);
+  --edzai-text: #1a1a2e;
+  --edzai-text-muted: #6b7280;
+  --edzai-border: rgba(0, 0, 0, 0.07);
+  --edzai-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --edzai-shadow-md: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --edzai-shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.18);
+  --edzai-radius-sm: 8px;
+  --edzai-radius-md: 12px;
+  --edzai-radius-lg: 16px;
+  --edzai-radius-xl: 24px;
+  --edzai-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --edzai-panel-w: 1080px;
+  --edzai-panel-h: 680px;
+  --edzai-left-w: 240px;
+  --edzai-right-w: 220px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FLOATING TRIGGER BUTTON
+══════════════════════════════════════════════════════════════════════════════ */
+#axis-trigger-btn,
+#edzai-chatbot-trigger {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  border: none;
+  cursor: pointer;
+  box-shadow:
+    0 4px 20px rgba(102, 126, 234, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 9990;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    transform var(--edzai-transition),
+    box-shadow var(--edzai-transition);
+  outline: none;
+}
+
+#axis-trigger-btn:hover,
+#edzai-chatbot-trigger:hover {
+  transform: scale(1.1) translateY(-2px);
+  box-shadow:
+    0 8px 28px rgba(102, 126, 234, 0.55),
+    0 4px 12px rgba(0, 0, 0, 0.2);
+}
+#axis-trigger-btn:active,
+#edzai-chatbot-trigger:active {
+  transform: scale(0.96);
+}
+#axis-trigger-btn svg,
+#edzai-chatbot-trigger svg {
+  width: 28px;
+  height: 28px;
+  fill: #fff;
+  transition: transform var(--edzai-transition);
+}
+#axis-trigger-btn.is-open svg.icon-chat {
+  display: none;
+}
+#axis-trigger-btn.is-open svg.icon-close {
+  display: block;
+}
+#edzai-chatbot-trigger.is-open svg.icon-chat {
+  display: none;
+}
+#edzai-chatbot-trigger.is-open svg.icon-close {
+  display: block;
+}
+#axis-trigger-btn svg.icon-close {
+  display: none;
+}
+#edzai-chatbot-trigger svg.icon-close {
+  display: none;
+}
+
+/* Pulse ring animation */
+#axis-trigger-btn::before,
+#edzai-chatbot-trigger::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  opacity: 0;
+  animation: edzai-pulse 2.5s ease-out infinite;
+}
+
+@keyframes edzai-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  70% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Notification badge */
+#edzai-chatbot-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  background: #ff4757;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BACKDROP OVERLAY
+══════════════════════════════════════════════════════════════════════════════ */
+#axis-backdrop,
+#edzai-chatbot-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 30, 0.45);
+  backdrop-filter: blur(4px);
+  z-index: 9991;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--edzai-transition);
+}
+#axis-backdrop.visible,
+#edzai-chatbot-backdrop.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MAIN CHATBOT PANEL
+══════════════════════════════════════════════════════════════════════════════ */
+
+#axis-panel,
+#edzai-chatbot-panel {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  background: var(--edzai-surface);
+  border-radius: var(--edzai-radius-xl);
+  box-shadow: var(--edzai-shadow-lg);
+  z-index: 9992;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(20px) scale(0.96);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--edzai-transition),
+    opacity var(--edzai-transition),
+    width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: calc(100vh - 100px);
+}
+#axis-panel.axis-panel--open,
+#edzai-chatbot-panel.visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Expanded 3-panel mode */
+#axis-panel.axis-panel--expanded,
+#edzai-chatbot-panel.expanded {
+  bottom: 16px;
+  right: 16px;
+  width: min(var(--edzai-panel-w), calc(100vw - 32px));
+  height: min(var(--edzai-panel-h), calc(100vh - 32px));
+  border-radius: var(--edzai-radius-lg);
+  max-height: calc(100vh - 32px);
+}
+
+/* ── Panel Header ─────────────────────────────────────────────────────────── */
+.axis-panel-header,
+.edzai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  color: #fff;
+  flex-shrink: 0;
+  min-height: 52px;
+}
+
+.axis-panel-header .edzai-header-brand,
+.edzai-panel-header .edzai-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.2px;
+}
+.axis-panel-header .edzai-header-brand svg,
+.edzai-panel-header .edzai-header-brand svg {
+  width: 22px;
+  height: 22px;
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.edzai-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edzai-header-btn {
+  background: rgba(255, 255, 255, 0.18);
+  border: none;
+  border-radius: 8px;
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--edzai-transition);
+  font-size: 14px;
+}
+
+.edzai-header-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Mode tabs in header */
+.edzai-mode-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+.edzai-mode-tab {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--edzai-transition);
+  white-space: nowrap;
+}
+
+.edzai-mode-tab:hover,
+.edzai-mode-tab.active {
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--edzai-primary-2);
+  border-color: transparent;
+}
+
+/* Study header accent */
+.axis-panel-header .axis-mode-study,
+.edzai-panel-header.mode-study {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+}
+.axis-panel-header .axis-mode-support,
+.edzai-panel-header.mode-support {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-support-1),
+    var(--edzai-support-2)
+  );
+}
+.axis-panel-header .axis-mode-analysis,
+.edzai-panel-header.mode-analysis {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-analysis-1),
+    var(--edzai-analysis-2)
+  );
+}
+.edzai-mode-tab.active.mode-study {
+  color: var(--edzai-study-1);
+}
+.edzai-mode-tab.active.mode-support {
+  color: var(--edzai-support-2);
+}
+.edzai-mode-tab.active.mode-analysis {
+  color: var(--edzai-analysis-1);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   WELCOME STATE
+══════════════════════════════════════════════════════════════════════════════ */
+.axis-welcome,
+.edzai-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 24px 28px;
+  text-align: center;
+  gap: 20px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.edzai-welcome-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.35);
+}
+
+.edzai-welcome-avatar svg {
+  width: 38px;
+  height: 38px;
+  fill: #fff;
+}
+
+.axis-welcome h2,
+.edzai-welcome h2 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--edzai-text);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.edzai-welcome-sub {
+  font-size: 14px;
+  color: var(--edzai-text-muted);
+  margin: -8px 0 0;
+  line-height: 1.5;
+}
+
+/* Quick stats strip */
+.edzai-welcome-stats {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.edzai-stat-pill {
+  flex: 1;
+  background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+  border: 1px solid rgba(102, 126, 234, 0.15);
+  border-radius: var(--edzai-radius-md);
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.edzai-stat-pill .edzai-stat-num {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--edzai-primary-1);
+  line-height: 1;
+}
+
+.edzai-stat-pill .edzai-stat-lbl {
+  font-size: 10px;
+  color: var(--edzai-text-muted);
+  margin-top: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Mode choice buttons */
+.edzai-mode-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.edzai-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: var(--edzai-radius-md);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--edzai-transition);
+  text-align: left;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.edzai-choice-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--edzai-transition);
+}
+
+.edzai-choice-btn:hover::before {
+  opacity: 1;
+}
+
+.edzai-choice-btn.study {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 172, 254, 0.08),
+    rgba(0, 242, 254, 0.08)
+  );
+  border-color: rgba(79, 172, 254, 0.25);
+}
+.edzai-choice-btn.study::before {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 172, 254, 0.14),
+    rgba(0, 242, 254, 0.14)
+  );
+}
+.edzai-choice-btn.support {
+  background: linear-gradient(
+    135deg,
+    rgba(240, 147, 251, 0.08),
+    rgba(245, 87, 108, 0.08)
+  );
+  border-color: rgba(240, 147, 251, 0.25);
+}
+.edzai-choice-btn.support::before {
+  background: linear-gradient(
+    135deg,
+    rgba(240, 147, 251, 0.14),
+    rgba(245, 87, 108, 0.14)
+  );
+}
+.edzai-choice-btn.analysis {
+  background: linear-gradient(
+    135deg,
+    rgba(67, 233, 123, 0.08),
+    rgba(56, 249, 215, 0.08)
+  );
+  border-color: rgba(67, 233, 123, 0.25);
+}
+.edzai-choice-btn.analysis::before {
+  background: linear-gradient(
+    135deg,
+    rgba(67, 233, 123, 0.14),
+    rgba(56, 249, 215, 0.14)
+  );
+}
+.edzai-choice-btn:hover {
+  transform: translateX(3px);
+}
+
+.edzai-choice-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.study .edzai-choice-icon {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+}
+.support .edzai-choice-icon {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-support-1),
+    var(--edzai-support-2)
+  );
+}
+.analysis .edzai-choice-icon {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-analysis-1),
+    var(--edzai-analysis-2)
+  );
+}
+
+.edzai-choice-text {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.edzai-choice-text strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--edzai-text);
+}
+.edzai-choice-text span {
+  font-size: 12px;
+  color: var(--edzai-text-muted);
+  line-height: 1.4;
+}
+
+.edzai-choice-arrow {
+  color: var(--edzai-text-muted);
+  font-size: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   THREE-PANEL LAYOUT
+══════════════════════════════════════════════════════════════════════════════ */
+.axis-threepanel,
+.edzai-three-panel {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ── Left Panel ────────────────────────────────────────────────────────────── */
+.axis-left,
+.edzai-panel-left {
+  width: var(--edzai-left-w);
+  flex-shrink: 0;
+  background: #f8f9fc;
+  border-right: 1px solid var(--edzai-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--edzai-transition);
+}
+
+.axis-left.hidden,
+.edzai-panel-left.hidden {
+  width: 0;
+  overflow: hidden;
+}
+
+.edzai-left-header {
+  padding: 12px 14px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--edzai-text-muted);
+  border-bottom: 1px solid var(--edzai-border);
+  flex-shrink: 0;
+}
+
+.edzai-left-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+/* Course list items */
+.edzai-course-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background var(--edzai-transition);
+  border-left: 3px solid transparent;
+}
+
+.edzai-course-item:hover {
+  background: rgba(102, 126, 234, 0.06);
+  border-left-color: rgba(102, 126, 234, 0.3);
+}
+.edzai-course-item.active {
+  background: rgba(102, 126, 234, 0.1);
+  border-left-color: var(--edzai-primary-1);
+}
+
+.edzai-course-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+}
+
+.edzai-course-item .edzai-course-info {
+  flex: 1;
+  min-width: 0;
+}
+.edzai-course-item .edzai-course-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--edzai-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.edzai-course-item .edzai-course-prog {
+  font-size: 10px;
+  color: var(--edzai-text-muted);
+  margin-top: 2px;
+}
+
+.edzai-ai-badge {
+  font-size: 9px;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+  color: #fff;
+  border-radius: 10px;
+  padding: 2px 6px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Thread items */
+.edzai-thread-item {
+  padding: 10px 14px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background var(--edzai-transition);
+}
+
+.edzai-thread-item:hover {
+  background: rgba(240, 147, 251, 0.06);
+  border-left-color: rgba(240, 147, 251, 0.4);
+}
+.edzai-thread-item.active {
+  background: rgba(240, 147, 251, 0.1);
+  border-left-color: var(--edzai-support-1);
+}
+
+.edzai-thread-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--edzai-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edzai-thread-meta {
+  font-size: 10px;
+  color: var(--edzai-text-muted);
+  margin-top: 2px;
+}
+
+/* New thread button */
+.edzai-new-thread-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 10px;
+  padding: 8px 12px;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  color: #fff;
+  border: none;
+  border-radius: var(--edzai-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  width: calc(100% - 20px);
+  justify-content: center;
+  transition: opacity var(--edzai-transition);
+}
+
+.edzai-new-thread-btn:hover {
+  opacity: 0.88;
+}
+
+/* Event items */
+.edzai-event-item {
+  display: flex;
+  gap: 10px;
+  padding: 10px 14px;
+  border-left: 3px solid transparent;
+}
+
+.edzai-event-date-badge {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-analysis-1),
+    var(--edzai-analysis-2)
+  );
+  color: #fff;
+  border-radius: 8px;
+  padding: 4px 8px;
+  text-align: center;
+  flex-shrink: 0;
+  min-width: 42px;
+}
+
+.edzai-event-date-badge .edzai-event-day {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+}
+.edzai-event-date-badge .edzai-event-mo {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.edzai-event-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--edzai-text);
+}
+.edzai-event-course {
+  font-size: 10px;
+  color: var(--edzai-text-muted);
+  margin-top: 2px;
+}
+
+/* ── Middle Panel ──────────────────────────────────────────────────────────── */
+.axis-middle,
+.edzai-panel-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+  background: #fff;
+}
+
+/* Sub-tabs (Learn / Practice) */
+.edzai-sub-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--edzai-border);
+  padding: 0 16px;
+  flex-shrink: 0;
+  background: #fafbff;
+}
+
+.edzai-sub-tab {
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--edzai-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all var(--edzai-transition);
+}
+
+.edzai-sub-tab:hover {
+  color: var(--edzai-primary-1);
+}
+.edzai-sub-tab.active {
+  color: var(--edzai-primary-1);
+  border-bottom-color: var(--edzai-primary-1);
+}
+
+/* Chat area */
+.edzai-chat-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  scroll-behavior: smooth;
+}
+
+/* Messages */
+.edzai-msg-row {
+  display: flex;
+  gap: 10px;
+  animation: edzai-msg-in 0.2s ease-out;
+}
+
+@keyframes edzai-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edzai-msg-row.user {
+  flex-direction: row-reverse;
+}
+
+.edzai-msg-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.edzai-msg-row.ai .edzai-msg-avatar {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  color: #fff;
+}
+
+.edzai-msg-row.user .edzai-msg-avatar {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe);
+  color: var(--edzai-primary-2);
+}
+
+.edzai-msg-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: var(--edzai-radius-md);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--edzai-text);
+  box-shadow: var(--edzai-shadow-sm);
+}
+
+.edzai-msg-row.ai .edzai-msg-bubble {
+  background: #f4f6ff;
+  border-radius: var(--edzai-radius-md) var(--edzai-radius-md)
+    var(--edzai-radius-md) 4px;
+}
+
+.edzai-msg-row.user .edzai-msg-bubble {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  color: #fff;
+  border-radius: var(--edzai-radius-md) var(--edzai-radius-md) 4px
+    var(--edzai-radius-md);
+}
+
+.edzai-msg-row.system .edzai-msg-bubble {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 12px;
+  width: 100%;
+  max-width: 100%;
+  border-radius: var(--edzai-radius-sm);
+  text-align: center;
+}
+
+/* Sources */
+.edzai-msg-sources {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.edzai-source-chip {
+  font-size: 10px;
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--edzai-primary-1);
+  border-radius: 20px;
+  padding: 2px 8px;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+/* Typing indicator */
+.edzai-typing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edzai-typing-dots {
+  display: flex;
+  gap: 4px;
+  background: #f4f6ff;
+  padding: 10px 14px;
+  border-radius: var(--edzai-radius-md) var(--edzai-radius-md)
+    var(--edzai-radius-md) 4px;
+}
+
+.edzai-typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: var(--edzai-primary-1);
+  border-radius: 50%;
+  animation: edzai-bounce 1.2s infinite;
+}
+
+.edzai-typing-dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.edzai-typing-dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes edzai-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
+}
+
+/* Suggestion chips */
+.edzai-suggestions {
+  padding: 8px 16px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--edzai-border);
+  background: #fafbff;
+}
+
+.edzai-suggestion-chip {
+  font-size: 12px;
+  padding: 5px 12px;
+  background: #fff;
+  border: 1px solid rgba(102, 126, 234, 0.25);
+  border-radius: 20px;
+  color: var(--edzai-primary-1);
+  cursor: pointer;
+  transition: all var(--edzai-transition);
+  white-space: nowrap;
+}
+
+.edzai-suggestion-chip:hover {
+  background: var(--edzai-primary-1);
+  color: #fff;
+  border-color: transparent;
+}
+
+/* Chat input */
+.edzai-chat-input-area {
+  padding: 12px 14px;
+  border-top: 1px solid var(--edzai-border);
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.edzai-chat-input-wrap {
+  flex: 1;
+  background: #f4f6ff;
+  border: 1.5px solid rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 12px;
+  transition: border-color var(--edzai-transition);
+}
+
+.edzai-chat-input-wrap:focus-within {
+  border-color: var(--edzai-primary-1);
+  background: #fff;
+}
+
+.edzai-chat-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--edzai-text);
+  outline: none;
+  resize: none;
+  max-height: 100px;
+  min-height: 20px;
+  line-height: 1.5;
+  font-family: inherit;
+}
+
+.edzai-chat-send-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: linear-gradient(
+    135deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--edzai-transition);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.35);
+}
+
+.edzai-chat-send-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.45);
+}
+.edzai-chat-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.edzai-chat-send-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+}
+
+/* Mode-specific send button colors */
+.mode-study .edzai-chat-send-btn {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+  box-shadow: 0 2px 8px rgba(79, 172, 254, 0.35);
+}
+.mode-support .edzai-chat-send-btn {
+  background: linear-gradient(
+    135deg,
+    var(--edzai-support-1),
+    var(--edzai-support-2)
+  );
+  box-shadow: 0 2px 8px rgba(240, 147, 251, 0.35);
+}
+
+/* Practice tab */
+.edzai-practice-area {
+  flex: 1;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Analysis metric cards */
+.edzai-analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.edzai-metric-card {
+  background: linear-gradient(135deg, #f8f9ff, #f0f4ff);
+  border: 1px solid rgba(102, 126, 234, 0.12);
+  border-radius: var(--edzai-radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    transform var(--edzai-transition),
+    box-shadow var(--edzai-transition);
+}
+
+.edzai-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--edzai-shadow-md);
+}
+
+.edzai-metric-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.edzai-metric-card.courses::before {
+  background: linear-gradient(
+    90deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+}
+.edzai-metric-card.certs::before {
+  background: linear-gradient(90deg, #f7971e, #ffd200);
+}
+.edzai-metric-card.points::before {
+  background: linear-gradient(
+    90deg,
+    var(--edzai-analysis-1),
+    var(--edzai-analysis-2)
+  );
+}
+.edzai-metric-card.progress::before {
+  background: linear-gradient(
+    90deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+}
+
+.edzai-metric-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.edzai-metric-number {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--edzai-text);
+  line-height: 1;
+}
+
+.edzai-metric-label {
+  font-size: 12px;
+  color: var(--edzai-text-muted);
+  font-weight: 600;
+}
+
+.edzai-metric-sub {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+  margin-top: auto;
+}
+
+/* Progress bar in metric card */
+.edzai-metric-bar {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.edzai-metric-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--edzai-primary-1),
+    var(--edzai-primary-2)
+  );
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Right Panel ───────────────────────────────────────────────────────────── */
+.axis-right,
+.edzai-panel-right {
+  width: var(--edzai-right-w);
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #fafbff 0%, #f3f4f8 100%);
+  border-left: 1px solid var(--edzai-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--edzai-transition);
+  position: relative;
+}
+.axis-right.collapsed,
+.edzai-panel-right.collapsed {
+  width: 0;
+  overflow: hidden;
+}
+
+.edzai-right-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.06);
+  border: none;
+  border-radius: 6px;
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--edzai-text-muted);
+  transition: background var(--edzai-transition);
+  z-index: 1;
+}
+
+.edzai-right-close:hover {
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.edzai-right-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Right panel card */
+.edzai-right-card {
+  background: #fff;
+  border-radius: var(--edzai-radius-md);
+  padding: 14px;
+  box-shadow: var(--edzai-shadow-sm);
+  border: 1px solid var(--edzai-border);
+}
+
+.edzai-right-card-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--edzai-text-muted);
+  margin-bottom: 10px;
+}
+
+/* Streak widget */
+.edzai-streak-widget {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edzai-streak-flame {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.edzai-streak-count {
+  font-size: 26px;
+  font-weight: 800;
+  color: #f97316;
+  line-height: 1;
+}
+
+.edzai-streak-label {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+  line-height: 1.3;
+}
+
+/* Motivational message */
+.edzai-motivation {
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--edzai-text);
+  font-style: italic;
+  padding: 10px 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(102, 126, 234, 0.06),
+    rgba(118, 75, 162, 0.06)
+  );
+  border-left: 3px solid var(--edzai-primary-1);
+  border-radius: 0 var(--edzai-radius-sm) var(--edzai-radius-sm) 0;
+}
+
+/* Mini progress in right panel */
+.edzai-mini-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.edzai-mini-prog-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.edzai-mini-prog-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--edzai-text);
+  font-weight: 600;
+}
+
+.edzai-mini-prog-bar {
+  height: 5px;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.edzai-mini-prog-fill {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    var(--edzai-study-1),
+    var(--edzai-study-2)
+  );
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Tips list */
+.edzai-tips-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.edzai-tip-item {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--edzai-text);
+  line-height: 1.4;
+  align-items: flex-start;
+}
+
+.edzai-tip-icon {
+  color: var(--edzai-primary-1);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* Re-open right panel button */
+.edzai-right-reopen {
+  position: absolute;
+  left: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--edzai-surface);
+  border: 1px solid var(--edzai-border);
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  width: 24px;
+  height: 50px;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--edzai-text-muted);
+  font-size: 12px;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.06);
+  transition: background var(--edzai-transition);
+}
+
+.edzai-panel-right.collapsed .edzai-right-reopen {
+  display: flex;
+}
+.edzai-right-reopen:hover {
+  background: #f0f4ff;
+  color: var(--edzai-primary-1);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   LOADING STATES
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e8e8e8 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: edzai-shimmer 1.4s infinite;
+  border-radius: 6px;
+}
+
+@keyframes edzai-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.edzai-skeleton-text {
+  height: 12px;
+  width: 80%;
+  margin-bottom: 6px;
+}
+.edzai-skeleton-text2 {
+  height: 12px;
+  width: 55%;
+}
+.edzai-skeleton-block {
+  height: 60px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SCROLLBAR STYLING
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-chat-area::-webkit-scrollbar,
+.edzai-left-scroll::-webkit-scrollbar,
+.edzai-right-scroll::-webkit-scrollbar,
+.edzai-practice-area::-webkit-scrollbar,
+.edzai-analysis-grid::-webkit-scrollbar {
+  width: 4px;
+}
+
+.edzai-chat-area::-webkit-scrollbar-track,
+.edzai-left-scroll::-webkit-scrollbar-track,
+.edzai-right-scroll::-webkit-scrollbar-track,
+.edzai-practice-area::-webkit-scrollbar-track,
+.edzai-analysis-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.edzai-chat-area::-webkit-scrollbar-thumb,
+.edzai-left-scroll::-webkit-scrollbar-thumb,
+.edzai-right-scroll::-webkit-scrollbar-thumb,
+.edzai-practice-area::-webkit-scrollbar-thumb,
+.edzai-analysis-grid::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   STUDENT PANEL (per-activity, injected below content)
+══════════════════════════════════════════════════════════════════════════════ */
+
+#edzai-student-panel {
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--edzai-shadow-sm);
+  margin-top: 24px;
+}
+
+#edzai-student-panel .card-header {
+  background: linear-gradient(135deg, #f8f9ff, #eef2ff);
+  border-bottom: 1px solid var(--edzai-border);
+  padding: 0 16px;
+}
+
+#edzai-student-panel .nav-tabs {
+  border-bottom: none;
+  gap: 2px;
+}
+
+#edzai-student-panel .nav-link {
+  font-size: 13px;
+  padding: 10px 14px;
+  color: var(--edzai-text-muted);
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  font-weight: 600;
+  transition: all var(--edzai-transition);
+}
+
+#edzai-student-panel .nav-link:hover {
+  color: var(--edzai-primary-1);
+}
+#edzai-student-panel .nav-link.active {
+  color: var(--edzai-primary-1);
+  border-bottom-color: var(--edzai-primary-1);
+  background: transparent;
+}
+
+#edzai-student-panel .tab-content {
+  padding: 0;
+}
+#edzai-student-panel .tab-pane {
+  padding: 20px;
+}
+
+/* Chat in student panel */
+.edzai-panel .edzai-chat-messages {
+  min-height: 160px;
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-md);
+  padding: 12px;
+  background: #fafbff;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 768px) {
+  :root {
+    --edzai-left-w: 0px;
+    --edzai-right-w: 0px;
+  }
+  #axis-panel.expanded,
+  #edzai-chatbot-panel.expanded {
+    bottom: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .edzai-panel-left,
+  .edzai-panel-right {
+    display: none;
+  }
+  #axis-trigger-btn,
+  #edzai-chatbot-trigger {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  #axis-panel,
+  #edzai-chatbot-panel {
+    width: calc(100vw - 20px);
+    right: 10px;
+    bottom: 80px;
+  }
+}
+
+#axis-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 420px;
+  z-index: 999999;
+}
+#axis-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 999998;
+}
+#axis-trigger-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 999999;
+}
+/***** AXIS DESIGN SYSTEM — v2 *****/
+/* =========================================================
+   COLOR TOKENS  (change these to retheme the entire chatbot)
+   ========================================================= */
+:root {
+  --axis-bg:       #f4f4f4;    /* light page-tone — left panel, outer backgrounds  */
+  --axis-surface:  #f1f0e8;    /* warm paper — AI bubbles, right panel, stat cards */
+  --axis-accent:   #c97216;    /* primary amber — buttons, chips, active states     */
+  --axis-warm:     #faeada;    /* soft peach — hover highlights, subtle fills       */
+  --axis-dark:     #1e2a38;    /* deep navy — header, user bubbles, headings        */
+  --axis-text:     #1e2a38;    /* body text                                         */
+  --axis-muted:    #6b7280;    /* secondary / meta text                             */
+  --axis-border:   rgba(30, 42, 56, 0.1); /* general borders                       */
+  --axis-shadow:   0 2px 12px rgba(30, 42, 56, 0.10);
+  --axis-radius:   12px;
+  --axis-trans:    0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =========================================================
+   AXIS THREE PANEL LAYOUT
+   ========================================================= */
+
+.axis-threepanel {
+  display: flex;
+  height: 100%;
+  min-height: 500px;
+  overflow: visible;
+  background: var(--axis-bg);
+  position: relative; /* ensures absolutely-positioned mobile overlays are scoped here, NOT to axis-panel */
+}
+
+/* =========================================================
+LEFT PANEL
+========================================================= */
+
+.axis-left {
+  width: 240px;
+  background: var(--axis-bg);
+  border-right: 1px solid var(--axis-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* needed so width:0 collapse clips content */
+}
+
+.axis-left-inner {
+  padding: 12px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Section */
+.axis-left-section {
+  padding: 0 12px 12px;
+}
+
+.axis-left-new-thread {
+  width: 100%;
+  padding: 9px 12px;
+  background: var(--axis-accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: opacity var(--axis-trans);
+}
+.axis-left-new-thread:hover { opacity: 0.88; }
+
+/* Title */
+.axis-left-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--axis-muted);
+  padding: 10px 14px 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+/* Course list */
+.axis-course-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.axis-course-item {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 10px 14px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: 0.2s;
+}
+
+.axis-course-item:hover {
+  background: var(--axis-warm);
+}
+
+.axis-course-item.active {
+  background: var(--axis-warm);
+  border-left-color: var(--axis-accent);
+}
+
+.axis-course-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-text);
+}
+
+.axis-course-meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.axis-progress-mini {
+  font-size: 10px;
+  color: #6b7280;
+}
+
+.axis-badge--ai {
+  font-size: 9px;
+  background: var(--axis-accent);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+/* =========================================================
+MIDDLE PANEL
+========================================================= */
+
+.axis-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+/* Tabs */
+.axis-subtabs {
+  display: flex;
+  border-bottom: 1px solid var(--axis-border);
+  background: var(--axis-bg);
+}
+
+.axis-subtab {
+  padding: 10px 16px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--axis-muted);
+  border-bottom: 2px solid transparent;
+  transition: color var(--axis-trans);
+}
+
+.axis-subtab--active {
+  color: var(--axis-accent);
+  border-bottom-color: var(--axis-accent);
+}
+
+/* Chat area — flex column so messages scroll, input stays at bottom */
+.axis-chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* Placeholder */
+.axis-chat-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 32px 20px;
+  color: #6b7280;
+}
+
+.axis-placeholder-icon svg {
+  width: 64px;
+  height: 64px;
+}
+
+.axis-placeholder-text {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Messages */
+.axis-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Typing */
+.axis-typing-bubble {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  background: #eef2ff;
+  border-radius: 10px;
+  width: fit-content;
+}
+
+.axis-dot {
+  width: 6px;
+  height: 6px;
+  background: #667eea;
+  border-radius: 50%;
+  animation: axisBounce 1.2s infinite;
+}
+
+.axis-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.axis-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes axisBounce {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-5px);
+  }
+}
+
+/* Input */
+.axis-chat-input-bar {
+  border-top: 1px solid var(--axis-border);
+  padding: 10px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.axis-chat-input-wrap {
+  display: flex;
+  gap: 8px;
+  background: var(--axis-bg);
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--axis-border);
+  transition: border-color var(--axis-trans);
+}
+.axis-chat-input-wrap:focus-within {
+  border-color: var(--axis-accent);
+  background: #fff;
+}
+
+.axis-chat-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  font-size: 13px;
+  color: var(--axis-text);
+  outline: none;
+  line-height: 1.5;
+  font-family: inherit;
+  min-height: 20px;
+  max-height: 100px;
+}
+
+.axis-send-btn {
+  background: var(--axis-accent);
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity var(--axis-trans);
+}
+.axis-send-btn:hover { opacity: 0.88; }
+.axis-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.axis-send-btn svg { width: 16px; height: 16px; stroke: #fff; }
+
+/* =========================================================
+RIGHT PANEL
+========================================================= */
+
+.axis-right {
+  width: 220px;
+  border-left: 1px solid var(--axis-border);
+  background: var(--axis-surface);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: width var(--axis-trans);
+}
+.axis-right--collapsed {
+  width: 0 !important;
+  overflow: hidden;
+  border-left: none;
+}
+
+.axis-right-inner {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Streak */
+.axis-right-streak {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--axis-dark);
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.axis-right-streak-fire {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+/* Tip */
+.axis-right-tip {
+  display: flex;
+  gap: 8px;
+  background: #fff;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--axis-border);
+  border-left: 3px solid var(--axis-accent);
+}
+
+.axis-right-tip-body strong {
+  font-size: 12px;
+  color: var(--axis-dark);
+}
+
+.axis-right-tip-body p {
+  font-size: 11px;
+  color: var(--axis-muted);
+  margin: 3px 0 0;
+  line-height: 1.4;
+}
+
+/* Motivation */
+.axis-right-motivate {
+  font-size: 12px;
+  background: var(--axis-warm);
+  padding: 10px;
+  border-radius: 10px;
+  color: var(--axis-dark);
+  font-weight: 500;
+}
+
+.axis-right-motivate-sub {
+  font-size: 11px;
+  color: var(--axis-muted);
+  margin-top: 2px;
+}
+
+/* Stats */
+.axis-right-stats {
+  display: flex;
+  justify-content: space-between;
+}
+
+.axis-right-stat {
+  text-align: center;
+}
+
+.axis-right-stat-num {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--axis-accent);
+}
+
+.axis-right-stat-lbl {
+  font-size: 10px;
+  color: var(--axis-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* Collapse button */
+.axis-right-collapse {
+  position: absolute;
+  left: -13px;
+  top: 20px;
+  width: 26px;
+  height: 44px;
+  background: var(--axis-surface);
+  border-radius: 6px 0 0 6px;
+  border: 1px solid var(--axis-border);
+  border-right: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--axis-muted);
+  z-index: 10;
+  transition: background var(--axis-trans), color var(--axis-trans);
+}
+.axis-right-collapse:hover {
+  background: var(--axis-warm);
+  color: var(--axis-accent);
+}
+.axis-right-collapse svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* collapsed state rule lives with .axis-right definition above */
+
+/* Re-open tab (visible when right panel is collapsed) */
+.axis-right-reopen {
+  position: absolute;
+  right: 0;
+  top: 20px;
+  width: 26px;
+  height: 44px;
+  background: var(--axis-surface);
+  border-radius: 6px 0 0 6px;
+  border: 1px solid var(--axis-border);
+  border-right: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--axis-muted);
+  z-index: 10;
+  transition: background var(--axis-trans), color var(--axis-trans);
+}
+.axis-right-reopen:hover {
+  background: var(--axis-warm);
+  color: var(--axis-accent);
+}
+.axis-right-reopen svg {
+  width: 14px;
+  height: 14px;
+  transform: scaleX(-1);
+}
+
+/*** MIIHIR INITIAL PANEL 31ST MARCH ***/
+/* =========================================================
+PANEL HEADER (POLISHED)
+========================================================= */
+
+.axis-panel-header {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--axis-dark);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.axis-header-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.axis-header-text {
+  margin-left: 10px;
+}
+
+.axis-header-title {
+  font-size: 14px;
+  font-weight: 700;
+  display: block;
+  letter-spacing: 0.1px;
+}
+
+.axis-header-subtitle {
+  font-size: 10px;
+  opacity: 0.65;
+}
+
+.axis-panel-header-left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Header right: always a horizontal row */
+.axis-panel-header-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.axis-header-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--axis-trans);
+  flex-shrink: 0;
+}
+.axis-header-btn svg { width: 16px; height: 16px; }
+.axis-header-btn:hover { background: rgba(255,255,255,0.24); }
+.axis-header-btn:active { background: rgba(255,255,255,0.32); }
+
+/* Active state for sidebar toggle buttons */
+.axis-btn-left-toggle--active,
+.axis-btn-right-toggle--active {
+  background: rgba(201, 114, 22, 0.5) !important;
+}
+
+/* =========================================================
+WELCOME VIEW
+========================================================= */
+
+.axis-welcome {
+  padding: 24px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  background: #fff;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Greeting */
+.axis-welcome-greeting {
+  text-align: center;
+}
+
+.axis-welcome-emoji {
+  font-size: 28px;
+}
+
+.axis-welcome-name {
+  font-size: 19px;
+  font-weight: 700;
+  margin: 6px 0 2px;
+  color: var(--axis-dark);
+}
+
+.axis-welcome-tagline {
+  font-size: 13px;
+  color: var(--axis-muted);
+}
+
+/* =========================================================
+STATS (PILLS)
+========================================================= */
+
+.axis-welcome-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.axis-stat-pill {
+  background: var(--axis-surface);
+  border: 1px solid var(--axis-border);
+  border-radius: 10px;
+  padding: 10px 6px;
+  text-align: center;
+}
+
+.axis-stat-icon {
+  font-size: 14px;
+  display: block;
+}
+
+.axis-stat-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--axis-accent);
+  display: block;
+}
+
+.axis-stat-lbl {
+  font-size: 10px;
+  color: var(--axis-muted);
+}
+
+/* =========================================================
+MODE SELECTION
+========================================================= */
+
+.axis-welcome-choose {
+  text-align: center;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+/* Buttons */
+.axis-mode-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Base button */
+.axis-mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px;
+  border-radius: 10px;
+  border: 1.5px solid var(--axis-border);
+  cursor: pointer;
+  transition: all var(--axis-trans);
+  text-align: left;
+  background: #fff;
+  position: relative;
+}
+.axis-mode-btn:hover {
+  border-color: var(--axis-accent);
+  background: var(--axis-warm);
+  transform: translateX(3px);
+}
+
+/* hover rule is combined with .axis-mode-btn above */
+
+/* Icon */
+.axis-mode-btn-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+/* Text */
+.axis-mode-btn-text strong {
+  font-size: 13px;
+  display: block;
+  color: var(--axis-dark);
+}
+
+.axis-mode-btn-text small {
+  font-size: 11px;
+  color: var(--axis-muted);
+}
+
+/* Arrow */
+.axis-mode-btn-arrow {
+  margin-left: auto;
+  font-size: 14px;
+  color: var(--axis-muted);
+}
+
+/* =========================================================
+MODE COLORS
+========================================================= */
+
+.axis-mode-btn--study .axis-mode-btn-icon { background: #1e2a38; }
+
+.axis-mode-btn--support .axis-mode-btn-icon { background: #c97216; }
+
+.axis-mode-btn--analysis .axis-mode-btn-icon { background: #2d6a4f; }
+
+/* =========================================================
+MINIMISED STATE (IMPORTANT)
+========================================================= */
+
+/* Panel body must fill the remaining height after the header so the flex
+   chain (panel → body → threepanel → middle → chat-area → messages) works.
+   Without this, axis-messages never gets a bounded height and can't scroll. */
+.axis-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.axis-panel--minimised .axis-panel-body {
+  display: none;
+}
+
+.axis-panel--minimised {
+  height: auto !important;
+  width: 280px;
+  bottom: 20px;
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(30,42,56,0.2);
+}
+
+.axis-panel--minimised .axis-panel-header {
+  border-radius: 14px;
+  cursor: pointer;
+}
+
+/* Minimise button — icon only; the native title attribute provides the tooltip */
+
+/* =========================================================
+SMOOTH ENTRY ANIMATION
+========================================================= */
+
+.axis-welcome {
+  animation: axisFadeIn 0.3s ease;
+}
+
+@keyframes axisFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/*** MIHIR FOR 31 MARCH: CHAT & PRACTICE UI ***/
+/* =========================================================
+SUGGESTION CHIPS (now sibling of messages, outside placeholder)
+========================================================= */
+
+.axis-suggestion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  padding: 8px 14px 12px;
+  flex-shrink: 0;
+}
+
+.axis-chip {
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 20px;
+  border: 1px solid rgba(201, 114, 22, 0.35);
+  background: var(--axis-warm);
+  color: var(--axis-accent);
+  cursor: pointer;
+  transition: all var(--axis-trans);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.axis-chip:hover {
+  background: var(--axis-accent);
+  color: #fff;
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+MESSAGES CONTAINER
+========================================================= */
+
+.axis-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 12px 14px 4px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
+
+/* =========================================================
+MESSAGE ROW — chatbot panel
+========================================================= */
+
+.axis-msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: axisMsgIn 0.18s ease;
+}
+
+@keyframes axisMsgIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* USER: row reversed so bubble is on the right, avatar on far right */
+.axis-msg--user {
+  flex-direction: row-reverse;
+}
+
+/* AI: normal LTR */
+.axis-msg--ai {
+  flex-direction: row;
+}
+
+/* System/error */
+.axis-msg--system {
+  justify-content: center;
+}
+
+/* ── Avatar ─────────────────────────────────────────────── */
+
+.axis-msg-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  align-self: flex-end;
+}
+
+.axis-msg--ai .axis-msg-avatar {
+  background: var(--axis-dark);
+  color: #fff;
+}
+
+.axis-msg--user .axis-msg-avatar {
+  background: var(--axis-warm);
+  color: var(--axis-accent);
+}
+
+.axis-msg--user .axis-msg-avatar svg {
+  display: block;
+}
+
+/* ── Content wrapper (holds bubble + time) ──────────────── */
+
+.axis-msg-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 72%;
+}
+
+.axis-msg--user .axis-msg-content {
+  align-items: flex-end;
+}
+
+.axis-msg--ai .axis-msg-content {
+  align-items: flex-start;
+}
+
+/* ── Bubble ─────────────────────────────────────────────── */
+
+.axis-msg-bubble {
+  padding: 9px 13px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.55;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* AI bubble */
+.axis-msg--ai .axis-msg-bubble {
+  background: var(--axis-surface);
+  color: var(--axis-text);
+  border-radius: 4px 14px 14px 14px;
+}
+
+/* AI markdown elements */
+.axis-msg--ai .axis-msg-bubble strong { font-weight: 700; }
+.axis-msg--ai .axis-msg-bubble em     { font-style: italic; }
+.axis-msg--ai .axis-msg-bubble code {
+  font-family: 'Courier New', monospace;
+  background: rgba(201,114,22,0.12);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.axis-msg--ai .axis-msg-bubble pre {
+  background: #1e1e3a;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  margin: 6px 0;
+  font-size: 12px;
+}
+.axis-msg--ai .axis-msg-bubble pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+.axis-msg--ai .axis-msg-bubble ul {
+  padding-left: 18px;
+  margin: 4px 0;
+}
+.axis-msg--ai .axis-msg-bubble li {
+  margin: 2px 0;
+  font-size: 13px;
+}
+
+/* USER bubble */
+.axis-msg--user .axis-msg-bubble {
+  background: var(--axis-dark);
+  color: #fff;
+  border-radius: 14px 4px 14px 14px;
+}
+
+/* System/error bubble */
+.axis-msg-bubble--system {
+  background: #fff8e6;
+  color: #92400e;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+  font-size: 12px;
+  padding: 7px 12px;
+}
+
+/* ── Timestamp ──────────────────────────────────────────── */
+
+.axis-msg-time {
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 3px;
+  padding: 0 2px;
+}
+
+/* =========================================================
+SOURCES / FOOTER (optional)
+========================================================= */
+
+.axis-msg-sources {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.axis-source-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+/* =========================================================
+TYPING INDICATOR
+========================================================= */
+
+.axis-typing {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.axis-typing-bubble {
+  display: flex;
+  gap: 4px;
+  padding: 10px 14px;
+  background: var(--axis-surface);
+  border-radius: 12px 12px 12px 4px;
+}
+
+.axis-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--axis-accent);
+  animation: axisTyping 1.2s infinite;
+}
+
+.axis-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.axis-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes axisTyping {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
+
+/* =========================================================
+SCROLLBAR (CLEAN)
+========================================================= */
+
+.axis-chat-area::-webkit-scrollbar {
+  width: 5px;
+}
+
+.axis-chat-area::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+/***** STUENT PRACTICE AREA *****/
+/* =========================================================
+PRACTICE AREA BASE
+========================================================= */
+/* ===== STUDENT PANEL AS FLOATING MODAL ===== */
+
+#axis-student-panel {
+  position: fixed !important;
+  bottom: 90px;
+  right: 24px;
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  height: 640px;
+  max-height: calc(100vh - 120px);
+
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+
+  z-index: 99999;
+
+  display: none; /* IMPORTANT */
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* OPEN STATE */
+#axis-student-panel.axis-open {
+  display: flex;
+  animation: axisPanelIn 0.25s ease;
+}
+
+@keyframes axisPanelIn {
+  from {
+    transform: translateY(20px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   ENTERPRISE BUTTON SYSTEM
+   Shared buttons used across student panel, KB admin, and wizard.
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2));
+  color: #fff;
+  border: none;
+  border-radius: var(--edzai-radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--edzai-transition), transform var(--edzai-transition);
+  letter-spacing: 0.1px;
+}
+.edzai-btn-primary:hover  { opacity: 0.88; transform: translateY(-1px); }
+.edzai-btn-primary:active { transform: translateY(0); opacity: 1; }
+.edzai-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.edzai-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  background: transparent;
+  color: var(--edzai-primary-1);
+  border: 1.5px solid var(--edzai-primary-1);
+  border-radius: var(--edzai-radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--edzai-transition), color var(--edzai-transition);
+}
+.edzai-btn-secondary:hover { background: rgba(102,126,234,0.08); }
+.edzai-btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.edzai-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: transparent;
+  color: var(--edzai-text-muted);
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-sm);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--edzai-transition), color var(--edzai-transition);
+}
+.edzai-btn-ghost:hover { background: rgba(0,0,0,0.04); color: var(--edzai-text); }
+
+.edzai-input {
+  width: 100%;
+  padding: 9px 13px;
+  border: 1.5px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-sm);
+  font-size: 13.5px;
+  color: var(--edzai-text);
+  background: #fff;
+  transition: border-color var(--edzai-transition), box-shadow var(--edzai-transition);
+  outline: none;
+  box-sizing: border-box;
+}
+.edzai-input:focus {
+  border-color: var(--edzai-primary-1);
+  box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   STUDENT PANEL — FLOATING TRIGGER BUTTON
+   "Study with AI" floating pill, bottom-left so it doesn't clash with chatbot.
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-study-trigger-btn {
+  position: fixed;
+  bottom: 28px;
+  left: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 20px;
+  background: linear-gradient(135deg, var(--edzai-study-1), var(--edzai-study-2));
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(79,172,254,0.4), 0 2px 6px rgba(0,0,0,0.12);
+  z-index: 9980;
+  transition: transform var(--edzai-transition), box-shadow var(--edzai-transition);
+  letter-spacing: 0.1px;
+}
+.edzai-study-trigger-btn:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 8px 24px rgba(79,172,254,0.5), 0 4px 10px rgba(0,0,0,0.14);
+}
+.edzai-study-trigger-btn:active { transform: translateY(0) scale(0.98); }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   STUDENT PANEL — MAIN COMPONENT
+   Injected below activity content. Enterprise / Anthropic-style card.
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-student-panel {
+  margin: 28px 0 24px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: var(--edzai-radius-lg);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  overflow: hidden;
+  font-family: inherit;
+}
+
+/* ── Panel header ─────────────────────────────────────────────────────────── */
+.edzai-student-panel .edzai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 20px 0;
+  background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+  border-bottom: 1px solid rgba(102,126,234,0.12);
+}
+
+.edzai-student-panel .edzai-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--edzai-text);
+  letter-spacing: -0.1px;
+  padding-bottom: 14px;
+}
+
+.edzai-panel-icon {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2));
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+/* ── Tab navigation ──────────────────────────────────────────────────────── */
+.edzai-tab-nav {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.edzai-tab-nav::-webkit-scrollbar { display: none; }
+
+.edzai-tab-item { flex-shrink: 0; }
+
+.edzai-tab-btn {
+  display: block;
+  padding: 10px 15px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--edzai-text-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: color var(--edzai-transition), border-color var(--edzai-transition);
+  white-space: nowrap;
+  letter-spacing: 0.1px;
+}
+.edzai-tab-btn:hover { color: var(--edzai-primary-1); }
+.edzai-tab-btn.active {
+  color: var(--edzai-primary-1);
+  border-bottom-color: var(--edzai-primary-1);
+}
+
+/* ── Tab body ─────────────────────────────────────────────────────────────── */
+.edzai-panel-body {
+  position: relative;
+}
+
+.edzai-tab-pane {
+  display: none;
+  padding: 22px 24px;
+}
+.edzai-tab-pane.active { display: block; }
+
+/* ── Empty / loading state ────────────────────────────────────────────────── */
+.edzai-empty-state {
+  text-align: center;
+  padding: 32px 20px;
+  color: var(--edzai-text-muted);
+  font-size: 13.5px;
+}
+.edzai-empty-state::before {
+  content: "✦";
+  display: block;
+  font-size: 24px;
+  margin-bottom: 10px;
+  opacity: 0.3;
+}
+
+/* ── Summary ──────────────────────────────────────────────────────────────── */
+.edzai-summary-content {
+  font-size: 14px;
+  line-height: 1.75;
+  color: var(--edzai-text);
+  max-width: 780px;
+}
+
+/* ── FAQ accordion ────────────────────────────────────────────────────────── */
+.edzai-faq { display: flex; flex-direction: column; gap: 8px; }
+
+.edzai-faq-item {
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-md);
+  overflow: hidden;
+  transition: box-shadow var(--edzai-transition);
+}
+.edzai-faq-item:hover { box-shadow: var(--edzai-shadow-sm); }
+
+.edzai-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  background: #fafbff;
+  border: none;
+  cursor: pointer;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--edzai-text);
+  text-align: left;
+  transition: background var(--edzai-transition);
+}
+.edzai-faq-question:hover { background: #f0f3ff; }
+.edzai-faq-question.open { background: #eef2ff; color: var(--edzai-primary-1); }
+
+.edzai-faq-chevron {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+  flex-shrink: 0;
+  transition: transform var(--edzai-transition);
+}
+.edzai-faq-question.open .edzai-faq-chevron { transform: rotate(180deg); }
+
+.edzai-faq-answer {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--edzai-text);
+  border-top: 1px solid var(--edzai-border);
+  background: #fff;
+}
+.edzai-faq-answer p { margin: 0; }
+
+/* ── Glossary ─────────────────────────────────────────────────────────────── */
+.edzai-glossary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.edzai-glossary-term {
+  background: #fafbff;
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-md);
+  padding: 14px 16px;
+}
+.edzai-glossary-term dt {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--edzai-primary-1);
+  margin-bottom: 5px;
+}
+.edzai-glossary-term dd {
+  font-size: 13px;
+  color: var(--edzai-text);
+  line-height: 1.6;
+  margin: 0;
+}
+.edzai-context-note {
+  font-size: 12px;
+  color: var(--edzai-text-muted);
+  font-style: italic;
+}
+
+/* ── Flashcards ───────────────────────────────────────────────────────────── */
+.edzai-flashcard-deck {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.edzai-flashcard {
+  width: 100%;
+  max-width: 480px;
+  min-height: 180px;
+  background: linear-gradient(135deg, #f0f4ff, #fafaff);
+  border: 1.5px solid rgba(102,126,234,0.2);
+  border-radius: var(--edzai-radius-lg);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+  box-shadow: var(--edzai-shadow-sm);
+  transition: box-shadow var(--edzai-transition), transform var(--edzai-transition);
+  text-align: center;
+}
+.edzai-flashcard:hover {
+  box-shadow: var(--edzai-shadow-md);
+  transform: translateY(-2px);
+}
+
+.edzai-fc-inner { width: 100%; }
+
+.edzai-fc-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--edzai-primary-1);
+  margin-bottom: 10px;
+  opacity: 0.7;
+}
+.edzai-fc-back .edzai-fc-label { color: var(--edzai-study-1); }
+
+.edzai-fc-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--edzai-text);
+  line-height: 1.55;
+  margin: 0 0 10px;
+}
+
+.edzai-fc-hint {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+}
+
+.edzai-fc-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.edzai-fc-counter {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--edzai-text-muted);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ── Quiz ─────────────────────────────────────────────────────────────────── */
+.edzai-quiz { display: flex; flex-direction: column; gap: 24px; }
+
+.edzai-quiz-question {
+  background: #fafbff;
+  border: 1px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-md);
+  padding: 18px 20px;
+}
+
+.edzai-quiz-qtext {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--edzai-text);
+  margin: 0 0 14px;
+  line-height: 1.5;
+}
+
+.edzai-quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.edzai-quiz-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1.5px solid var(--edzai-border);
+  border-radius: var(--edzai-radius-sm);
+  cursor: pointer;
+  font-size: 13.5px;
+  color: var(--edzai-text);
+  transition: border-color var(--edzai-transition), background var(--edzai-transition);
+}
+.edzai-quiz-option:hover { border-color: var(--edzai-primary-1); background: #f5f7ff; }
+.edzai-quiz-option.correct { border-color: #22c55e; background: #f0fdf4; }
+.edzai-quiz-option.incorrect { border-color: #ef4444; background: #fef2f2; }
+.edzai-quiz-option input { flex-shrink: 0; margin-top: 2px; }
+
+.edzai-quiz-feedback {
+  padding: 10px 14px;
+  border-radius: var(--edzai-radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 8px;
+}
+.edzai-quiz-feedback.correct { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.edzai-quiz-feedback.incorrect { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+
+.edzai-quiz-freetext {
+  margin-bottom: 10px;
+}
+
+/* ── Transcript / Chapters ───────────────────────────────────────────────── */
+.edzai-transcript {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 440px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
+
+.edzai-transcript-chapter {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--edzai-border);
+}
+.edzai-transcript-chapter:last-child { border-bottom: none; }
+
+.edzai-transcript-chapter-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--edzai-text);
+  margin: 0 0 6px;
+}
+
+.edzai-transcript-segment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.edzai-ts-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: rgba(102,126,234,0.1);
+  color: var(--edzai-primary-1);
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background var(--edzai-transition);
+}
+.edzai-ts-badge:hover { background: rgba(102,126,234,0.2); }
+
+.edzai-transcript-text {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--edzai-text);
+  flex: 1;
+}
+
+/* ── Chat in student panel — legacy placeholder (replaced by bottom section) ─ */
+/* New rules for edzai-chat-msg--user/ai are at the end of the file */
+.edzai-chat { display: flex; flex-direction: column; height: 100%; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   KNOWLEDGE BASE ADMIN PAGE
+   Enterprise-grade admin table page.
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-kb-admin {
+  max-width: 1000px;
+}
+
+/* Header row */
+.edzai-kb-header {
+  margin-bottom: 28px;
+}
+
+.edzai-kb-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--edzai-text);
+  letter-spacing: -0.3px;
+}
+
+.edzai-kb-icon {
+  font-size: 22px;
+}
+
+/* Add item panel */
+.edzai-kb-add-panel {
+  background: #fff;
+  border: 1.5px solid rgba(102,126,234,0.2);
+  border-radius: var(--edzai-radius-lg);
+  box-shadow: var(--edzai-shadow-sm);
+  margin-bottom: 24px;
+  overflow: hidden;
+  animation: edzai-slide-down 0.2s ease;
+}
+
+@keyframes edzai-slide-down {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* Tab links in KB add panel */
+.edzai-kb-tab-link {
+  position: relative;
+  color: var(--edzai-text-muted);
+  font-weight: 600;
+  transition: color var(--edzai-transition);
+}
+.edzai-kb-tab-link:hover { color: var(--edzai-primary-1); }
+.edzai-kb-tab-link.active {
+  color: var(--edzai-primary-1);
+}
+.edzai-kb-tab-link.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2.5px;
+  background: var(--edzai-primary-1);
+  border-radius: 2px 2px 0 0;
+}
+
+/* Status alert */
+.edzai-kb-add-status {
+  font-size: 13px;
+  border-radius: var(--edzai-radius-sm);
+  animation: edzai-fade-in 0.2s ease;
+}
+
+/* Table */
+.edzai-kb-loading,
+.edzai-kb-empty {
+  font-size: 14px;
+}
+
+#edzai-kb-table thead th {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--edzai-text-muted);
+}
+
+#edzai-kb-table td {
+  font-size: 13.5px;
+  vertical-align: middle;
+}
+
+/* Badge overrides for KB status */
+#edzai-kb-table .badge-success  { background: #22c55e; }
+#edzai-kb-table .badge-warning  { background: #f59e0b; color: #fff; }
+#edzai-kb-table .badge-danger   { background: #ef4444; }
+#edzai-kb-table .badge-primary  { background: var(--edzai-primary-1); }
+#edzai-kb-table .badge-light    { background: #f3f4f6; }
+
+@keyframes edzai-fade-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   INFOGRAPHIC CONTENT
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-infographic {
+  max-width: 100%;
+  overflow: auto;
+  font-size: 13.5px;
+}
+.edzai-infographic img  { max-width: 100%; height: auto; }
+.edzai-infographic table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.edzai-infographic td,
+.edzai-infographic th {
+  padding: 8px 12px;
+  border: 1px solid var(--edzai-border);
+}
+.edzai-infographic th {
+  background: #f0f3ff;
+  font-weight: 700;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   FIXES & MISSING CLASSES — added 2026-04-01
+   All issues: #2 right panel, left panel, thread list, student panel chat msgs
+══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Left panel empty state ───────────────────────────────────────────────── */
+.axis-left-empty {
+  font-size: 12px;
+  color: #9ca3af;
+  padding: 10px 14px;
+  line-height: 1.5;
+}
+.axis-left-empty--error { color: #ef4444; }
+
+/* ── Thread list (support mode left panel) ────────────────────────────────── */
+.axis-thread-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px;
+}
+
+.axis-thread-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  transition: background 0.15s;
+}
+.axis-thread-item:hover { background: rgba(102,126,234,0.07); }
+
+.axis-thread-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+.axis-thread-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+  flex: 1;
+}
+
+.axis-thread-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.axis-thread-meta {
+  font-size: 10.5px;
+  color: #9ca3af;
+  display: block;
+}
+
+/* ── Analysis left panel — thread/event items ─────────────────────────────── */
+.axis-events-list,
+.axis-recent-threads {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 8px;
+}
+
+.axis-event-item {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 7px 8px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.05);
+}
+
+.axis-event-days-badge {
+  min-width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.axis-event-days-badge--urgent { background: #fee2e2; color: #b91c1c; }
+
+.axis-event-body { overflow: hidden; }
+.axis-event-name  { font-size: 12px; font-weight: 600; color: #111827; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.axis-event-meta  { font-size: 10.5px; color: #9ca3af; }
+
+.axis-left-thread-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 11.5px;
+}
+.axis-left-thread-mode {
+  font-size: 9.5px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+.axis-left-thread-mode--study   { background: #e0f2fe; color: #0369a1; }
+.axis-left-thread-mode--support { background: #fce7f3; color: #9d174d; }
+.axis-left-thread-name { font-weight: 600; color: #374151; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.axis-left-thread-date { font-size: 10px; color: #9ca3af; flex-shrink: 0; }
+
+/* ── CM chip (study mode picker) ──────────────────────────────────────────── */
+.axis-chip--cm {
+  border-color: rgba(79,172,254,0.4);
+  color: #0284c7;
+  background: #f0f9ff;
+}
+.axis-chip--cm:hover {
+  background: #0ea5e9;
+  color: #fff;
+  border-color: transparent;
+}
+
+/* ── Chat input bar ───────────────────────────────────────────────────────── */
+.axis-chat-input-bar {
+  flex-shrink: 0;
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+}
+
+.axis-chat-input-wrap {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.axis-chat-input {
+  flex: 1;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  line-height: 1.4;
+  min-height: 38px;
+  max-height: 120px;
+  overflow-y: auto;
+  transition: border-color 0.2s;
+  background: transparent;
+}
+.axis-chat-input:focus {
+  outline: none;
+  border-color: transparent;
+  background: transparent;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   STUDENT PANEL — CHAT TAB messages (edzai-chat-msg-*)
+   Replaces old edzai-msg / edzai-msg-label / edzai-msg-text classes
+══════════════════════════════════════════════════════════════════════════════ */
+
+.edzai-chat-messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding: 12px 0 8px;
+  min-height: 180px;
+  max-height: 360px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
+
+/* Message row */
+.edzai-chat-msg {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  animation: edzaiMsgIn 0.15s ease;
+}
+@keyframes edzaiMsgIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* User: row reversed, bubble on right */
+.edzai-chat-msg--user { flex-direction: row-reverse; }
+
+/* AI: LTR */
+.edzai-chat-msg--ai   { flex-direction: row; }
+
+/* Avatar circle */
+.edzai-chat-msg-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  align-self: flex-end;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+.edzai-chat-msg-avatar--ai {
+  background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2));
+  color: #fff;
+  font-size: 13px;
+}
+.edzai-chat-msg--user .edzai-chat-msg-avatar svg { display: block; }
+
+/* Content wrapper */
+.edzai-chat-msg-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 75%;
+}
+.edzai-chat-msg--user .edzai-chat-msg-content { align-items: flex-end; }
+.edzai-chat-msg--ai   .edzai-chat-msg-content { align-items: flex-start; }
+
+/* Bubble */
+.edzai-chat-msg-bubble {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  word-break: break-word;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+}
+
+/* AI bubble */
+.edzai-chat-msg-bubble--ai {
+  background: #f0f2ff;
+  color: var(--edzai-text);
+  border-radius: 4px 12px 12px 12px;
+}
+.edzai-chat-msg-bubble--ai strong { font-weight: 700; }
+.edzai-chat-msg-bubble--ai em     { font-style: italic; }
+.edzai-chat-msg-bubble--ai code {
+  background: rgba(102,126,234,0.12);
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: monospace;
+}
+.edzai-chat-msg-bubble--ai ul {
+  padding-left: 16px;
+  margin: 4px 0;
+}
+.edzai-chat-msg-bubble--ai li { margin: 2px 0; }
+
+/* User bubble */
+.edzai-chat-msg--user .edzai-chat-msg-bubble {
+  background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2));
+  color: #fff;
+  border-radius: 12px 4px 12px 12px;
+}
+
+/* Sources */
+.edzai-chat-msg-sources {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+  padding: 4px 2px;
+  font-style: italic;
+}
+
+/* Chat container inside student panel tab */
+.edzai-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+}
+
+/* Input row */
+.edzai-chat-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 10px 0 0;
+  border-top: 1px solid var(--edzai-border);
+  margin-top: 8px;
+}
+
+.edzai-chat-input {
+  flex: 1;
+  border: 1.5px solid var(--edzai-border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  resize: none;
+  line-height: 1.4;
+  min-height: 36px;
+  max-height: 100px;
+  overflow-y: auto;
+  background: #fafbff;
+  transition: border-color 0.2s;
+}
+.edzai-chat-input:focus {
+  outline: none;
+  border-color: var(--edzai-primary-1);
+  background: #fff;
+}
+
+.edzai-btn-primary.edzai-chat-send {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.edzai-btn-primary.edzai-chat-send svg { display: block; }
+
+/* Status line */
+.edzai-chat-status {
+  font-size: 11px;
+  color: var(--edzai-text-muted);
+  min-height: 16px;
+  padding: 2px 0;
+  font-style: italic;
+}
+
+/* =========================================================
+   FLASHCARD CARDS IN CHAT — student panel (.edzai-*) and
+   global chatbot (.axis-*)
+   ========================================================= */
+
+/* Wrapper around a batch of cards */
+.edzai-chat-cards,
+.axis-chat-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 6px 0 2px;
+}
+
+/* Individual card */
+.edzai-chat-card,
+.axis-chat-card {
+  background: #f5f7ff;
+  border: 1px solid rgba(102, 126, 234, 0.22);
+  border-left: 3px solid #667eea;
+  border-radius: 10px;
+  padding: 11px 14px;
+  transition: box-shadow 0.15s;
+}
+.edzai-chat-card:hover,
+.axis-chat-card:hover {
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+}
+
+/* Card number badge */
+.edzai-chat-card-num,
+.axis-chat-card-num {
+  font-size: 10px;
+  font-weight: 700;
+  color: #667eea;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 7px;
+}
+
+/* Question */
+.edzai-chat-card-q,
+.axis-chat-card-q {
+  font-size: 13px;
+  color: #1f2937;
+  line-height: 1.45;
+  margin-bottom: 5px;
+}
+
+/* Answer */
+.edzai-chat-card-a,
+.axis-chat-card-a {
+  font-size: 13px;
+  color: #4b5563;
+  line-height: 1.45;
+  border-top: 1px dashed rgba(102, 126, 234, 0.2);
+  padding-top: 5px;
+  margin-top: 2px;
+}
+
+/* "N more cards" footer note */
+.edzai-chat-cards-more,
+.axis-chat-cards-more {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 6px;
+  font-style: italic;
+}
+
+/* Key-term paragraphs in chat */
+.edzai-chat-term,
+.axis-chat-term {
+  margin: 4px 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #374151;
+}
+
+/* Intro paragraph before cards/terms */
+.edzai-chat-msg-bubble--ai p,
+.axis-msg-bubble p {
+  margin: 0 0 6px;
+}
+.edzai-chat-msg-bubble--ai p:last-child,
+.axis-msg-bubble p:last-child {
+  margin-bottom: 0;
+}
+
+/* =========================================================
+   MY ANALYSIS ENTERPRISE DASHBOARD
+   ========================================================= */
+
+/* Dashboard scrollable middle content area */
+.axis-analysis-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.1) transparent;
+}
+
+/* ── Hero Stats Strip ─────────────────────────────────────── */
+.axis-dash-hero {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.axis-dash-stat {
+  flex: 1;
+  min-width: 72px;
+  background: #f8f9ff;
+  border: 1px solid rgba(102,126,234,0.15);
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+  transition: box-shadow 0.15s, transform 0.15s;
+}
+.axis-dash-stat:hover {
+  box-shadow: 0 3px 12px rgba(102,126,234,0.15);
+  transform: translateY(-1px);
+}
+
+.axis-dash-stat-icon { font-size: 18px; margin-bottom: 3px; }
+.axis-dash-stat-val  { font-size: 20px; font-weight: 800; color: #1f2937; line-height: 1; }
+.axis-dash-stat-lbl  { font-size: 10px; color: #6b7280; margin-top: 2px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+
+/* Colour variants */
+.axis-dash-stat--blue   { background: #eff6ff; border-color: rgba(59,130,246,0.2); }
+.axis-dash-stat--blue   .axis-dash-stat-val { color: #2563eb; }
+.axis-dash-stat--green  { background: #f0fdf4; border-color: rgba(34,197,94,0.2); }
+.axis-dash-stat--green  .axis-dash-stat-val { color: #16a34a; }
+.axis-dash-stat--orange { background: #fff7ed; border-color: rgba(249,115,22,0.2); }
+.axis-dash-stat--orange .axis-dash-stat-val { color: #ea580c; }
+.axis-dash-stat--purple { background: #faf5ff; border-color: rgba(168,85,247,0.2); }
+.axis-dash-stat--purple .axis-dash-stat-val { color: #9333ea; }
+.axis-dash-stat--indigo { background: #eef2ff; border-color: rgba(102,126,234,0.2); }
+.axis-dash-stat--indigo .axis-dash-stat-val { color: #4f46e5; }
+
+/* ── Dashboard Section ────────────────────────────────────── */
+.axis-dash-section {
+  margin-bottom: 18px;
+}
+
+.axis-dash-section-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #374151;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.axis-dash-section-subtitle {
+  font-size: 11px;
+  color: #6b7280;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.axis-dash-empty-note {
+  font-size: 12px;
+  color: #6b7280;
+  font-style: italic;
+  padding: 6px 0;
+}
+
+.axis-dash-error {
+  padding: 16px;
+  color: #dc2626;
+  background: #fef2f2;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* ── Due Soon ────────────────────────────────────────────── */
+.axis-dash-due-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.axis-dash-due-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.07);
+  background: #fafbff;
+}
+
+.axis-dash-due--urgent { background: #fff1f2; border-color: rgba(239,68,68,0.25); }
+.axis-dash-due--high   { background: #fff7ed; border-color: rgba(249,115,22,0.25); }
+.axis-dash-due--medium { background: #fffbeb; border-color: rgba(234,179,8,0.25); }
+
+.axis-dash-due-badge {
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 46px;
+  text-align: center;
+  padding: 3px 6px;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.06);
+  color: #374151;
+  flex-shrink: 0;
+}
+.axis-dash-due--urgent .axis-dash-due-badge { background: #ef4444; color: #fff; }
+.axis-dash-due--high   .axis-dash-due-badge { background: #f97316; color: #fff; }
+
+.axis-dash-due-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  line-height: 1.3;
+}
+.axis-dash-due-meta {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 1px;
+}
+
+/* ── Course Progress Grid ─────────────────────────────────── */
+.axis-dash-courses {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.axis-dash-course-row {
+  background: #f8f9ff;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 8px;
+  padding: 9px 12px;
+}
+
+.axis-dash-course-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.axis-dash-course-done {
+  color: #16a34a;
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.axis-dash-course-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.axis-dash-course-bar {
+  flex: 1;
+  height: 5px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.axis-dash-course-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+.axis-dash-course-bar-fill--done { background: linear-gradient(90deg, #22c55e, #16a34a); }
+
+.axis-dash-course-pct {
+  font-size: 10px;
+  font-weight: 700;
+  color: #667eea;
+  min-width: 28px;
+  text-align: right;
+}
+
+.axis-dash-course-grade {
+  font-size: 10px;
+  color: #6b7280;
+  padding: 1px 6px;
+  background: #f0fdf4;
+  border-radius: 4px;
+  font-weight: 600;
+  color: #16a34a;
+}
+
+/* ── Chat Intelligence ────────────────────────────────────── */
+.axis-dash-chat-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.axis-dash-mini-stat {
+  flex: 1;
+  min-width: 60px;
+  background: #f8f9ff;
+  border: 1px solid rgba(102,126,234,0.12);
+  border-radius: 8px;
+  padding: 8px 6px;
+  text-align: center;
+}
+
+.axis-dash-mini-val {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  color: #667eea;
+  line-height: 1;
+}
+
+.axis-dash-mini-lbl {
+  display: block;
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* CSS bar chart for weekly activity */
+.axis-bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 60px;
+  margin-bottom: 10px;
+  padding: 0 2px;
+}
+
+.axis-bar-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.axis-bar {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  background: linear-gradient(180deg, #667eea, #764ba2);
+  height: calc(var(--bar-h, 4%) + 4px); /* min 4px so always visible */
+  min-height: 4px;
+  transition: height 0.4s ease;
+  opacity: 0.85;
+}
+.axis-bar:hover { opacity: 1; }
+
+.axis-bar-label {
+  font-size: 9px;
+  color: #9ca3af;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Topic tag cloud */
+.axis-dash-topic-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 4px;
+}
+
+.axis-dash-topic-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 12px;
+  padding: 3px 9px;
+  font-weight: 600;
+}
+
+.axis-dash-topic-count {
+  background: #667eea;
+  color: #fff;
+  border-radius: 10px;
+  padding: 0 5px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.axis-dash-top-topics { margin-top: 8px; }
+
+/* ── Recommendations ─────────────────────────────────────── */
+.axis-dash-recs {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.axis-dash-rec {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.07);
+  background: #fafbff;
+  transition: box-shadow 0.15s;
+}
+.axis-dash-rec:hover { box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+.axis-dash-rec--urgent { border-color: rgba(239,68,68,0.3); background: #fff1f2; }
+.axis-dash-rec--high   { border-color: rgba(249,115,22,0.3); background: #fff7ed; }
+.axis-dash-rec--medium { border-color: rgba(234,179,8,0.25); background: #fffbeb; }
+.axis-dash-rec--low    { border-color: rgba(102,126,234,0.2); background: #eef2ff; }
+
+.axis-dash-rec-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 32px;
+  text-align: center;
+}
+
+.axis-dash-rec-body { flex: 1; min-width: 0; }
+
+.axis-dash-rec-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1f2937;
+  line-height: 1.3;
+}
+
+.axis-dash-rec-desc {
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.axis-dash-rec-action,
+.axis-dash-rec-action-arrow {
+  font-size: 16px;
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Right panel upgrades ─────────────────────────────────── */
+.axis-dash-right-nudge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #f8f9ff;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+.axis-dash-right-nudge div strong { display: block; font-size: 12px; color: #1f2937; }
+.axis-dash-right-nudge div small  { font-size: 11px; color: #6b7280; }
+
+.axis-dash-right-level {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #fff;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.axis-dash-right-level-label { font-size: 11px; font-weight: 700; opacity: 0.85; }
+.axis-dash-right-level-pts   { font-size: 16px; font-weight: 800; }
+.axis-dash-right-level-pts small { font-size: 10px; opacity: 0.75; margin-left: 3px; }
+
+.axis-dash-right-footer {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #6b7280;
+  text-align: center;
+}
+.axis-dash-right-footer p { margin: 0 0 2px; font-weight: 600; }
+.axis-dash-right-footer small { font-size: 11px; }
+
+/* =========================================================
+   "SHOW ME VISUALLY" — Content Visual Overview
+   (student panel chat)
+   ========================================================= */
+
+.edzai-visual-overview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+/* Stats row */
+.edzai-vis-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.edzai-vis-stat {
+  flex: 1;
+  min-width: 70px;
+  background: linear-gradient(135deg, #667eea10, #764ba210);
+  border: 1px solid rgba(102,126,234,0.2);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+}
+
+.edzai-vis-stat-val {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  color: #667eea;
+  line-height: 1;
+}
+
+.edzai-vis-stat-lbl {
+  display: block;
+  font-size: 10px;
+  color: #6b7280;
+  margin-top: 3px;
+  font-weight: 600;
+}
+
+/* Section titles within the visual */
+.edzai-vis-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4338ca;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+
+/* Learning objectives */
+.edzai-vis-objectives {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  counter-reset: obj-counter;
+}
+
+.edzai-vis-obj-item {
+  counter-increment: obj-counter;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: #374151;
+  padding: 7px 10px;
+  background: #f5f7ff;
+  border-radius: 8px;
+  border-left: 3px solid #667eea;
+  line-height: 1.4;
+}
+
+.edzai-vis-obj-item::before {
+  content: counter(obj-counter, decimal-leading-zero);
+  font-size: 11px;
+  font-weight: 800;
+  color: #667eea;
+  flex-shrink: 0;
+}
+
+/* Key topic chips */
+.edzai-vis-term-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.edzai-vis-term-chip {
+  font-size: 11px;
+  background: #eef2ff;
+  color: #4338ca;
+  border-radius: 12px;
+  padding: 3px 10px;
+  font-weight: 600;
+  border: 1px solid rgba(102,126,234,0.2);
+}
+
+/* Quiz difficulty bar */
+.edzai-vis-diff-bar {
+  display: flex;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 22px;
+  gap: 1px;
+}
+
+.edzai-vis-diff-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.edzai-vis-diff--easy   { background: #22c55e; }
+.edzai-vis-diff--medium { background: #f59e0b; }
+.edzai-vis-diff--hard   { background: #ef4444; }
+
+/* Footer note */
+.edzai-vis-footer {
+  font-size: 11px;
+  color: #9ca3af;
+  margin: 0;
+}
+
+/* =========================================================
+   AXIS v2 — ADDITIONS & REFINEMENTS
+   ========================================================= */
+
+/* Header mode accents (applied by setHeaderMode in JS) */
+.axis-panel-header.axis-header--study    { background: #1e3a5f; }
+.axis-panel-header.axis-header--support  { background: #7a3b00; }
+.axis-panel-header.axis-header--analysis { background: #1e2a38; }
+
+/* Thread items (support left panel) */
+.axis-thread-item {
+  display: flex;
+  width: 100%;
+  text-align: left;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: background var(--axis-trans), border-color var(--axis-trans);
+}
+.axis-thread-item:hover {
+  background: var(--axis-warm);
+  border-left-color: var(--axis-accent);
+}
+.axis-thread-item.active {
+  background: var(--axis-warm);
+  border-left-color: var(--axis-accent);
+}
+.axis-thread-icon { font-size: 16px; flex-shrink: 0; }
+.axis-thread-body { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.axis-thread-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axis-thread-meta { font-size: 10px; color: var(--axis-muted); margin-top: 1px; }
+
+/* Event items (analysis left panel) */
+.axis-event-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 14px;
+  border-left: 3px solid transparent;
+}
+.axis-event-days-badge {
+  min-width: 36px;
+  text-align: center;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: var(--axis-surface);
+  border: 1px solid var(--axis-border);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--axis-accent);
+  flex-shrink: 0;
+}
+.axis-event-days-badge--urgent {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+.axis-event-body { flex: 1; min-width: 0; }
+.axis-event-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axis-event-meta { font-size: 10px; color: var(--axis-muted); margin-top: 1px; }
+
+/* Left panel thread items (analysis mode recent sessions) */
+.axis-left-thread-item {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 14px;
+  gap: 2px;
+  border-left: 3px solid transparent;
+}
+.axis-left-thread-mode {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--axis-muted);
+}
+.axis-left-thread-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--axis-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axis-left-thread-date { font-size: 10px; color: var(--axis-muted); }
+
+/* Trigger button — new amber colour */
+.axis-trigger {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: var(--axis-dark);
+  border: none;
+  cursor: pointer;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(30,42,56,0.35);
+  transition: transform var(--axis-trans), box-shadow var(--axis-trans);
+  color: #fff;
+}
+.axis-trigger:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 8px 26px rgba(30,42,56,0.4);
+  background: var(--axis-accent);
+}
+.axis-trigger svg { width: 24px; height: 24px; }
+.axis-trigger-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 2px solid #fff;
+  font-size: 9px;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Right panel course chip */
+.axis-right-course-chip {
+  background: var(--axis-dark);
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 11px;
+}
+.axis-right-chip-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.65;
+  display: block;
+  margin-bottom: 2px;
+}
+.axis-right-course-chip strong {
+  font-size: 12px;
+  font-weight: 600;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Skeleton states */
+.axis-left-loading { padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
+.axis-skeleton-line {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, var(--axis-surface) 25%, var(--axis-bg) 50%, var(--axis-surface) 75%);
+  background-size: 200% 100%;
+  animation: axisShimmer 1.4s infinite;
+}
+.axis-skeleton-line:nth-child(2) { width: 70%; }
+.axis-skeleton-line:nth-child(3) { width: 85%; }
+
+.axis-skeleton-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(90deg, var(--axis-surface) 25%, var(--axis-bg) 50%, var(--axis-surface) 75%);
+  background-size: 200% 100%;
+  animation: axisShimmer 1.4s infinite;
+  margin: 0 auto;
+}
+.axis-skeleton-line--wide { height: 16px; border-radius: 6px; width: 60%; margin: 0 auto; }
+.axis-skeleton-line--narrow { height: 12px; border-radius: 6px; width: 40%; margin: 0 auto; }
+.axis-skeleton-pills { display: flex; gap: 8px; justify-content: center; }
+.axis-skeleton-pill {
+  height: 52px; flex: 1; border-radius: 10px;
+  background: linear-gradient(90deg, var(--axis-surface) 25%, var(--axis-bg) 50%, var(--axis-surface) 75%);
+  background-size: 200% 100%;
+  animation: axisShimmer 1.4s infinite;
+}
+.axis-skeleton-btns { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.axis-skeleton-btn {
+  height: 52px; border-radius: 10px;
+  background: linear-gradient(90deg, var(--axis-surface) 25%, var(--axis-bg) 50%, var(--axis-surface) 75%);
+  background-size: 200% 100%;
+  animation: axisShimmer 1.4s infinite;
+}
+.axis-skeleton-card {
+  height: 80px; border-radius: 10px; margin: 8px;
+  background: linear-gradient(90deg, var(--axis-surface) 25%, var(--axis-bg) 50%, var(--axis-surface) 75%);
+  background-size: 200% 100%;
+  animation: axisShimmer 1.4s infinite;
+}
+
+@keyframes axisShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Analysis area */
+.axis-analysis-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+.axis-analysis-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.axis-analysis-skeleton { padding: 12px; }
+
+/* Left panel empty states */
+.axis-left-empty {
+  padding: 16px 14px;
+  font-size: 12px;
+  color: var(--axis-muted);
+  text-align: center;
+}
+
+/* Input hint and char count */
+.axis-input-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding: 0 2px;
+}
+.axis-input-hint { font-size: 10px; color: var(--axis-muted); }
+.axis-char-count { font-size: 10px; color: #ef4444; }
+
+/* Study chips bar (context chips shown after local intent) */
+.axis-study-context-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px 14px 10px;
+  border-top: 1px solid var(--axis-border);
+  background: var(--axis-bg);
+  flex-shrink: 0;
+}
+.axis-study-context-chips .axis-chip {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* Panel open state */
+.axis-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 420px;
+  z-index: 999999;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(30,42,56,0.18);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: translateY(16px) scale(0.97);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.25s cubic-bezier(0.4,0,0.2,1), opacity 0.25s cubic-bezier(0.4,0,0.2,1);
+  max-height: calc(100vh - 100px);
+}
+.axis-panel--open {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  pointer-events: all;
+}
+.axis-panel--expanded {
+  bottom: 16px;
+  right: 16px;
+  width: min(1080px, calc(100vw - 32px));
+  height: min(680px, calc(100vh - 32px));
+  border-radius: 14px;
+  max-height: calc(100vh - 32px);
+}
+
+/* Backdrop */
+#axis-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 14, 20, 0.5);
+  z-index: 999998;
+  backdrop-filter: blur(3px);
+}
+
+/* ── Right panel: level card (analysis mode) ─────────────────────────────── */
+.axis-right-level-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--axis-warm);
+  border: 1px solid rgba(201, 114, 22, 0.2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.axis-right-level-badge {
+  background: var(--axis-accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.axis-right-level-info {
+  flex: 1;
+  min-width: 0;
+}
+.axis-right-level-pts {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--axis-dark);
+  line-height: 1;
+}
+.axis-right-level-lbl {
+  font-size: 10px;
+  color: var(--axis-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-top: 2px;
+}
+
+/* ── Right panel: footer note ────────────────────────────────────────────── */
+.axis-right-footer-note {
+  font-size: 11px;
+  color: var(--axis-muted);
+  text-align: center;
+  padding-top: 4px;
+  border-top: 1px solid var(--axis-border);
+}
+
+/* ── Support: thread item active state ───────────────────────────────────── */
+.axis-thread-item--active {
+  background: var(--axis-warm) !important;
+  border-color: var(--axis-accent) !important;
+}
+.axis-thread-item--active .axis-thread-title {
+  color: var(--axis-accent);
+}
+
+/* ── Support: thread info card (middle panel) ────────────────────────────── */
+.axis-thread-info-card {
+  background: var(--axis-surface);
+  border: 1px solid var(--axis-border);
+  border-radius: 12px;
+  padding: 16px;
+}
+.axis-thread-info-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.axis-thread-info-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.axis-thread-info-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--axis-dark);
+}
+.axis-thread-info-meta {
+  font-size: 11px;
+  color: var(--axis-muted);
+  margin-top: 2px;
+}
+.axis-thread-info-note {
+  font-size: 12px;
+  color: var(--axis-muted);
+  line-height: 1.5;
+  margin: 0;
+  border-top: 1px solid var(--axis-border);
+  padding-top: 10px;
+}
+
+/* ── Left panel: collapsed state ─────────────────────────────────────────── */
+.axis-left--collapsed {
+  width: 0 !important;
+  overflow: hidden;
+  border-right: none;
+}
+
+/* ── Activity picker (CM selection) ─────────────────────────────────────── */
+.axis-chat-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  padding: 24px 20px;
+  gap: 12px;
+}
+.axis-cm-picker-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  max-width: 340px;
+  margin-top: 4px;
+}
+.axis-cm-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1.5px solid var(--axis-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color var(--axis-trans), background var(--axis-trans), box-shadow var(--axis-trans);
+  width: 100%;
+}
+.axis-cm-card:hover {
+  border-color: var(--axis-accent);
+  background: var(--axis-warm);
+  box-shadow: 0 2px 8px rgba(201, 114, 22, 0.12);
+}
+.axis-cm-card-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--axis-surface);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.axis-cm-card-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--axis-dark);
+  flex: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.axis-cm-picker-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--axis-muted);
+  margin-bottom: 2px;
+  align-self: flex-start;
+}
+
+/* ── Mobile layout ───────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+  /* Panel takes full viewport */
+  .axis-panel--expanded,
+  .axis-panel {
+    bottom: 0 !important;
+    right: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 92vh !important;
+    height: 92vh !important;
+  }
+
+  /* Three panel becomes single column — left/right hidden by default */
+  .axis-threepanel {
+    min-height: 0;
+  }
+
+  /* Left and right panels hidden on mobile unless explicitly opened */
+  .axis-left {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 260px;
+    box-shadow: 2px 0 12px rgba(30, 42, 56, 0.15);
+    transform: translateX(-100%);
+    transition: transform var(--axis-trans);
+  }
+  .axis-left--mobile-open {
+    transform: translateX(0);
+  }
+  .axis-left--collapsed {
+    width: 260px !important; /* keep width, just use transform */
+    overflow: hidden;
+    transform: translateX(-100%);
+    border-right: none;
+  }
+
+  .axis-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 50;
+    width: 200px;
+    box-shadow: -2px 0 12px rgba(30, 42, 56, 0.15);
+    transform: translateX(100%);
+    transition: transform var(--axis-trans);
+  }
+  .axis-right--mobile-open {
+    transform: translateX(0);
+  }
+  .axis-right--collapsed {
+    width: 200px !important;
+    overflow: hidden;
+    transform: translateX(100%);
+  }
+
+  /* Middle takes full width on mobile */
+  .axis-middle {
+    width: 100% !important;
+    flex: 1 !important;
+  }
+
+  /* Make trigger bigger on mobile */
+  .axis-trigger {
+    width: 52px;
+    height: 52px;
+  }
+
+  /* Smaller header text on mobile */
+  .axis-header-title { font-size: 13px; }
+  .axis-header-subtitle { display: none; }
+}
+
+/* ── Right panel: section title ─────────────────────────────────────────── */
+.axis-right-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--axis-muted);
+  padding: 6px 0 4px;
+  border-top: 1px solid var(--axis-border);
+  margin-top: 4px;
+}
+
+/* ── Right panel: loading / empty states ────────────────────────────────── */
+.axis-right-loading {
+  font-size: 12px;
+  color: var(--axis-muted);
+  text-align: center;
+  padding: 12px 0;
+  animation: axisRightPulse 1.2s ease-in-out infinite;
+}
+@keyframes axisRightPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+.axis-right-empty {
+  font-size: 12px;
+  color: var(--axis-muted);
+  text-align: center;
+  padding: 10px 0;
+  line-height: 1.5;
+}
+
+/* ── Right panel: FAQ stream (Support mode) ──────────────────────────────── */
+.axis-right-faq-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+.axis-right-faq-item {
+  background: #fff;
+  border: 1px solid var(--axis-border);
+  border-radius: 8px;
+  padding: 9px 10px;
+  transition: border-color var(--axis-trans), box-shadow var(--axis-trans);
+}
+.axis-right-faq-item:hover {
+  border-color: var(--axis-accent);
+  box-shadow: 0 2px 6px rgba(201, 114, 22, 0.1);
+}
+.axis-right-faq-q {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-dark);
+  line-height: 1.4;
+  margin-bottom: 4px;
+}
+.axis-right-faq-q::before {
+  content: "Q ";
+  color: var(--axis-accent);
+  font-weight: 700;
+}
+.axis-right-faq-a {
+  font-size: 11px;
+  color: var(--axis-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.axis-right-faq-freq {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 10px;
+  background: var(--axis-surface);
+  color: var(--axis-muted);
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+
+/* ── Right panel: activity stream (Study mode) ───────────────────────────── */
+.axis-right-activity-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+}
+.axis-right-activity-item {
+  background: #fff;
+  border: 1px solid var(--axis-border);
+  border-left: 3px solid var(--axis-accent);
+  border-radius: 6px;
+  padding: 8px 10px;
+  transition: background var(--axis-trans);
+}
+.axis-right-activity-item:hover {
+  background: var(--axis-warm);
+}
+.axis-right-activity-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+}
+.axis-right-activity-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.axis-right-activity-info {
+  flex: 1;
+  min-width: 0;
+}
+.axis-right-activity-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--axis-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axis-right-activity-course {
+  font-size: 10px;
+  color: var(--axis-muted);
+  margin-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.axis-right-activity-meta {
+  font-size: 10px;
+  color: var(--axis-muted);
+  margin-top: 3px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.axis-right-activity-meta span {
+  background: var(--axis-surface);
+  border-radius: 8px;
+  padding: 1px 6px;
+}
+
+/* ── Right panel: token usage (Analysis mode) ────────────────────────────── */
+.axis-right-token-card {
+  background: linear-gradient(135deg, var(--axis-bg) 0%, var(--axis-surface) 100%);
+  border: 1px solid var(--axis-border);
+  border-radius: 10px;
+  padding: 12px 12px 10px;
+  margin-top: 2px;
+}
+.axis-right-token-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--axis-dark);
+  margin-bottom: 4px;
+}
+.axis-right-token-row-label {
+  color: var(--axis-muted);
+  font-size: 11px;
+}
+.axis-right-token-row-val {
+  font-weight: 700;
+  color: var(--axis-dark);
+}
+.axis-right-token-bar-wrap {
+  background: var(--axis-border);
+  border-radius: 4px;
+  height: 6px;
+  margin: 6px 0 8px;
+  overflow: hidden;
+}
+.axis-right-token-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--axis-accent), #e08020);
+  transition: width 0.6s ease;
+}
+.axis-right-token-bar-fill--warn {
+  background: linear-gradient(90deg, #e08020, #d94040);
+}
+.axis-right-token-reset {
+  font-size: 10px;
+  color: var(--axis-muted);
+  text-align: right;
+  margin-top: 2px;
+}
+
+/* ── Teacher edit modal ──────────────────────────────────────────────────── */
+.edzai-edit-section {
+  max-height: 65vh;
+  overflow-y: auto;
+  padding: 4px 2px;
+}
+.edzai-summary-textarea {
+  font-family: monospace;
+  font-size: 13px;
+  resize: vertical;
+}
+.edzai-glossary-row,
+.edzai-flashcard-row,
+.edzai-quiz-row {
+  background: #fafafa;
+  border-radius: 6px;
+}
+.edzai-glossary-row .form-control,
+.edzai-flashcard-row .form-control,
+.edzai-quiz-row .form-control {
+  font-size: 13px;
+}
+.edzai-opts-list .d-flex {
+  gap: 8px;
+}
+.edzai-opts-list input[type="radio"] {
+  margin-top: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
+#edzai-save-status {
+  font-size: 13px;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   AI ASSISTANT — HEADER LAUNCHER + RIGHT SLIDE-IN DRAWER   (added 2026-07-18)
+   Replaces the bottom-left "Study with AI" trigger + the inline card layout.
+   Only the OUTER container changes; all inner tab/chat/card styles are reused.
+══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── Launcher button (top navbar) ─────────────────────────────────────────── */
+.edzai-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+}
+.edzai-launch-btn--nav {
+  height: 38px;
+  padding: 0 15px 0 13px;
+  margin-right: 10px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  background: linear-gradient(135deg, var(--edzai-primary-1, #667eea), var(--edzai-primary-2, #764ba2));
+  box-shadow: 0 2px 8px rgba(102,126,234,0.35);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+.edzai-launch-btn--nav:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 16px rgba(102,126,234,0.45);
+}
+.edzai-launch-btn--nav.edzai-active { filter: brightness(0.94); }
+.edzai-launch-btn .edzai-launch-icon { font-size: 15px; line-height: 1; }
+
+/* Collapse to an icon-only pill on narrow screens */
+@media (max-width: 640px) {
+  .edzai-launch-btn--nav .edzai-launch-text { display: none; }
+  .edzai-launch-btn--nav { width: 38px; padding: 0; justify-content: center; border-radius: 50%; }
+}
+
+/* Fallback placements when the navbar anchor isn't found */
+.edzai-launch-btn--header {
+  margin-left: 12px; height: 34px; padding: 0 14px; border-radius: 18px;
+  color: #fff; font-size: 13px; font-weight: 700;
+  background: linear-gradient(135deg, var(--edzai-primary-1, #667eea), var(--edzai-primary-2, #764ba2));
+}
+.edzai-launch-btn--float {
+  position: fixed; top: 14px; right: 18px; z-index: 9980;
+  height: 40px; padding: 0 16px; border-radius: 22px; color: #fff; font-weight: 700;
+  background: linear-gradient(135deg, var(--edzai-primary-1, #667eea), var(--edzai-primary-2, #764ba2));
+  box-shadow: 0 4px 16px rgba(102,126,234,0.4);
+}
+
+/* ── Backdrop ─────────────────────────────────────────────────────────────── */
+.edzai-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15,23,42,0.38);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility .25s ease;
+  z-index: 10590;
+}
+.edzai-drawer-backdrop.edzai-open { opacity: 1; visibility: visible; }
+
+/* ── Drawer container (overrides the inline .edzai-student-panel card) ─────── */
+.edzai-student-panel.edzai-drawer {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  width: min(460px, 94vw);
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+  border: none;
+  border-left: 1px solid rgba(0,0,0,0.08);
+  border-radius: 0;
+  box-shadow: -14px 0 44px rgba(15,23,42,0.20);
+  display: flex;
+  flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .3s cubic-bezier(.4,0,.2,1);
+  z-index: 10600;
+  will-change: transform;
+}
+.edzai-student-panel.edzai-drawer.edzai-open { transform: translateX(0); }
+
+/* Header fixed at top; body flexes and scrolls */
+.edzai-student-panel.edzai-drawer .edzai-panel-header { flex: 0 0 auto; }
+.edzai-student-panel.edzai-drawer .edzai-panel-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.edzai-student-panel.edzai-drawer .edzai-tab-pane { min-height: 0; }
+.edzai-student-panel.edzai-drawer .edzai-tab-pane.active {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+/* Study Chat fills the pane; messages scroll, input row pins to the bottom */
+.edzai-student-panel.edzai-drawer .edzai-chat {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.edzai-student-panel.edzai-drawer .edzai-chat-messages {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 120px;
+}
+
+/* ── Title bar with the close (×) button ──────────────────────────────────── */
+.edzai-panel-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.edzai-drawer-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--edzai-text-muted, #64748b);
+  transition: background .15s ease, color .15s ease;
+  flex-shrink: 0;
+}
+.edzai-drawer-close:hover { background: rgba(0,0,0,0.07); color: var(--edzai-text, #0f172a); }
+
+/* Lock page scroll while the drawer is open */
+body.edzai-drawer-lock { overflow: hidden; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   DESIGN POLISH — Bloom sliders · SVG tab icons · 3D flashcards · edit modal
+   (added 2026-07-18)
+══════════════════════════════════════════════════════════════════════════════ */
+
+/* ── SVG tab icons in the drawer ─────────────────────────────────────────── */
+.edzai-tab-btn { display: inline-flex; align-items: center; gap: 6px; }
+.edzai-tab-ic { flex-shrink: 0; opacity: 0.8; }
+.edzai-tab-btn.active .edzai-tab-ic { opacity: 1; }
+
+/* ── Flashcards — real 3D flip ───────────────────────────────────────────── */
+.edzai-flashcard {
+  width: 100%;
+  max-width: 480px;
+  min-height: 210px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  display: block;
+  cursor: pointer;
+  perspective: 1400px;
+}
+.edzai-flashcard:hover { transform: none; box-shadow: none; }
+.edzai-flashcard:hover .edzai-fc-inner { box-shadow: 0 14px 34px rgba(102,126,234,0.20); }
+.edzai-flashcard:focus-visible { outline: none; }
+.edzai-flashcard:focus-visible .edzai-fc-inner { box-shadow: 0 0 0 3px rgba(102,126,234,0.35); }
+
+.edzai-fc-inner {
+  position: relative;
+  width: 100%;
+  min-height: 210px;
+  transform-style: preserve-3d;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--edzai-radius-lg);
+  box-shadow: 0 6px 18px rgba(15,23,42,0.10);
+}
+.edzai-flashcard.flipped .edzai-fc-inner { transform: rotateY(180deg); }
+
+.edzai-fc-face {
+  position: absolute;
+  inset: 0;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 24px;
+  border-radius: var(--edzai-radius-lg);
+  text-align: center;
+  overflow-y: auto;
+}
+.edzai-fc-front { background: linear-gradient(135deg, #eef2ff, #f8f9ff); border: 1.5px solid rgba(102,126,234,0.20); }
+.edzai-fc-back  { background: linear-gradient(135deg, #e6f6ff, #f0fbff); border: 1.5px solid rgba(79,172,254,0.30); transform: rotateY(180deg); }
+
+.edzai-fc-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.edzai-fc-back .edzai-fc-label { background: linear-gradient(135deg, var(--edzai-study-1), #0091ea); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.edzai-fc-text { font-size: 15.5px; font-weight: 600; color: var(--edzai-text); line-height: 1.55; margin: 0 0 12px; }
+.edzai-fc-hint { font-size: 11px; color: var(--edzai-text-muted); opacity: 0.75; }
+
+.edzai-fc-nav {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--edzai-primary-2);
+  background: #eef2ff;
+  transition: background 0.15s ease, transform 0.15s ease, color 0.15s ease;
+}
+.edzai-fc-nav:hover { background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2)); color: #fff; transform: translateY(-1px); }
+.edzai-fc-counter { font-size: 13px; font-weight: 700; color: var(--edzai-text-muted); min-width: 56px; text-align: center; }
+
+/* ── Bloom's Taxonomy sliders (wizard step 3) ────────────────────────────── */
+.edzai-blooms-section {
+  margin-top: 20px;
+  padding: 18px 20px;
+  background: #fbfbfe;
+  border: 1px solid rgba(102,126,234,0.12);
+  border-radius: var(--edzai-radius-md);
+}
+.edzai-blooms-section h5 { font-weight: 700; color: var(--edzai-text); }
+.edzai-blooms-row { display: flex; align-items: center; gap: 14px; padding: 7px 0; }
+.edzai-blooms-row > label { width: 96px; margin: 0; font-weight: 600; font-size: 13.5px; color: var(--edzai-text); flex-shrink: 0; }
+.edzai-blooms-val { width: 46px; text-align: right; font-weight: 700; font-size: 13.5px; color: var(--edzai-primary-2); flex-shrink: 0; }
+
+.edzai-blooms-slider {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  flex: 1 1 auto;
+  width: auto;
+  height: 6px !important;
+  border-radius: 999px;
+  background: #e4e7f4 !important;
+  outline: none;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+.edzai-blooms-slider:focus-visible { box-shadow: 0 0 0 3px rgba(102,126,234,0.25); }
+.edzai-blooms-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: #e4e7f4;
+  border: none;
+}
+.edzai-blooms-slider::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  margin-top: -7px;
+  border-radius: 50% !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  border: 3px solid #fff !important;
+  box-shadow: 0 2px 6px rgba(102,126,234,0.55) !important;
+  cursor: pointer;
+  transition: transform 0.12s ease;
+}
+.edzai-blooms-slider::-webkit-slider-thumb:hover { transform: scale(1.18); }
+.edzai-blooms-slider::-moz-range-track { height: 6px; border-radius: 999px; background: #e4e7f4; border: none; }
+.edzai-blooms-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #667eea;
+  box-shadow: 0 2px 6px rgba(102,126,234,0.55);
+  cursor: pointer;
+}
+
+/* ── Edit-content modal — modern chrome ──────────────────────────────────── */
+.modal-dialog:has(.edzai-edit-modal) { max-width: 860px; }
+.modal-dialog:has(.edzai-edit-modal) .modal-content { border: none; border-radius: 16px; overflow: hidden; box-shadow: 0 24px 60px rgba(15,23,42,0.28); }
+.modal-dialog:has(.edzai-edit-modal) .modal-header { background: linear-gradient(135deg, #f6f7ff, #eef1ff); border-bottom: 1px solid rgba(102,126,234,0.14); padding: 16px 22px; }
+.modal-dialog:has(.edzai-edit-modal) .modal-title { font-weight: 700; color: var(--edzai-text); font-size: 16px; }
+.modal-dialog:has(.edzai-edit-modal) .modal-body { padding: 20px 22px; }
+.modal-dialog:has(.edzai-edit-modal) .modal-header .close { border-radius: 8px; opacity: 0.55; transition: opacity 0.15s ease, background 0.15s ease; }
+.modal-dialog:has(.edzai-edit-modal) .modal-header .close:hover { opacity: 1; background: rgba(0,0,0,0.06); }
+
+.edzai-edit-modal .edzai-edit-tabs { border-bottom: 2px solid #eef0f6; gap: 2px; }
+.edzai-edit-modal .edzai-edit-tabs .nav-link { border: none; border-bottom: 2.5px solid transparent; border-radius: 0; color: var(--edzai-text-muted); font-weight: 600; font-size: 13.5px; padding: 8px 14px; }
+.edzai-edit-modal .edzai-edit-tabs .nav-link:hover { color: var(--edzai-primary-1); }
+.edzai-edit-modal .edzai-edit-tabs .nav-link.active { color: var(--edzai-primary-1); border-bottom-color: var(--edzai-primary-1); background: transparent; }
+
+.edzai-edit-modal .form-control { border-radius: 10px; border: 1px solid #e2e5ef; font-size: 13.5px; }
+.edzai-edit-modal .form-control:focus { border-color: var(--edzai-primary-1); box-shadow: 0 0 0 3px rgba(102,126,234,0.15); }
+.edzai-edit-modal .edzai-flashcard-row,
+.edzai-edit-modal .edzai-quiz-row { background: #fbfbfe; border: 1px solid #eceef6 !important; border-radius: 12px !important; padding: 14px !important; margin-bottom: 12px !important; }
+.edzai-edit-modal .edzai-flashcard-row strong,
+.edzai-edit-modal .edzai-quiz-row strong { color: var(--edzai-primary-2); }
+
+.edzai-edit-modal .btn-outline-danger { border: none; background: #fff0f1; color: #e5484d; width: 30px; height: 30px; padding: 0; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+.edzai-edit-modal .btn-outline-danger:hover { background: #e5484d; color: #fff; }
+.edzai-edit-modal .btn-outline-secondary { border: 1px dashed #c9cee0; color: var(--edzai-primary-2); background: #fff; border-radius: 10px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; }
+.edzai-edit-modal .btn-outline-secondary:hover { border-color: var(--edzai-primary-1); background: #f4f6ff; color: var(--edzai-primary-1); }
+.edzai-edit-modal .btn svg { vertical-align: middle; }
+
+.edzai-edit-footer { border-top: 1px solid #eef0f6; padding-top: 14px; }
+.edzai-edit-modal .edzai-save-btn { background: linear-gradient(135deg, var(--edzai-primary-1), var(--edzai-primary-2)); border: none; border-radius: 10px; font-weight: 700; padding: 9px 22px; box-shadow: 0 3px 10px rgba(102,126,234,0.35); }
+.edzai-edit-modal .edzai-save-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+/* ============================================================
+   AI Manager Dashboard — modern redesign (v1.1.3, 2026-07-20)
+   Scoped to .edzai-dashboard / #edzai-cm-table. Uses existing
+   --edzai-* design tokens so it matches the AI Learning panel.
+   CSS-only: no JS/markup changes, no event bindings touched.
+   ============================================================ */
+.edzai-dashboard{color:var(--edzai-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;}
+.edzai-dashboard h2{font-weight:700;font-size:1.55rem;letter-spacing:-.02em;margin-bottom:.15rem;}
+.edzai-dashboard .text-muted{color:var(--edzai-text-muted)!important;}
+.edzai-dashboard .btn-primary{background:linear-gradient(135deg,var(--edzai-primary-1),var(--edzai-primary-2));border:none;border-radius:999px;font-weight:600;padding:.6rem 1.2rem;box-shadow:var(--edzai-shadow-sm);transition:transform .25s,box-shadow .25s;}
+.edzai-dashboard .btn-primary:hover{transform:translateY(-1px);box-shadow:var(--edzai-shadow-md);color:#fff;}
+.edzai-legend{gap:.5rem!important;flex-wrap:wrap;}
+.edzai-legend span{display:inline-flex;align-items:center;gap:.4rem;font-size:.8rem;color:var(--edzai-text-muted);background:rgba(102,126,234,.06);border:1px solid var(--edzai-border);padding:.32rem .72rem;border-radius:999px;}
+#edzai-dashboard-cms{background:var(--edzai-surface);border-radius:var(--edzai-radius-lg);box-shadow:var(--edzai-shadow-sm);padding:6px;overflow:hidden;}
+#edzai-cm-table{background:transparent;border-collapse:separate;border-spacing:0;width:100%;margin:0;}
+#edzai-cm-table.table-striped tbody tr:nth-of-type(odd){background:transparent;}
+#edzai-cm-table thead th{background:transparent;text-transform:uppercase;font-size:.7rem;letter-spacing:.07em;color:var(--edzai-text-muted);font-weight:700;border:none;padding:1rem 1rem .7rem;}
+#edzai-cm-table tbody td{border:none;border-top:1px solid var(--edzai-border);padding:.95rem 1rem;vertical-align:middle;font-size:.9rem;}
+#edzai-cm-table tbody tr{transition:background .2s;}
+#edzai-cm-table tbody tr:hover{background:rgba(102,126,234,.05);}
+#edzai-cm-table td a{color:var(--edzai-text);font-weight:600;text-decoration:none;}
+#edzai-cm-table td a:hover{color:var(--edzai-primary-2);}
+.edzai-dashboard .badge{border-radius:999px;padding:.4em .75em;font-weight:600;font-size:.72rem;letter-spacing:.01em;}
+.edzai-dashboard .badge-light{background:rgba(0,0,0,.05);color:var(--edzai-text-muted);}
+.edzai-dashboard .badge-info{background:rgba(102,126,234,.13);color:#4c51bf;}
+.edzai-dashboard .badge-secondary{background:rgba(118,75,162,.12);color:#764ba2;}
+#edzai-cm-table td .edzai-status-label{display:inline-block;padding:.3em .75em;border-radius:999px;font-size:.75rem;font-weight:600;text-transform:capitalize;}
+#edzai-cm-table tr[data-status="ready"] .edzai-status-label{background:rgba(67,233,123,.16);color:#15915a;}
+#edzai-cm-table tr[data-status="processing"] .edzai-status-label,#edzai-cm-table tr[data-status="queued"] .edzai-status-label{background:rgba(79,172,254,.16);color:#2273c9;}
+#edzai-cm-table tr[data-status="failed"] .edzai-status-label{background:rgba(245,87,108,.16);color:#db2b51;}
+#edzai-cm-table tr[data-status="not_ingested"] .edzai-status-label{background:rgba(0,0,0,.06);color:var(--edzai-text-muted);}
+#edzai-cm-table td .fa-spinner{color:var(--edzai-primary-1);}
+#edzai-cm-table .edzai-btn-wizard{background:linear-gradient(135deg,var(--edzai-primary-1),var(--edzai-primary-2));border:none;border-radius:999px;font-weight:600;color:#fff;padding:.45rem .9rem;box-shadow:var(--edzai-shadow-sm);}
+#edzai-cm-table .edzai-btn-wizard:hover{transform:translateY(-1px);box-shadow:var(--edzai-shadow-md);color:#fff;}
+#edzai-cm-table .edzai-btn-view{border-radius:999px;font-weight:600;border:1.5px solid rgba(102,126,234,.4);color:#4c51bf;background:#fff;padding:.42rem .85rem;}
+#edzai-cm-table .edzai-btn-view:hover{background:rgba(102,126,234,.08);}
+
+/* ============================================================
+   AI Content Generation Wizard — modern redesign (v1.1.3)
+   Scoped to .edzai-wizard. .edzai-wizard prefix beats the
+   template's inline <style> by specificity. CSS-only.
+   ============================================================ */
+.edzai-wizard{color:var(--edzai-text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:940px;}
+.edzai-wizard h4{font-weight:700;letter-spacing:-.01em;}
+.edzai-wizard h5{font-weight:700;font-size:1rem;}
+.edzai-wizard .text-muted{color:var(--edzai-text-muted)!important;}
+.edzai-wizard .edzai-step-circle{width:38px;height:38px;border-radius:50%;background:#e9ecf5;color:var(--edzai-text-muted);font-weight:700;box-shadow:inset 0 0 0 1px var(--edzai-border);transition:all .25s;}
+.edzai-wizard .edzai-step-indicator small{color:var(--edzai-text-muted);font-weight:600;}
+.edzai-wizard .edzai-step-indicator.active .edzai-step-circle{background:linear-gradient(135deg,var(--edzai-primary-1),var(--edzai-primary-2));color:#fff;box-shadow:var(--edzai-shadow-sm);}
+.edzai-wizard .edzai-step-indicator.active small{color:var(--edzai-primary-2);}
+.edzai-wizard .edzai-step-indicator.completed .edzai-step-circle{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#0a5;}
+.edzai-wizard .edzai-step-panel{background:var(--edzai-surface);border-radius:var(--edzai-radius-lg);box-shadow:var(--edzai-shadow-sm);padding:1.6rem 1.7rem;}
+.edzai-wizard .form-control{border-radius:var(--edzai-radius-sm);border:1px solid var(--edzai-border);padding:.55rem .8rem;transition:border .2s,box-shadow .2s;}
+.edzai-wizard .form-control:focus{border-color:var(--edzai-primary-1);box-shadow:0 0 0 3px rgba(102,126,234,.15);}
+.edzai-wizard label{font-weight:600;font-size:.85rem;color:var(--edzai-text);}
+.edzai-wizard .btn-primary{background:linear-gradient(135deg,var(--edzai-primary-1),var(--edzai-primary-2));border:none;border-radius:999px;font-weight:600;padding:.55rem 1.3rem;box-shadow:var(--edzai-shadow-sm);}
+.edzai-wizard .btn-primary:hover{transform:translateY(-1px);box-shadow:var(--edzai-shadow-md);color:#fff;}
+.edzai-wizard .btn-outline-secondary{border-radius:999px;font-weight:600;border:1.5px solid var(--edzai-border);color:var(--edzai-text-muted);padding:.55rem 1.2rem;background:#fff;}
+.edzai-wizard .btn-outline-secondary:hover{background:rgba(0,0,0,.03);color:var(--edzai-text);}
+.edzai-wizard .btn-success{background:linear-gradient(135deg,#43e97b,#26c281);border:none;border-radius:999px;font-weight:700;padding:.6rem 1.5rem;box-shadow:var(--edzai-shadow-sm);}
+.edzai-wizard .btn-success:hover{transform:translateY(-1px);box-shadow:var(--edzai-shadow-md);}
+.edzai-wizard .edzai-blooms-section{background:rgba(102,126,234,.04);border:1px solid var(--edzai-border);border-radius:var(--edzai-radius-md);padding:1rem 1.2rem;}
+.edzai-wizard .edzai-blooms-slider{accent-color:var(--edzai-primary-1);}
+.edzai-wizard .edzai-blooms-val{font-weight:700;color:var(--edzai-primary-2);}
+.edzai-wizard .alert-info{background:rgba(102,126,234,.08);border:1px solid rgba(102,126,234,.2);color:#3c3c6e;border-radius:var(--edzai-radius-md);}
+.edzai-wizard .alert-success{background:rgba(67,233,123,.1);border:1px solid rgba(67,233,123,.3);color:#15915a;border-radius:var(--edzai-radius-md);}
+.edzai-wizard .edzai-feature-check,.edzai-wizard .edzai-cm-check{accent-color:var(--edzai-primary-1);width:17px;height:17px;}
+
+/* ============================================================
+   AI badge on course-page activities (v1.1.5)
+   Injected by amd/src/course_badges.js. z-index sits above
+   Moodle's .stretched-link so the pill stays clickable.
+   ============================================================ */
+.edzai-ai-badge{position:relative;z-index:3;display:inline-flex;align-items:center;gap:.25rem;margin-left:.5rem;padding:.13rem .5rem;border-radius:999px;font-size:.68rem;font-weight:700;line-height:1;letter-spacing:.02em;text-decoration:none;color:#fff;background:linear-gradient(135deg,var(--edzai-primary-1),var(--edzai-primary-2));box-shadow:var(--edzai-shadow-sm);vertical-align:middle;white-space:nowrap;transition:transform .2s,box-shadow .2s;}
+.edzai-ai-badge:hover,.edzai-ai-badge:focus{color:#fff;text-decoration:none;transform:translateY(-1px);box-shadow:var(--edzai-shadow-md);}
+.edzai-ai-badge svg{flex-shrink:0;}
+
+
+/* =========================================================
+   KEY TERMS — clean card list (chat)
+========================================================= */
+.axis-kt-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.axis-kt-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #fff;
+  border: 1px solid var(--axis-border);
+  border-left: 3px solid var(--axis-accent);
+  border-radius: 10px;
+  padding: 10px 13px;
+  transition: box-shadow var(--axis-trans), transform var(--axis-trans);
+}
+.axis-kt-item:hover {
+  box-shadow: 0 3px 10px rgba(30, 42, 56, 0.07);
+  transform: translateY(-1px);
+}
+.axis-kt-term {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--axis-accent);
+}
+.axis-kt-def {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--axis-text);
+}
+/* interactive flip deck in chat reuses .edzai-flashcard classes; add a touch of top spacing */
+.axis-fc-deck { margin: 8px 0 4px; }
+
+
+/* =========================================================
+   AI ASSISTANT DRAWER — viewport fit + chat fill (team QA #7, #10)
+   #edzai-student-panel is an ID (high specificity), so its
+   margin-top:24px + the chat max-height cap need ID-level overrides.
+========================================================= */
+#edzai-student-panel.edzai-drawer {
+  margin: 0;            /* #7: was pushed 24px below the fold, cutting the last quiz item */
+}
+#edzai-student-panel.edzai-drawer .edzai-chat-messages {
+  flex: 1 1 auto;       /* #10: fill the drawer instead of capping height */
+  max-height: none;     /* remove the 360px cap that left blank space below the input */
+  min-height: 120px;
+}
