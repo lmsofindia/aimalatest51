@@ -56,9 +56,24 @@ define([], function () {
       loadSdk(function () {
         if (!window.Vimeo || !window.Vimeo.Player) { reject(new Error("Vimeo SDK unavailable")); return; }
         try {
-          const opts = { id: Number(cfg.videoid), controls: false, playsinline: true, dnt: true };
-          if (cfg.videohash) { opts.h = cfg.videohash; }
-          player = new window.Vimeo.Player(holderEl, opts);
+          // Build the player.vimeo.com embed iframe ourselves and hand it to
+          // the SDK. Passing a numeric `id` instead makes the SDK first fetch
+          // the embed code from vimeo.com/api/oembed.json — but that apex host
+          // is blocked on some networks (while player.vimeo.com is reachable),
+          // which fails with "There was an error fetching the embed code from
+          // Vimeo." and no iframe is ever created. Constructing the iframe
+          // directly skips the oembed round-trip entirely. The unlisted/private
+          // hash is passed via the `h` query param.
+          const params = ["controls=0", "playsinline=1", "dnt=1", "transparent=0"];
+          if (cfg.videohash) { params.push("h=" + encodeURIComponent(cfg.videohash)); }
+          const iframe = document.createElement("iframe");
+          iframe.src = "https://player.vimeo.com/video/" + encodeURIComponent(cfg.videoid) + "?" + params.join("&");
+          iframe.setAttribute("frameborder", "0");
+          iframe.setAttribute("allow", "autoplay; fullscreen; picture-in-picture; encrypted-media");
+          iframe.setAttribute("allowfullscreen", "");
+          iframe.setAttribute("title", "Vimeo video");
+          holderEl.appendChild(iframe);
+          player = new window.Vimeo.Player(iframe);
 
           player.on("play", function () { cb.onStateChange && cb.onStateChange("playing"); });
           player.on("pause", function () { cb.onStateChange && cb.onStateChange("paused"); });
