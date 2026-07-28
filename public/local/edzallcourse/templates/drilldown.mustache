@@ -1,0 +1,33 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_edzallcourse/drilldown
+
+    Stacked chip rows for the category drilldown.
+
+    Context variables required for this template:
+    * hasrows bool
+    * rows array of {level, label, parentid, allcount, allactive, alllabel, chips[]}
+      chips: {id, name, count, active, haschildren}
+}}
+{{#hasrows}}
+<div class="edzcat-chiprows">
+    {{#rows}}
+    <div class="edzcat-chiprow" data-level="{{level}}">
+        <span class="edzcat-rowlabel"><span class="edzcat-lvl">{{level}}</span>{{{label}}}</span>
+        <button type="button" class="edzcat-chip edzcat-chip-all {{#allactive}}is-active{{/allactive}}"
+            data-catid="{{parentid}}" data-haschildren="0"
+            aria-pressed="{{#allactive}}true{{/allactive}}{{^allactive}}false{{/allactive}}">
+            {{{alllabel}}} <span class="edzcat-count">({{allcount}})</span>
+        </button>
+        {{#chips}}
+        <button type="button" class="edzcat-chip {{#active}}is-active{{/active}}"
+            data-catid="{{id}}" data-haschildren="{{#haschildren}}1{{/haschildren}}{{^haschildren}}0{{/haschildren}}"
+            aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
+            {{{name}}} <span class="edzcat-count">({{count}})</span>
+        </button>
+        {{/chips}}
+    </div>
+    {{/rows}}
+</div>
+{{/hasrows}}

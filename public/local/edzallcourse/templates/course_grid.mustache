@@ -1,0 +1,22 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_edzallcourse/course_grid
+
+    Grid of course cards with empty state.
+
+    Context variables required for this template:
+    * courses array (see local_edzallcourse/course_card)
+    * hasresults bool
+}}
+<div class="edzcat-grid">
+    {{#courses}}
+        {{> local_edzallcourse/course_card}}
+    {{/courses}}
+    {{^hasresults}}
+    <div class="edzcat-empty">
+        <div class="edzcat-empty-icon" aria-hidden="true">&#128218;</div>
+        <p>{{#str}}nocoursesin, local_edzallcourse{{/str}}</p>
+    </div>
+    {{/hasresults}}
+</div>

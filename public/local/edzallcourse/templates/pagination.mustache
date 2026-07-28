@@ -1,0 +1,33 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_edzallcourse/pagination
+
+    Result meta line + numbered pager.
+
+    Context variables required for this template:
+    * hasresults bool
+    * total, from, to int
+    * pathtext string
+    * recursive bool
+    * haspagination bool
+    * pages array of {number, active}
+    * hasprev bool, prevpage int
+    * hasnext bool, nextpage int
+}}
+{{#hasresults}}
+<p class="edzcat-meta">
+    {{metatext}}
+    {{#pathtext}}<span class="edzcat-meta-sep">&middot;</span> <span class="edzcat-meta-path">{{{pathtext}}}</span>{{/pathtext}}
+    {{#recursive}} <span class="edzcat-meta-sub">{{#str}}inclsub, local_edzallcourse{{/str}}</span>{{/recursive}}
+</p>
+{{/hasresults}}
+{{#haspagination}}
+<nav class="edzcat-pager" aria-label="Course pages">
+    <button type="button" class="edzcat-pg {{^hasprev}}is-disabled{{/hasprev}}" data-page="{{prevpage}}" {{^hasprev}}disabled{{/hasprev}}>&lsaquo; {{#str}}prev, local_edzallcourse{{/str}}</button>
+    {{#pages}}
+    <button type="button" class="edzcat-pg {{#active}}is-active{{/active}}" data-page="{{number}}"{{#active}} aria-current="page"{{/active}}>{{number}}</button>
+    {{/pages}}
+    <button type="button" class="edzcat-pg {{^hasnext}}is-disabled{{/hasnext}}" data-page="{{nextpage}}" {{^hasnext}}disabled{{/hasnext}}>{{#str}}next, local_edzallcourse{{/str}} &rsaquo;</button>
+</nav>
+{{/haspagination}}

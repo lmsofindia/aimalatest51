@@ -1,0 +1,455 @@
+/* local_edzallcourse — EDZ Catalogue styles.
+   Namespaced under .edzcat. Colours derive from theme (Bootstrap) variables
+   with sensible fallbacks so AIMA / GAIL each inherit their own palette. */
+
+.edzcat {
+    --edzcat-primary: var(--bs-primary, #2c4fa3);
+    --edzcat-primary-contrast: #ffffff;
+    --edzcat-ink: var(--bs-body-color, #1f2733);
+    --edzcat-muted: #6b7280;
+    --edzcat-line: var(--bs-border-color, #e5e7eb);
+    --edzcat-surface: var(--bs-body-bg, #ffffff);
+    --edzcat-band: color-mix(in srgb, var(--edzcat-primary) 7%, #ffffff);
+    --edzcat-band-line: color-mix(in srgb, var(--edzcat-primary) 16%, #ffffff);
+    --edzcat-radius: 14px;
+    --edzcat-shadow: 0 2px 8px rgba(16, 32, 64, .07);
+    --edzcat-shadow-h: 0 10px 26px rgba(16, 32, 64, .14);
+    color: var(--edzcat-ink);
+}
+
+/* Hero */
+.edzcat-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 22px;
+    padding: 40px 32px;
+    margin: 8px 0 22px;
+    background: linear-gradient(135deg, #4272d7 0%, var(--edzcat-primary) 45%, #1d2125 100%);
+    box-shadow: var(--edzcat-shadow-h);
+}
+.edzcat-hero::before {
+    content: "";
+    position: absolute;
+    top: -70px;
+    right: -60px;
+    width: 230px;
+    height: 230px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .08);
+}
+.edzcat-hero-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 680px;
+}
+.edzcat-hero-title {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -.5px;
+    margin: 0 0 .35rem;
+}
+.edzcat-hero-text {
+    color: rgba(255, 255, 255, .85);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Layout */
+.edzcat-layout {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 22px;
+    align-items: start;
+}
+@media (max-width: 840px) {
+    .edzcat-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Left rail */
+.edzcat-rail {
+    background: var(--edzcat-surface);
+    border: 1px solid var(--edzcat-line);
+    border-radius: var(--edzcat-radius);
+    box-shadow: var(--edzcat-shadow);
+    padding: 12px;
+    position: sticky;
+    top: 12px;
+}
+.edzcat-rail-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .6px;
+    color: var(--edzcat-muted);
+    margin: 4px 6px 10px;
+}
+.edzcat-root {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 11px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--edzcat-ink);
+    margin: 2px 0;
+    transition: background .12s, color .12s;
+}
+.edzcat-root:hover {
+    background: var(--edzcat-band);
+}
+.edzcat-root.is-active {
+    background: var(--edzcat-primary);
+    color: var(--edzcat-primary-contrast);
+}
+.edzcat-root-name {
+    flex: 1;
+}
+.edzcat-count {
+    font-size: .78rem;
+    font-weight: 700;
+    opacity: .8;
+}
+.edzcat-root:not(.is-active) .edzcat-count {
+    color: var(--edzcat-muted);
+}
+
+/* Controls */
+.edzcat-controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 14px;
+}
+.edzcat-search {
+    flex: 1;
+    min-width: 200px;
+    position: relative;
+}
+.edzcat-search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--edzcat-muted);
+    font-size: 1.05rem;
+}
+.edzcat-search-input {
+    width: 100%;
+    border: 1.5px solid var(--edzcat-line);
+    border-radius: 999px;
+    padding: 10px 16px 10px 40px;
+    font-size: .95rem;
+    background: var(--edzcat-surface);
+    color: var(--edzcat-ink);
+}
+.edzcat-search-input:focus {
+    outline: none;
+    border-color: var(--edzcat-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--edzcat-primary) 18%, transparent);
+}
+.edzcat-sort {
+    border: 1.5px solid var(--edzcat-line);
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-size: .88rem;
+    font-weight: 600;
+    background: var(--edzcat-surface);
+    color: var(--edzcat-ink);
+    cursor: pointer;
+}
+
+/* Drilldown chip rows (coloured band) */
+.edzcat-chiprows {
+    background: var(--edzcat-band);
+    border: 1px solid var(--edzcat-band-line);
+    border-radius: var(--edzcat-radius);
+    padding: 4px 16px;
+    margin-bottom: 16px;
+}
+.edzcat-chiprow {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+    padding: 11px 0;
+    border-bottom: 1px dashed var(--edzcat-band-line);
+}
+.edzcat-chiprow:last-child {
+    border-bottom: none;
+}
+.edzcat-rowlabel {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 96px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: var(--edzcat-muted);
+}
+.edzcat-lvl {
+    width: 18px;
+    height: 18px;
+    border-radius: 5px;
+    background: #fff;
+    border: 1px solid var(--edzcat-band-line);
+    display: grid;
+    place-items: center;
+    font-size: .62rem;
+    color: var(--edzcat-primary);
+}
+.edzcat-chip {
+    border: 1.5px solid var(--edzcat-line);
+    background: var(--edzcat-surface);
+    border-radius: 999px;
+    padding: 8px 15px;
+    font-size: .84rem;
+    font-weight: 600;
+    color: var(--edzcat-ink);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color .12s, background .12s, color .12s;
+}
+.edzcat-chip:hover {
+    border-color: var(--edzcat-primary);
+    color: var(--edzcat-primary);
+}
+.edzcat-chip.is-active {
+    background: var(--edzcat-primary);
+    border-color: var(--edzcat-primary);
+    color: var(--edzcat-primary-contrast);
+}
+.edzcat-chip-all {
+    border-style: dashed;
+}
+.edzcat-chip .edzcat-count {
+    margin-left: 3px;
+    opacity: .7;
+}
+
+/* Result meta */
+.edzcat-meta {
+    font-size: .85rem;
+    color: var(--edzcat-muted);
+    margin: 2px 2px 14px;
+}
+.edzcat-meta-path {
+    color: var(--edzcat-primary);
+    font-weight: 600;
+}
+.edzcat-meta-sub {
+    color: #9aa4b2;
+}
+
+/* Grid */
+.edzcat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+@media (max-width: 1050px) {
+    .edzcat-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+@media (max-width: 560px) {
+    .edzcat-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.edzcat-grid-region.edzcat-is-loading {
+    opacity: .5;
+    pointer-events: none;
+    transition: opacity .15s ease;
+}
+
+/* Card */
+.edzcat-card {
+    background: var(--edzcat-surface);
+    border: 1px solid var(--edzcat-line);
+    border-radius: var(--edzcat-radius);
+    box-shadow: var(--edzcat-shadow);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform .16s, box-shadow .16s;
+}
+.edzcat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--edzcat-shadow-h);
+}
+.edzcat-thumb {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background-size: 100px 100px;
+    background-repeat: repeat;
+    background-position: center;
+    overflow: hidden;
+}
+.edzcat-thumb-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.edzcat-badge {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    max-width: 80%;
+    background: rgba(255, 255, 255, .92);
+    color: var(--edzcat-primary);
+    font-size: .62rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.edzcat-edit {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, .45);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-size: .85rem;
+    text-decoration: none;
+    transition: background .12s;
+}
+.edzcat-edit:hover {
+    background: var(--edzcat-primary);
+    color: #fff;
+}
+.edzcat-card-body {
+    padding: 14px 15px 15px;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+.edzcat-card-title {
+    font-size: .98rem;
+    font-weight: 700;
+    line-height: 1.35;
+    margin: 0 0 7px;
+}
+.edzcat-card-title a {
+    color: #223a58;
+    text-decoration: none;
+}
+.edzcat-card-title a:hover {
+    color: var(--edzcat-primary);
+}
+.edzcat-card-summary {
+    font-size: .8rem;
+    color: var(--edzcat-muted);
+    line-height: 1.5;
+    margin: 0 0 11px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.edzcat-card-meta {
+    font-size: .78rem;
+    color: var(--edzcat-muted);
+    margin: 0 0 3px;
+}
+.edzcat-meta-k {
+    color: #374151;
+    font-weight: 600;
+}
+.edzcat-cta {
+    margin-top: auto;
+    display: block;
+    text-align: center;
+    background: var(--edzcat-primary);
+    color: var(--edzcat-primary-contrast);
+    font-weight: 600;
+    font-size: .84rem;
+    padding: 9px;
+    border-radius: 999px;
+    text-decoration: none;
+    margin-top: 12px;
+    transition: filter .12s;
+}
+.edzcat-cta:hover {
+    filter: brightness(.92);
+    color: var(--edzcat-primary-contrast);
+}
+.edzcat-cta.is-enrolled {
+    background: color-mix(in srgb, var(--edzcat-primary) 12%, #ffffff);
+    color: var(--edzcat-primary);
+}
+
+/* Empty state */
+.edzcat-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--edzcat-muted);
+}
+.edzcat-empty-icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+/* Pagination */
+.edzcat-pager {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 26px;
+    flex-wrap: wrap;
+}
+.edzcat-pg {
+    min-width: 38px;
+    height: 38px;
+    border: 1.5px solid var(--edzcat-line);
+    background: var(--edzcat-surface);
+    border-radius: 999px;
+    font-size: .84rem;
+    font-weight: 600;
+    color: var(--edzcat-ink);
+    cursor: pointer;
+    padding: 0 12px;
+    transition: border-color .12s, color .12s;
+}
+.edzcat-pg:hover:not(.is-active):not(:disabled) {
+    border-color: var(--edzcat-primary);
+    color: var(--edzcat-primary);
+}
+.edzcat-pg.is-active {
+    background: var(--edzcat-primary);
+    border-color: var(--edzcat-primary);
+    color: var(--edzcat-primary-contrast);
+}
+.edzcat-pg:disabled,
+.edzcat-pg.is-disabled {
+    opacity: .45;
+    cursor: not-allowed;
+}
+
+.edzcat-muted {
+    color: var(--edzcat-muted);
+    font-size: .85rem;
+    padding: 6px;
+}

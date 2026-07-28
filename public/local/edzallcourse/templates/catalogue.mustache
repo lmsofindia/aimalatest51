@@ -1,0 +1,76 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_edzallcourse/catalogue
+
+    Catalogue page shell: hero, controls, root rail, drilldown, grid, pager.
+
+    Context variables required for this template:
+    * herotitle string
+    * herotext string
+    * browseheading string
+    * searchplaceholder string
+    * q string
+    * roots array of {id,name,count,active}
+    * hasroots bool
+    * sortoptions array of {value,label,selected}
+    * drilldown object (see local_edzallcourse/drilldown)
+    * grid object (see local_edzallcourse/course_grid)
+    * pager object (see local_edzallcourse/pagination)
+}}
+<div id="edzcat" class="edzcat" data-region="edzcat-root">
+    <section class="edzcat-hero">
+        <div class="edzcat-hero-inner">
+            <h1 class="edzcat-hero-title">{{{herotitle}}}</h1>
+            <p class="edzcat-hero-text">{{{herotext}}}</p>
+        </div>
+    </section>
+
+    <div class="edzcat-layout">
+        <aside class="edzcat-rail" aria-label="{{browseheading}}">
+            <h2 class="edzcat-rail-title">{{browseheading}}</h2>
+            <div class="edzcat-roots" data-region="roots">
+                {{#roots}}
+                <button type="button" class="edzcat-root {{#active}}is-active{{/active}}" data-catid="{{id}}"
+                    aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
+                    <span class="edzcat-root-name">{{{name}}}</span>
+                    <span class="edzcat-count">({{count}})</span>
+                </button>
+                {{/roots}}
+                {{^hasroots}}
+                <p class="edzcat-muted">{{#str}}noresults, local_edzallcourse{{/str}}</p>
+                {{/hasroots}}
+            </div>
+        </aside>
+
+        <div class="edzcat-main">
+            <div class="edzcat-controls">
+                <div class="edzcat-search">
+                    <span class="edzcat-search-icon" aria-hidden="true">&#8981;</span>
+                    <input type="search" class="edzcat-search-input" data-region="search"
+                        placeholder="{{searchplaceholder}}" value="{{q}}" aria-label="{{searchplaceholder}}">
+                </div>
+                <label class="edzcat-sort-wrap">
+                    <span class="visually-hidden">{{#str}}sortlabel, local_edzallcourse{{/str}}</span>
+                    <select class="edzcat-sort" data-region="sort">
+                        {{#sortoptions}}
+                        <option value="{{value}}" {{#selected}}selected{{/selected}}>{{label}}</option>
+                        {{/sortoptions}}
+                    </select>
+                </label>
+            </div>
+
+            <div class="edzcat-drill" data-region="drilldown">
+                {{#drilldown}}{{> local_edzallcourse/drilldown}}{{/drilldown}}
+            </div>
+
+            <div class="edzcat-grid-region" data-region="grid" aria-live="polite" aria-busy="false">
+                {{#grid}}{{> local_edzallcourse/course_grid}}{{/grid}}
+            </div>
+
+            <div class="edzcat-pager-region" data-region="pager">
+                {{#pager}}{{> local_edzallcourse/pagination}}{{/pager}}
+            </div>
+        </div>
+    </div>
+</div>

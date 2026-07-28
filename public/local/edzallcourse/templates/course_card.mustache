@@ -1,0 +1,55 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    @template local_edzallcourse/course_card
+
+    A single course card.
+
+    Context variables required for this template:
+    * id int
+    * fullname string
+    * summary string
+    * hassummary bool
+    * categoryname string
+    * courseimage string
+    * hasimage bool
+    * coursecolor string
+    * coursepattern string
+    * showteacher bool
+    * teacherlabel string
+    * teacher string
+    * hasmoreteachers bool
+    * moreteachers int
+    * showstartdate bool
+    * startdate string
+    * url string
+    * ctalabel string
+    * enrolled bool
+    * canedit bool
+    * editurl string
+}}
+<article class="edzcat-card">
+    <div class="edzcat-thumb"{{^hasimage}} style="background-color: {{coursecolor}}; background-image: url('{{coursepattern}}');"{{/hasimage}}>
+        {{#hasimage}}
+        <img class="edzcat-thumb-img" src="{{courseimage}}" alt="{{fullnamealt}}" loading="lazy">
+        {{/hasimage}}
+        <span class="edzcat-badge">{{{categoryname}}}</span>
+        {{#canedit}}
+        <a class="edzcat-edit" href="{{editurl}}" title="{{#str}}editcourse, local_edzallcourse{{/str}}"
+            aria-label="{{#str}}editcourse, local_edzallcourse{{/str}}">&#9998;</a>
+        {{/canedit}}
+    </div>
+    <div class="edzcat-card-body">
+        <h3 class="edzcat-card-title"><a href="{{url}}">{{{fullname}}}</a></h3>
+        {{#hassummary}}
+        <div class="edzcat-card-summary">{{{summary}}}</div>
+        {{/hassummary}}
+        {{#showteacher}}
+        <p class="edzcat-card-meta"><span class="edzcat-meta-k">{{teacherlabel}}:</span> {{teacher}}{{#hasmoreteachers}} <span class="edzcat-more">+{{moreteachers}}</span>{{/hasmoreteachers}}</p>
+        {{/showteacher}}
+        {{#showstartdate}}
+        <p class="edzcat-card-meta"><span class="edzcat-meta-k">{{#str}}startdatelabel, local_edzallcourse{{/str}}:</span> {{startdate}}</p>
+        {{/showstartdate}}
+        <a class="edzcat-cta {{#enrolled}}is-enrolled{{/enrolled}}" href="{{url}}">{{ctalabel}}</a>
+    </div>
+</article>
