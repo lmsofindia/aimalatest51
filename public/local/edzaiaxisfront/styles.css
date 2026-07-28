@@ -3103,14 +3103,39 @@ PRACTICE AREA BASE
 .edzai-quiz-option input { flex-shrink: 0; margin-top: 2px; }
 
 .edzai-quiz-feedback {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   padding: 10px 14px;
   border-radius: var(--edzai-radius-sm);
   font-size: 13px;
   font-weight: 600;
   margin-top: 8px;
 }
-.edzai-quiz-feedback.correct { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
-.edzai-quiz-feedback.incorrect { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+/* Modern status icon (green circle-check / red circle-x). Rendered via CSS so it
+   works for both the student panel (--correct/--wrong) and the chatbot
+   (.correct/.incorrect) class conventions, with no icon-font dependency. */
+.edzai-quiz-feedback::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.edzai-quiz-feedback.correct,
+.edzai-quiz-feedback--correct { background: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+.edzai-quiz-feedback.incorrect,
+.edzai-quiz-feedback--wrong { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.edzai-quiz-feedback.correct::before,
+.edzai-quiz-feedback--correct::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%2316a34a'/%3E%3Cpath d='M7 12.4l3.3 3.3L17 9' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+.edzai-quiz-feedback.incorrect::before,
+.edzai-quiz-feedback--wrong::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='10' fill='%23dc2626'/%3E%3Cpath d='M8.3 8.3l7.4 7.4M15.7 8.3l-7.4 7.4' fill='none' stroke='%23ffffff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+}
 
 .edzai-quiz-freetext {
   margin-bottom: 10px;
