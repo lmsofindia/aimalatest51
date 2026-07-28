@@ -2095,8 +2095,8 @@ define(["core/ajax"], function (Ajax) {
         const isCorrect = userAnswer.toLowerCase() === answer.toLowerCase();
         const feedback = qDiv.querySelector(".edzai-quiz-feedback");
         feedback.className = "edzai-quiz-feedback " + (isCorrect ? "correct" : "incorrect");
-        feedback.textContent = isCorrect ? "✓ Correct!" : ("✗ Correct answer: " + answer);
-        feedback.style.display = "block";
+        feedback.textContent = isCorrect ? "Correct!" : ("Correct answer: " + answer);
+        feedback.style.display = "flex";
         qDiv.querySelectorAll(".edzai-quiz-option").forEach((opt) => {
           const span = opt.querySelector("span");
           const val = ((span && span.textContent) || "").trim().toLowerCase();

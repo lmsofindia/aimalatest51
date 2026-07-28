@@ -10,18 +10,39 @@ define([], function () {
   const pending = [];
 
   function loadSdk(cb) {
-    if (sdkReady || window.Vimeo) { sdkReady = true; return cb(); }
+    if (sdkReady || (window.Vimeo && window.Vimeo.Player)) { sdkReady = true; return cb(); }
     pending.push(cb);
     if (sdkLoading) { return; }
     sdkLoading = true;
+
+    // Moodle loads RequireJS, which registers a global AMD `define` (with a
+    // truthy `define.amd`). Vimeo's player.js is a UMD bundle: when it sees
+    // `define.amd` it registers itself as an ANONYMOUS AMD module instead of
+    // assigning window.Vimeo — and because the script is injected directly
+    // (not loaded through RequireJS) that anonymous define throws
+    // "Mismatched anonymous define() module", so window.Vimeo is never set and
+    // the adapter fails with "Vimeo SDK unavailable".
+    // Fix: temporarily hide define.amd across the SDK load so the UMD wrapper
+    // takes the browser-global branch and assigns window.Vimeo.Player.
+    // Restored the instant the script finishes running.
+    const hasDefine = (typeof window.define === "function");
+    const savedAmd = hasDefine ? window.define.amd : undefined;
+    let amdRestored = false;
+    function restoreAmd() {
+      if (amdRestored) { return; }
+      amdRestored = true;
+      if (hasDefine) { window.define.amd = savedAmd; }
+    }
+
     const s = document.createElement("script");
     s.id = "edztv-vimeo-sdk";
     s.src = "https://player.vimeo.com/api/player.js";
     s.async = true;
-    s.onload = function () { sdkReady = true; while (pending.length) { pending.shift()(); } };
-    s.onerror = function () { while (pending.length) { pending.shift()(); } };
+    s.onload = function () { restoreAmd(); sdkReady = true; while (pending.length) { pending.shift()(); } };
+    s.onerror = function () { restoreAmd(); while (pending.length) { pending.shift()(); } };
+    if (hasDefine) { window.define.amd = undefined; }
     document.head.appendChild(s);
-    setTimeout(function () { if (!sdkReady) { while (pending.length) { pending.shift()(); } } }, 10000);
+    setTimeout(function () { restoreAmd(); if (!sdkReady) { while (pending.length) { pending.shift()(); } } }, 10000);
   }
 
   function create(holderEl, cfg, cb) {
@@ -33,7 +54,7 @@ define([], function () {
 
     const ready = new Promise(function (resolve, reject) {
       loadSdk(function () {
-        if (!window.Vimeo) { reject(new Error("Vimeo SDK unavailable")); return; }
+        if (!window.Vimeo || !window.Vimeo.Player) { reject(new Error("Vimeo SDK unavailable")); return; }
         try {
           const opts = { id: Number(cfg.videoid), controls: false, playsinline: true, dnt: true };
           if (cfg.videohash) { opts.h = cfg.videohash; }

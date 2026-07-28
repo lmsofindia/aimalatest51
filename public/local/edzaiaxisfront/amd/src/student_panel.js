@@ -545,9 +545,9 @@ import Notification from 'core/notification'; // eslint-disable-line no-unused-v
       const correct = userAnswer.toLowerCase() === answer.toLowerCase();
       feedback.className = `edzai-quiz-feedback edzai-quiz-feedback--${correct ? "correct" : "wrong"}`;
       feedback.textContent = correct
-        ? "✓ Correct!"
-        : `✗ Correct answer: ${answer}`;
-      feedback.style.display = "block";
+        ? "Correct!"
+        : `Correct answer: ${answer}`;
+      feedback.style.display = "flex";
     });
 
     // Chat send via button
