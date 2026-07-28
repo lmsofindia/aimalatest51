@@ -159,7 +159,9 @@ class card {
         }
 
         // Teacher (first course contact — respects $CFG->coursecontact).
+        // Only surfaced when a contact actually exists; otherwise the line is hidden.
         $teacher = '';
+        $hasteacher = false;
         $moreteachers = 0;
         if ($showteacher) {
             $contacts = $cle->get_course_contacts();
@@ -167,8 +169,7 @@ class card {
                 $first = reset($contacts);
                 $teacher = $first['username'] ?? fullname($first['user']);
                 $moreteachers = count($contacts) - 1;
-            } else {
-                $teacher = get_string('notyetassigned', 'local_edzallcourse');
+                $hasteacher = true;
             }
         }
 
@@ -223,6 +224,7 @@ class card {
             'coursecolor'   => $image === '' ? self::gradient($id) : '',
             'coursepattern' => $image === '' ? self::pattern_datauri($id) : '',
             'showteacher'   => $showteacher,
+            'hasteacher'    => $hasteacher,
             'teacherlabel'  => terminology::teacher_label(),
             'teacher'       => $teacher,
             'moreteachers'  => $moreteachers > 0 ? $moreteachers : 0,
