@@ -167,49 +167,65 @@
     cursor: pointer;
 }
 
-/* Drilldown chip rows (coloured band) */
+/* Drilldown chip rows — stepped tree + tonal levels */
 .edzcat-chiprows {
-    background: var(--edzcat-band);
-    border: 1px solid var(--edzcat-band-line);
+    position: relative;
+    background: var(--edzcat-surface);
+    border: 1px solid var(--edzcat-line);
     border-radius: var(--edzcat-radius);
-    padding: 4px 16px;
+    box-shadow: var(--edzcat-shadow);
+    padding: 8px 20px 14px;
     margin-bottom: 16px;
 }
 .edzcat-chiprow {
-    display: flex;
-    align-items: center;
-    gap: 9px;
-    flex-wrap: wrap;
-    padding: 11px 0;
-    border-bottom: 1px dashed var(--edzcat-band-line);
+    position: relative;
+    padding: 13px 0 13px 46px;
 }
-.edzcat-chiprow:last-child {
-    border-bottom: none;
+/* Connector rail linking the level nodes. */
+.edzcat-chiprow:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    top: 37px;
+    bottom: -2px;
+    width: 2px;
+    background: linear-gradient(#cfd8ea, #e4e9f3);
 }
-.edzcat-rowlabel {
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    min-width: 96px;
-    font-size: .7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .5px;
-    color: var(--edzcat-muted);
-}
-.edzcat-lvl {
-    width: 18px;
-    height: 18px;
-    border-radius: 5px;
-    background: #fff;
-    border: 1px solid var(--edzcat-band-line);
+.edzcat-rownode {
+    position: absolute;
+    left: 5px;
+    top: 13px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
     display: grid;
     place-items: center;
-    font-size: .62rem;
-    color: var(--edzcat-primary);
+    background: var(--edzcat-primary);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    box-shadow: 0 0 0 4px var(--edzcat-surface);
+    z-index: 1;
+}
+.edzcat-rowband {
+    border: 1px solid transparent;
+    border-radius: 12px;
+    padding: 10px 14px 12px;
+}
+.edzcat-rowcap {
+    margin: 0 0 9px;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+}
+.edzcat-rowchips {
+    display: flex;
+    gap: 9px;
+    flex-wrap: wrap;
 }
 .edzcat-chip {
-    border: 1.5px solid var(--edzcat-line);
+    border: 1.5px solid #dfe4ee;
     background: var(--edzcat-surface);
     border-radius: 999px;
     padding: 8px 15px;
@@ -224,17 +240,48 @@
     border-color: var(--edzcat-primary);
     color: var(--edzcat-primary);
 }
-.edzcat-chip.is-active {
-    background: var(--edzcat-primary);
-    border-color: var(--edzcat-primary);
-    color: var(--edzcat-primary-contrast);
-}
 .edzcat-chip-all {
     border-style: dashed;
+    color: var(--edzcat-muted);
+    background: rgba(255, 255, 255, .6);
 }
 .edzcat-chip .edzcat-count {
     margin-left: 3px;
-    opacity: .7;
+    opacity: .68;
+    font-weight: 600;
+}
+.edzcat-chip.is-active .edzcat-count {
+    color: #fff;
+    opacity: .85;
+}
+
+/* Level 1 — indigo. */
+.edzcat-lvl-1 .edzcat-rownode { background: #3b53b8; }
+.edzcat-lvl-1 .edzcat-rowband { background: #eef2fd; border-color: #dde4fb; }
+.edzcat-lvl-1 .edzcat-rowcap  { color: #2c3e8f; }
+.edzcat-lvl-1 .edzcat-chip.is-active { background: #3b53b8; border-color: #3b53b8; color: #fff; }
+/* Level 2 — teal, stepped in. */
+.edzcat-lvl-2 .edzcat-rowband { margin-left: 22px; background: #e9f6f5; border-color: #cdeae7; }
+.edzcat-lvl-2 .edzcat-rownode { background: #159a90; }
+.edzcat-lvl-2 .edzcat-rowcap  { color: #12706a; }
+.edzcat-lvl-2 .edzcat-chip.is-active { background: #159a90; border-color: #159a90; color: #fff; }
+/* Level 3 — amber, stepped in more, denser chips. */
+.edzcat-lvl-3 .edzcat-rowband { margin-left: 44px; background: #fdf3e8; border-color: #f6e1c5; }
+.edzcat-lvl-3 .edzcat-rownode { background: #d98420; }
+.edzcat-lvl-3 .edzcat-rowcap  { color: #9a5a12; }
+.edzcat-lvl-3 .edzcat-rowchips .edzcat-chip { font-size: .78rem; padding: 7px 12px; }
+.edzcat-lvl-3 .edzcat-chip.is-active { background: #d98420; border-color: #d98420; color: #fff; }
+/* Level 4+ — slate fallback. */
+.edzcat-lvl-4 .edzcat-rowband { margin-left: 66px; background: #f1f5f9; border-color: #e2e8f0; }
+.edzcat-lvl-4 .edzcat-rownode { background: #64748b; }
+.edzcat-lvl-4 .edzcat-rowcap  { color: #475569; }
+.edzcat-lvl-4 .edzcat-chip.is-active { background: #64748b; border-color: #64748b; color: #fff; }
+
+@media (max-width: 640px) {
+    .edzcat-lvl-2 .edzcat-rowband,
+    .edzcat-lvl-3 .edzcat-rowband,
+    .edzcat-lvl-4 .edzcat-rowband { margin-left: 0; }
+    .edzcat-chiprow { padding-left: 40px; }
 }
 
 /* Result meta */

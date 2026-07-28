@@ -13,20 +13,25 @@
 {{#hasrows}}
 <div class="edzcat-chiprows">
     {{#rows}}
-    <div class="edzcat-chiprow" data-level="{{level}}">
-        <span class="edzcat-rowlabel"><span class="edzcat-lvl">{{level}}</span>{{{label}}}</span>
-        <button type="button" class="edzcat-chip edzcat-chip-all {{#allactive}}is-active{{/allactive}}"
-            data-catid="{{parentid}}" data-haschildren="0"
-            aria-pressed="{{#allactive}}true{{/allactive}}{{^allactive}}false{{/allactive}}">
-            {{{alllabel}}} <span class="edzcat-count">({{allcount}})</span>
-        </button>
-        {{#chips}}
-        <button type="button" class="edzcat-chip {{#active}}is-active{{/active}}"
-            data-catid="{{id}}" data-haschildren="{{#haschildren}}1{{/haschildren}}{{^haschildren}}0{{/haschildren}}"
-            aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
-            {{{name}}} <span class="edzcat-count">({{count}})</span>
-        </button>
-        {{/chips}}
+    <div class="edzcat-chiprow edzcat-lvl-{{level}}" data-level="{{level}}">
+        <div class="edzcat-rownode">{{level}}</div>
+        <div class="edzcat-rowband">
+            <p class="edzcat-rowcap">{{{label}}}</p>
+            <div class="edzcat-rowchips">
+                <button type="button" class="edzcat-chip edzcat-chip-all {{#allactive}}is-active{{/allactive}}"
+                    data-catid="{{parentid}}" data-haschildren="0"
+                    aria-pressed="{{#allactive}}true{{/allactive}}{{^allactive}}false{{/allactive}}">
+                    {{{alllabel}}} <span class="edzcat-count">({{allcount}})</span>
+                </button>
+                {{#chips}}
+                <button type="button" class="edzcat-chip {{#active}}is-active{{/active}}"
+                    data-catid="{{id}}" data-haschildren="{{#haschildren}}1{{/haschildren}}{{^haschildren}}0{{/haschildren}}"
+                    aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
+                    {{{name}}} <span class="edzcat-count">({{count}})</span>
+                </button>
+                {{/chips}}
+            </div>
+        </div>
     </div>
     {{/rows}}
 </div>
