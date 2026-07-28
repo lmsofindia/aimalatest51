@@ -1,0 +1,79 @@
+local_edzallcourse — Testing checklist
+========================================
+
+PRE-DEPLOY
+[ ] php -l on every .php file (no syntax errors)
+[ ] amd/build/catalogue.min.js regenerated from amd/src/catalogue.js (terser/grunt)
+[ ] version.php bumped; Site admin > Notifications runs cleanly (in-place upgrade, no DB step)
+[ ] php admin/cli/purge_caches.php after deploy
+
+CORE NAVIGATION (hybrid drilldown)
+[ ] /local/edzallcourse/index.php loads with hero, search, sort, left rail, grid
+[ ] Left rail lists ONLY root categories (parent=0) with (n) recursive counts
+[ ] Click a root -> level-1 chip row appears; grid shows courses under root RECURSIVELY
+[ ] Chip counts render as "(12)" style; "All <parent>" chip present per row
+[ ] Click a chip WITH children -> new chip row stacks BELOW; grid narrows to that node (recursive)
+[ ] Click a LEAF chip -> grid shows only that leaf's direct courses; no further row
+[ ] Selecting a sibling chip at level N trims deeper rows and recomputes
+[ ] Selected chip highlighted in each active row; parent label + level number shown
+[ ] Chip-row band has coloured background
+
+SCOPE SETTING
+[ ] scope=recursive: parent node shows own + descendant courses
+[ ] scope=direct: parent node shows ONLY directly-placed courses; leaves unchanged
+[ ] Counts match the active scope
+
+COURSE CARDS
+[ ] Course with overview image shows the image
+[ ] Course without image shows deterministic gradient + pattern (stable per course id)
+[ ] Category badge positioned correctly (top-left over thumb)
+[ ] Title links to /course/view.php?id=
+[ ] Summary clamps to 2 lines; hidden when showsummary=0
+[ ] Teacher = a course contact (respects $CFG->coursecontact), NOT hardcoded role 3; "Not yet assigned" when none; hidden when showteacher=0
+[ ] Start date localised; hidden when showstartdate=0
+[ ] CTA: guest="View", enrolled user="Go to course", else "Enrol now"
+[ ] Admin/manager (moodle/course:update) sees edit pencil -> /course/edit.php?id=; others do NOT
+
+SEARCH / SORT
+[ ] Typing in search filters within current category scope (debounced ~250ms)
+[ ] Empty search restores full scope
+[ ] Sort popular/new/az/start each reorders correctly
+[ ] Search + sort + drilldown combine correctly
+
+PAGINATION
+[ ] "Showing X-Y of N" accurate
+[ ] Numbered pager prev . 1 2 3 . next; disabled states at ends
+[ ] Page change fetches server-side slice (not client slicing)
+[ ] Changing category/search/sort resets to page 1
+
+URL STATE / SEO
+[ ] category/page/q/sort reflected in URL as you interact
+[ ] Reload of a deep URL restores the exact view server-side
+[ ] Browser Back/Forward moves between prior views (popstate)
+[ ] With JavaScript disabled, first paint still shows roots + first page of courses
+
+PERMISSIONS / VISIBILITY
+[ ] Hidden courses not shown to users lacking view-hidden
+[ ] Hidden categories not shown
+[ ] Guest access honours local/edzallcourse:view archetype
+[ ] enable=0 -> page shows disabled message; redirect inactive
+[ ] takeovercourseindex=1 -> /course/index.php redirects to catalogue (carrying categoryid)
+[ ] takeovercourseindex=0 -> /course/index.php behaves normally
+
+PERFORMANCE
+[ ] Category with 500+ courses: only one page fetched (SQL limit/offset), not all rows
+[ ] No N+1 explosion: teacher/image/enrol batched per visible page (check DB query count via debug)
+[ ] Tree + counts served from cache on repeat loads
+
+MULTI-BRAND / i18n
+[ ] All visible copy comes from lang strings (no hardcoded English in templates)
+[ ] terminology helper swaps wording where configured
+[ ] Colours follow theme variables
+
+REGRESSION (vs legacy)
+[ ] No "rashid" debug output anywhere
+[ ] No duplicate global function fatals
+[ ] No [[nofilterenabled]] or other missing-string markers on screen
+
+UPGRADE PATH
+[ ] Install over legacy 2025072814 -> upgrades to new version, page works, old ajax URLs gone
