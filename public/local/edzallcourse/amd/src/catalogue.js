@@ -80,8 +80,6 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
             grid.classList.add('edzcat-is-loading');
         }
 
-        // loginrequired = false so the guest-accessible catalogue works for
-        // anonymous visitors as well as logged-in users.
         Ajax.call([{
             methodname: 'local_edzallcourse_get_view',
             args: {
@@ -90,7 +88,7 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
                 sort: state.sort,
                 page: state.page
             }
-        }], true, false)[0].then(function(resp) {
+        }])[0].then(function(resp) {
             if (mine !== seq) {
                 return; // A newer request superseded this one.
             }
