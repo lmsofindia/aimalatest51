@@ -900,3 +900,135 @@ body.pagelayout-mydashboard .page-header-headings {
     .instancename,
     .name { min-width: 0; }
 }
+
+
+// =============================================================================
+// EdzCorp — Admin / report data-screen fixes                     2026-07-27
+// -----------------------------------------------------------------------------
+// Source: UI/UX audit of aimanew.lmsatwork.com (course management, participants,
+// quiz report, grader report, logs, in-course view, activity-completion report).
+//
+// WHY THIS BLOCK EXISTS
+// The theme styles learner pages well but left Moodle's core data screens on
+// Boost defaults + a 1.65 (26.4px) body line-height. That produced tall, sparse
+// rows, wrapped date columns and misaligned controls on the admin/report tables.
+//
+// SAFETY CONTRACT — do NOT widen the global `.table` rule (that broad rule is
+// what caused the inconsistency in the first place). EVERY selector below is
+// pinned to ONE screen via its Moodle body id / unique table id / component
+// class, so it physically cannot reach the dashboard, course content tables,
+// the gradebook's numeric alignment, or any learner-facing page. Colours use
+// --edz-* tokens so dark mode inherits automatically. No !important unless a
+// core inline/utility class forces it.
+//
+// FIXES IN THIS BLOCK
+//   A · Report-table density  (logs, quiz report, participants)   — kills tall rows
+//   B · Course-management rows (checkbox stranded above wrapped title)
+//   C · Participants header alignment (empty DEPARTMENT column looked right-shifted)
+//   D · In-course activity rows (name dropped below its icon when a description exists)
+//   E · Completion-report header (soften empty top-left void; surface name tooltip)
+// =============================================================================
+
+
+// ── A · Report-table density ─────────────────────────────────  2026-07-27
+// Fix: tall, sparse rows on the high-traffic report/admin tables. Root cause was
+// the 1.65 body line-height plus long date/time columns wrapping to 3-4 lines,
+// which stretched every cell in the row (e.g. logs rows were 127px tall; quiz
+// grade cells 105px, making the tick/cross marks look huge). Scoped per table so
+// content tables inside courses are untouched.
+
+// Logs report — the Time column ("26 July 2026, 11:05:29 PM") wrapped to ~4
+// lines. Keep it on one line and tighten line-height; top-align for multi-line
+// description cells. Table id/class `.reportlog` is unique to this report.
+.reportlog {
+    td.cell,
+    th { line-height: 1.35; vertical-align: top; }
+    td.cell.c0 { white-space: nowrap; }   // c0 = Time column
+}
+
+// Quiz report (attempts / overview) — Started/Completed dates wrapped to 3
+// lines and stretched the whole row, so the tick/cross grade cells looked
+// oversized. This report table already scrolls horizontally, so a single-line
+// layout is the right trade: rows collapse to one line, marks read normally.
+// Scoped to the quiz-report page body id only.
+#page-mod-quiz-report table.generaltable {
+    td.cell { line-height: 1.3; vertical-align: top; white-space: nowrap; }
+    // The stacked "Review attempt" link under a name is a block element, so
+    // nowrap does not merge it onto the name line.
+}
+
+// Participants list — rows were ~89px with inconsistent vertical alignment
+// (name top-aligned, email/role middle-aligned). Anchor every cell to the same
+// baseline and tighten line-height. `#participants` id is unique to this page.
+#participants {
+    td.cell { vertical-align: middle; line-height: 1.4; }
+}
+
+
+// ── B · Course-management course rows ────────────────────────  2026-07-27
+// Fix: on /course/management.php a course row's checkbox sat alone ABOVE the
+// title with a gap, and the row action icons dropped to a second line. Cause:
+// Moodle wraps course rows in `.d-flex.flex-wrap` but the checkbox/drag-handle
+// keep legacy `.float-start` classes; floats are ignored inside flex, so the
+// long title wrapped down. Category rows use `.clearfix` (float layout) and are
+// deliberately NOT matched by `> .d-flex`, so they stay exactly as they are.
+#page-course-management .course-listing .listitem > .d-flex {
+    flex-wrap: nowrap;
+    align-items: center;
+
+    // Neutralise the ignored float only inside this flex row (no-op elsewhere).
+    .float-start { float: none; }
+
+    // Let the title take the remaining space and truncate in place instead of
+    // dropping below the checkbox.
+    .coursename,
+    .listitem-course-actions { min-width: 0; }
+    .coursename { flex: 1 1 auto; }
+}
+
+
+// ── C · Participants header alignment ────────────────────────  2026-07-27
+// Fix: the empty DEPARTMENT column made its header look right-shifted / detached
+// from the (empty) data below it. Left-align the header cells to match the body.
+// Participants has no numeric columns, so this is safe here — deliberately NOT
+// applied globally, to avoid disturbing the gradebook's right-aligned numbers.
+// NOTE: the empty Department column is intentionally NOT hidden — Department is
+// data-driven and other courses/users may have it populated.
+#participants thead th { text-align: left; }
+
+
+// ── D · In-course activity rows ──────────────────────────────  2026-07-27
+// Fix: on course/view.php an activity WITH a description scattered — the
+// "Mark as done" button and description were top-aligned but the activity name
+// dropped ~100px lower and looked detached from its own icon. Cause: the
+// `.activity-grid` flex row did not top-anchor the name column while the
+// completion/altcontent cells carried `align-self-start`. Force all cells to the
+// top. Activities without a description are single-line, so this is a no-op for
+// them. Scoped to course-view page bodies only (the course-index drawer uses
+// different markup: `.courseindex-item`).
+body[id^="page-course-view"] .activity-item .activity-grid {
+    align-items: start;
+
+    > * { align-self: start; }
+}
+
+
+// ── E · Completion-report header band ────────────────────────  2026-07-27
+// Screen: /report/progress (Activity completion). The rotated activity-name
+// headers repeat/truncate ("CONTRACT MANAGEMENT & …") and a large empty white
+// box sits top-left. IMPORTANT: that "…" is Moodle server-side truncation
+// (report_progress shorten_text) — CSS cannot lengthen it; the FULL name is
+// already on the header <a title="…"> as a native hover tooltip. So this pass
+// only (1) softens the empty top-left corner so it reads as intentional header
+// space, and (2) adds a hover affordance so users discover the tooltip. Showing
+// more of the name = a report-level override (phase 2), not theme CSS.
+#page-report-progress-index {
+    th.completion-sortchoice,
+    th.completion-identifyfield {
+        vertical-align: bottom;
+        background: var(--edz-page-bg);
+        border-bottom: 2px solid var(--edz-border-color);
+    }
+    th.completion-header a[title] { cursor: help; }
+}
+// ── end EdzCorp admin/report fixes (2026-07-27) ──────────────────────────────
