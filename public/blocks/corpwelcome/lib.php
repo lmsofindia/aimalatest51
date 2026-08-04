@@ -6,13 +6,15 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * Serve the admin-uploaded background image from a block instance's file area.
+ * Serve the admin-uploaded (site-level) Hero background image.
  *
- * URL shape: /pluginfile.php/{blockcontextid}/block_corpwelcome/backgroundimage/0/{filename}
+ * The image is a SITE setting stored in the SYSTEM context (see settings.php),
+ * so it is shared by every dashboard. URL shape:
+ *   /pluginfile.php/1/block_corpwelcome/backgroundimage/0/{filename}
  *
- * @param stdClass $course        Course object (unused for block context).
- * @param stdClass $birecordorcm  Block instance record.
- * @param context  $context       Block context.
+ * @param stdClass $course        Course object (unused for system context).
+ * @param stdClass $birecordorcm  Block instance record (unused).
+ * @param context  $context       System context.
  * @param string   $filearea      File area name.
  * @param array    $args          [itemid, ...filepath, filename].
  * @param bool     $forcedownload Whether to force download.
@@ -20,8 +22,8 @@ defined('MOODLE_INTERNAL') || die();
  * @return bool False if the file was not served.
  */
 function block_corpwelcome_pluginfile($course, $birecordorcm, $context, $filearea, $args, $forcedownload, array $options = []) {
-    // Only serve from block contexts, and only our one file area.
-    if ($context->contextlevel != CONTEXT_BLOCK) {
+    // Site-level image lives in the system context; only our one file area.
+    if ($context->contextlevel != CONTEXT_SYSTEM) {
         return false;
     }
     if ($filearea !== 'backgroundimage') {
