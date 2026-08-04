@@ -55,6 +55,8 @@ $string['card_courseconsolidated'] = 'Consolidated course report';
 $string['carddesc_courseconsolidated'] = 'Pick a course: every learner\'s completion, grade & status, with charts.';
 $string['card_badges'] = 'Badges & achievements';
 $string['carddesc_badges'] = 'Badges earned across courses.';
+$string['card_edzfaculty'] = 'Faculty dashboard';
+$string['carddesc_edzfaculty'] = 'Your teaching dashboard: courses, learners and grading at a glance.';
 
 // Settings.
 $string['settings_general'] = 'General';

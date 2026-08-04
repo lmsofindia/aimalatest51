@@ -35,6 +35,7 @@ class access {
         'logreport'   => '/report/log/index.php?id=0',
         'teamreports' => '/local/edzteams/index.php',
         'badges'      => '/badges/mybadges.php',
+        'edzfaculty'  => '/local/edzfaculty/index.php',
     ];
 
     /**
@@ -74,6 +75,78 @@ class access {
     }
 
     /**
+     * Visibility test for a "special" card whose display rules go beyond a simple
+     * capability check.
+     *
+     * @param string $special the special-card identifier
+     * @return bool whether the card should be shown to the current viewer
+     */
+    protected static function special_card_visible(string $special): bool {
+        switch ($special) {
+            case 'edzfaculty':
+                // Faculty dashboard: only when the plugin is installed and the viewer
+                // actually teaches somewhere.
+                return self::edzfaculty_available() && self::is_teacher_anywhere();
+        }
+        return false;
+    }
+
+    /**
+     * Is the local_edzfaculty plugin present and installed on this site?
+     *
+     * Checks both that the plugin's code exists on disk and that it has a recorded
+     * version (i.e. it finished installing), so we never link to a dead page.
+     *
+     * @return bool
+     */
+    public static function edzfaculty_available(): bool {
+        if (!\core_component::get_component_directory('local_edzfaculty')) {
+            return false;
+        }
+        return (bool)get_config('local_edzfaculty', 'version');
+    }
+
+    /**
+     * Is the current user a teacher in at least one course?
+     *
+     * "Teacher" means holding a role built on the editing- or non-editing-teacher
+     * archetype (including custom roles derived from them) in a course or activity
+     * context. Site-level managers/admins who are not actually assigned a teaching
+     * role in a course are deliberately NOT counted.
+     *
+     * @return bool
+     */
+    public static function is_teacher_anywhere(): bool {
+        global $USER, $DB;
+
+        if (!isloggedin() || isguestuser()) {
+            return false;
+        }
+
+        // Roles derived from the teacher archetypes. Keyed by role id; '+' merges the
+        // two archetype sets without clobbering (ids are unique).
+        $teacherroles = get_archetype_roles('editingteacher') + get_archetype_roles('teacher');
+        if (empty($teacherroles)) {
+            return false;
+        }
+        $roleids = array_keys($teacherroles);
+
+        list($insql, $params) = $DB->get_in_or_equal($roleids, SQL_PARAMS_NAMED, 'ra');
+        $params['userid'] = (int)$USER->id;
+        $params['crs'] = CONTEXT_COURSE;
+        $params['mod'] = CONTEXT_MODULE;
+
+        $sql = "SELECT 1
+                  FROM {role_assignments} ra
+                  JOIN {context} ctx ON ctx.id = ra.contextid
+                 WHERE ra.userid = :userid
+                   AND ra.roleid $insql
+                   AND ctx.contextlevel IN (:crs, :mod)";
+
+        return $DB->record_exists_sql($sql, $params);
+    }
+
+    /**
      * Require that the viewer may see this target user's data. In self mode the only
      * allowed target is the viewer; full mode may view anyone.
      *
@@ -100,6 +173,13 @@ class access {
         // never display a card that would lead to "access denied". Cards with no
         // 'requires' are available to everyone who can view the panel (self-service).
         $defs = [
+            [
+                // Faculty dashboard (local_edzfaculty). Shown only when that plugin is
+                // installed AND the viewer is a teacher in at least one course — see the
+                // 'special' handling below.
+                'key' => 'edzfaculty', 'icon' => 'fa-chalkboard-user', 'internal' => false,
+                'special' => 'edzfaculty',
+            ],
             [
                 'key' => 'leaderboard', 'icon' => 'fa-trophy', 'internal' => false,
             ],
@@ -151,12 +231,18 @@ class access {
         $groups = [
             'leaderboard' => 'self', 'quizreports' => 'self', 'certreports' => 'self',
             'consolidated' => 'self', 'badges' => 'self',
+            'edzfaculty' => 'manager',
             'courseconsolidated' => 'manager', 'engagement' => 'manager', 'rankings' => 'manager',
             'overview' => 'manager', 'teamreports' => 'manager', 'logreport' => 'manager',
         ];
 
         $cards = [];
         foreach ($defs as $def) {
+            // Special-case cards with bespoke visibility rules (plugin presence,
+            // role checks, etc.) that don't fit the simple capability gate below.
+            if (!empty($def['special']) && !self::special_card_visible($def['special'])) {
+                continue;
+            }
             // Capability gate: only show the card if the viewer can actually open it.
             if (!empty($def['requires']) && !self::has_any_cap($def['requires'])) {
                 continue;

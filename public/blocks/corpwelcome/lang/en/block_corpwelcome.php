@@ -35,9 +35,10 @@ $string['configbgcolor_help']     = 'HEX or CSS colour value for the block backg
 $string['configblocktheme_help']  = 'Choose the visual style for this block. Dark uses the premium glassmorphism look; Light uses a clean split-panel layout.';
 $string['configcategories_help']  = 'Choose which course categories appear as filter pills. Leave empty to show all (up to 5).';
 
-// Background image (Hero style).
-$string['configbackgroundimage']      = 'Background image (Hero style)';
-$string['configbackgroundimage_help'] = 'Optional. Upload an image to use as the background of the Hero banner header instead of the flat accent colour. Recommended size roughly 1600×500px (landscape). The background colour above is used as a fallback and shows behind the image while it loads. Leave empty to keep the plain colour.';
+// Background image (Hero style) — site-level setting shared by all dashboards.
+$string['pluginname_desc']            = 'Corporate welcome block settings.';
+$string['configbackgroundimage']      = 'Hero background image (all dashboards)';
+$string['configbackgroundimage_help'] = 'Optional. Upload ONE image to use as the background of the Hero banner header on every dashboard — the default dashboard and each user\'s own copy all share this image. It replaces the flat accent colour. Recommended size roughly 1600×500px (landscape). Leave empty to keep the plain colour. Applies only to blocks set to the Hero style.';
 $string['configoverlaydarkness']      = 'Image overlay darkness';
 $string['configoverlaydarkness_help'] = 'How dark a scrim to place over the background image so the white heading and progress text stay readable. Increase this for bright or busy images; decrease it for images that are already dark. Only applies when a background image is set.';
 $string['overlay0']  = 'None (0%) — image only';
