@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_reportpanel';
-$plugin->version   = 2026070810;
+$plugin->version   = 2026080400;
 $plugin->requires  = 2024042200; // Moodle 5.0.
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '1.4.0';
+$plugin->release   = '1.5.0';

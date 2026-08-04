@@ -48,6 +48,7 @@ if ($hassiteconfig) {
         'logreport'   => '/report/log/index.php?id=0',
         'teamreports' => '/local/edzteams/index.php',
         'badges'      => '/badges/mybadges.php',
+        'edzfaculty'  => '/local/edzfaculty/index.php',
     ];
     foreach ($externalcards as $key => $default) {
         $settings->add(new admin_setting_configcheckbox("local_reportpanel/enable_{$key}",
