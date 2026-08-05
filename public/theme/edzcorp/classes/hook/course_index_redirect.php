@@ -30,13 +30,15 @@ defined('MOODLE_INTERNAL') || die();
  * after_config hook: send /course/ (and /course/index.php with no params) to
  * the local_coursecatalogue front page.
  */
-class course_index_redirect {
+class course_index_redirect
+{
 
     /**
      * @param \core\hook\after_config $hook
      * @return void
      */
-    public static function redirect(\core\hook\after_config $hook): void {
+    public static function redirect(\core\hook\after_config $hook): void
+    {
         global $CFG;
 
         // Skip non-interactive / bootstrap contexts.
@@ -44,8 +46,9 @@ class course_index_redirect {
             return;
         }
         if ((defined('CLI_SCRIPT') && CLI_SCRIPT)
-                || (defined('AJAX_SCRIPT') && AJAX_SCRIPT)
-                || (defined('WS_SERVER') && WS_SERVER)) {
+            || (defined('AJAX_SCRIPT') && AJAX_SCRIPT)
+            || (defined('WS_SERVER') && WS_SERVER)
+        ) {
             return;
         }
         if (!empty($CFG->upgraderunning)) {
@@ -71,6 +74,6 @@ class course_index_redirect {
             return;
         }
 
-        redirect(new \moodle_url('/local/coursecatalogue/'));
+        redirect(new \moodle_url('/local/edzallcourse/')); // redirect to edzallcourse 
     }
 }
