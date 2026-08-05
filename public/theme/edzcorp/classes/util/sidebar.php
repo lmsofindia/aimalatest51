@@ -183,12 +183,14 @@ class sidebar
             }
 
             // Onboarding — local_edzonboard personal onboarding journey.
+            /* Hide onboarding
             $learning[] = $this->make_item(
                 'onboarding',
                 get_string('navonboarding', 'theme_edzcorp'),
                 'fa-rocket',
                 new \moodle_url('/local/edzonboard/myonboarding.php')
             );
+            */
         }
 
         // Course catalogue — local_coursecatalogue, visible to ALL users.
