@@ -28,7 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Sidebar navigation builder.
  */
-class sidebar {
+class sidebar
+{
 
     /** @var \moodle_page The current page. */
     protected \moodle_page $page;
@@ -41,7 +42,8 @@ class sidebar {
      *
      * @param \moodle_page $page  The current Moodle page object.
      */
-    public function __construct(\moodle_page $page) {
+    public function __construct(\moodle_page $page)
+    {
         $this->page   = $page;
         $this->groups = $this->build_nav_groups();
         $this->mark_active();
@@ -56,7 +58,8 @@ class sidebar {
      *
      * @return array
      */
-    public function get_context(): array {
+    public function get_context(): array
+    {
         global $USER, $SITE;
 
         $theme   = \theme_config::load('edzcorp');
@@ -117,7 +120,8 @@ class sidebar {
      *
      * @return array
      */
-    protected function build_nav_groups(): array {
+    protected function build_nav_groups(): array
+    {
         $groups = [];
 
         $loggedin = isloggedin() && !isguestuser();
@@ -192,7 +196,7 @@ class sidebar {
             'coursecatalogue',
             get_string('navcoursecatalogue', 'theme_edzcorp'),
             'fa-book-open',
-            new \moodle_url('/local/coursecatalogue/')
+            new \moodle_url('/local/edzallcourse/')
         );
 
         // Manage team — local_edzteams, only for managers/admins holding the
@@ -218,8 +222,9 @@ class sidebar {
         // opens a course picker (select.php); the picker + target page enforce
         // the real per-course capability.
         // ==================================================================
+        /* FOR AIMA Comment the scorm builder and ai course builder 
         if ($loggedin && (is_siteadmin()
-                || $this->user_has_any_role(['manager', 'coursecreator', 'editingteacher', 'teacher']))) {
+            || $this->user_has_any_role(['manager', 'coursecreator', 'editingteacher', 'teacher']))) {
             $authoring = [
                 $this->make_item(
                     'scormbuilder',
@@ -240,7 +245,7 @@ class sidebar {
                 'items'      => $authoring,
             ];
         }
-
+        */
         // ==================================================================
         // GROUP 2 — Analytics
         // Only shown to authenticated non-admin users and teacher+ roles.
@@ -331,8 +336,8 @@ class sidebar {
         // panel (local_admincontrol). Links to the curated control panel when
         // that plugin is installed; otherwise falls back to Moodle's admin search.
         $canadmin = $loggedin && (is_siteadmin()
-                || has_capability('moodle/site:configview', $sysctx)
-                || has_capability('local/admincontrol:view', $sysctx));
+            || has_capability('moodle/site:configview', $sysctx)
+            || has_capability('local/admincontrol:view', $sysctx));
         if ($canadmin) {
             $admin = [];
 
@@ -388,7 +393,8 @@ class sidebar {
      *
      * @return void
      */
-    protected function mark_active(): void {
+    protected function mark_active(): void
+    {
         $currenturl  = $this->page->url->out(false);
         $currentpath = parse_url($currenturl, PHP_URL_PATH) ?? '/';
         parse_str(parse_url($currenturl, PHP_URL_QUERY) ?? '', $currentparams);
@@ -462,7 +468,8 @@ class sidebar {
      *
      * @return array
      */
-    protected function groups_for_template(): array {
+    protected function groups_for_template(): array
+    {
         $result = [];
         foreach ($this->groups as $group) {
             $items = array_map(static function (array $item): array {
@@ -493,7 +500,8 @@ class sidebar {
      * @param  string[] $archetypes  Role archetypes to look for.
      * @return bool
      */
-    protected function user_has_any_role(array $archetypes): bool {
+    protected function user_has_any_role(array $archetypes): bool
+    {
         global $DB, $USER;
 
         if (!isloggedin() || isguestuser()) {
@@ -524,7 +532,8 @@ class sidebar {
      *
      * @return string
      */
-    protected function get_primary_role_name(): string {
+    protected function get_primary_role_name(): string
+    {
         global $DB, $USER;
 
         if (!isloggedin() || isguestuser()) {
