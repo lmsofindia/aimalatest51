@@ -360,6 +360,18 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $top_subtext = !empty($s->fp_top_subtext) ? clean_param($s->fp_top_subtext, PARAM_TEXT)
         : 'Find, explore and learn in an awesome place, find, explore and learn in great service.';
 
+    // Layout switch: 'classic' (3-col illustration) or 'split' (2-col + search).
+    $top_layout = !empty($s->fp_top_layout) ? clean_param($s->fp_top_layout, PARAM_ALPHA) : 'split';
+    if (!in_array($top_layout, ['classic', 'split'], true)) {
+        $top_layout = 'split';
+    }
+
+    // Split-layout photo shape: 'arch' (AIMA dome-left) or 'circle' (full circle).
+    $top_photo_shape = !empty($s->fp_top_photo_shape) ? clean_param($s->fp_top_photo_shape, PARAM_ALPHA) : 'arch';
+    if (!in_array($top_photo_shape, ['arch', 'circle'], true)) {
+        $top_photo_shape = 'arch';
+    }
+
     // CTA: auto Login (logged out) / Dashboard (logged in). Label can be overridden.
     if (isloggedin() && !isguestuser()) {
         $top_cta_url     = (new \moodle_url('/my/'))->out(false);
@@ -369,6 +381,25 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         $top_cta_default = get_string('fp_top_login', 'theme_edzcorp');
     }
     $top_cta_label = !empty($s->fp_top_btnlabel) ? clean_param($s->fp_top_btnlabel, PARAM_TEXT) : $top_cta_default;
+
+    // Split-layout: "Explore Programmes" primary button (defaults to the catalogue).
+    $top_explore_label = !empty($s->fp_top_explore_label)
+        ? clean_param($s->fp_top_explore_label, PARAM_TEXT) : 'Explore Programmes';
+    $top_explore_url = !empty($s->fp_top_explore_url)
+        ? clean_param($s->fp_top_explore_url, PARAM_LOCALURL) : '';
+    if ($top_explore_url === '') {
+        $top_explore_url = (new \moodle_url('/local/edzallcourse/index.php'))->out(false);
+    }
+
+    // Split-layout: hero search box (typeahead over courses + categories).
+    $top_search_enable = (!isset($s->fp_top_search_enable) || (string)$s->fp_top_search_enable !== '0');
+    $top_search_placeholder = !empty($s->fp_top_search_placeholder)
+        ? clean_param($s->fp_top_search_placeholder, PARAM_TEXT) : 'Search programmes, subjects or skills';
+    // Enter with no suggestion selected falls back to the catalogue, pre-filtered.
+    $top_search_action = (new \moodle_url('/local/edzallcourse/index.php'))->out(false);
+
+    // Split-layout hero background colour (blank = a soft brand tint via SCSS fallback).
+    $top_bg = !empty($s->fp_top_bg) ? clean_param($s->fp_top_bg, PARAM_TEXT) : '';
 
     $top_qlabel = !empty($s->fp_top_qlabel) ? clean_param($s->fp_top_qlabel, PARAM_TEXT) : 'Have a question?';
     $top_qurl   = !empty($s->fp_top_qurl) ? clean_param($s->fp_top_qurl, PARAM_URL) : '';
@@ -384,18 +415,39 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $top_badge     = !empty($s->fp_top_badge) ? clean_param($s->fp_top_badge, PARAM_TEXT) : 'Learn more about service';
     $top_badge_url = !empty($s->fp_top_badge_url) ? clean_param($s->fp_top_badge_url, PARAM_URL) : '';
 
+    // Defaults use fa-regular (outline/line style) to match the AIMA design.
     $topstatdefaults = [
-        1 => ['+120K', 'Our active monthly users'],
-        2 => ['+27K',  'Our monthly products'],
-        3 => ['+300K', 'Hours of learning recorded'],
+        1 => ['+120K', 'Our active monthly users', 'fa-regular fa-user'],
+        2 => ['+27K',  'Our monthly products',      'fa-regular fa-folder-open'],
+        3 => ['+300K', 'Hours of learning recorded', 'fa-regular fa-clock'],
+    ];
+    // Migrate the old bundled SOLID defaults (saved on early sites) to the new
+    // outline icons, so existing installs pick up the line-style look too.
+    $iconmigrate = [
+        'fa-user-group' => 'fa-regular fa-user',
+        'fa-users'      => 'fa-regular fa-user',
+        'fa-book-open'  => 'fa-regular fa-folder-open',
+        'fa-book'       => 'fa-regular fa-folder-open',
+        'fa-clock'      => 'fa-regular fa-clock',
     ];
     $top_stats = [];
     for ($ti = 1; $ti <= 3; $ti++) {
         $nk = "fp_top_stat{$ti}_num";
         $lk = "fp_top_stat{$ti}_label";
+        $ik = "fp_top_stat{$ti}_icon";
+        $rawicon = !empty($s->$ik) ? clean_param($s->$ik, PARAM_TEXT) : $topstatdefaults[$ti][2];
+        $rawicon = trim($rawicon);
+        if (isset($iconmigrate[$rawicon])) {
+            $rawicon = $iconmigrate[$rawicon];
+        }
+        // Accept a full class ("fa-regular fa-clock") or a bare name ("fa-clock").
+        // Bare names default to the solid style so older custom values keep working.
+        $iconclass = preg_match('/\b(fa-solid|fa-regular|fa-brands|fas|far|fab)\b/', $rawicon)
+            ? $rawicon : ('fa-solid ' . $rawicon);
         $top_stats[] = [
             'num'   => !empty($s->$nk) ? clean_param($s->$nk, PARAM_TEXT) : $topstatdefaults[$ti][0],
             'label' => !empty($s->$lk) ? clean_param($s->$lk, PARAM_TEXT) : $topstatdefaults[$ti][1],
+            'icon'  => $iconclass,
         ];
     }
     $top_avatars_text = !empty($s->fp_top_avatars_text) ? clean_param($s->fp_top_avatars_text, PARAM_TEXT) : 'Find, explore & learn with us.';
@@ -404,13 +456,34 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     // 1. EMPLOYEE SPOTLIGHT
     // =========================================================================
 
-    $emp_name  = !empty($s->fp_emp_name)  ? clean_param($s->fp_emp_name,  PARAM_TEXT) : 'Sara Chen';
-    $emp_title = !empty($s->fp_emp_title) ? clean_param($s->fp_emp_title, PARAM_TEXT) : 'Product Lead';
-    $emp_dept  = !empty($s->fp_emp_dept)  ? clean_param($s->fp_emp_dept,  PARAM_TEXT) : 'Innovation & Technology';
+    // Use isset() (not !empty) so a deliberately-cleared field stays blank and
+    // the name/role row hides — only an UNSET (never-configured) field uses the
+    // sample default. Otherwise clearing "Sara Chen" would silently re-show it.
+    $emp_name  = isset($s->fp_emp_name)  ? clean_param($s->fp_emp_name,  PARAM_TEXT) : 'Sara Chen';
+    $emp_title = isset($s->fp_emp_title) ? clean_param($s->fp_emp_title, PARAM_TEXT) : 'Product Lead';
+    $emp_dept  = isset($s->fp_emp_dept)  ? clean_param($s->fp_emp_dept,  PARAM_TEXT) : 'Innovation & Technology';
     $emp_quote = !empty($s->fp_emp_quote)
         ? format_text($s->fp_emp_quote, FORMAT_HTML, ['trusted' => false, 'noclean' => false])
         : 'This platform changed how our entire team thinks about upskilling. The breadth of content and the way courses are structured is simply unmatched at this scale.';
-    $emp_rating = !empty($s->fp_emp_rating) ? max(1, min(5, (int)$s->fp_emp_rating)) : 5;
+
+    // Eyebrow label — editable so the block can be reused (blank = default string).
+    $emp_label = !empty($s->fp_emp_label)
+        ? clean_param($s->fp_emp_label, PARAM_TEXT)
+        : get_string('employeespotlight', 'theme_edzcorp');
+
+    // Optional big headline (blank = hidden).
+    $emp_headline = !empty($s->fp_emp_headline) ? clean_param($s->fp_emp_headline, PARAM_TEXT) : '';
+
+    // Optional CTA button (needs both label and URL to render).
+    $emp_btnlabel = !empty($s->fp_emp_btnlabel) ? clean_param($s->fp_emp_btnlabel, PARAM_TEXT) : '';
+    $emp_btnurl   = !empty($s->fp_emp_btnurl) ? clean_param($s->fp_emp_btnurl, PARAM_URL) : '';
+    $emp_has_btn  = ($emp_btnlabel !== '' && $emp_btnurl !== '');
+
+    // Rating: 0 (or unset-to-0 via the "No rating" option) hides the stars.
+    // NOTE: string '0' is "empty" in PHP, so test with isset()/!== '' not empty().
+    $emp_rating = (isset($s->fp_emp_rating) && $s->fp_emp_rating !== '')
+        ? max(0, min(5, (int)$s->fp_emp_rating)) : 5;
+    $emp_has_stars = ($emp_rating >= 1);
 
     // Spotlight style.
     $emp_style = !empty($s->fp_emp_style) ? clean_param($s->fp_emp_style, PARAM_ALPHA) : 'card';
@@ -608,6 +681,9 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         ? clean_param($s->fp_topics_heading, PARAM_TEXT)
         : 'Popular topics to learn';
 
+    // Topics band background colour (blank = default dark band via SCSS fallback).
+    $topics_bg = !empty($s->fp_topics_bg) ? clean_param($s->fp_topics_bg, PARAM_TEXT) : '';
+
     $topics_source = !empty($s->fp_topics_source) ? clean_param($s->fp_topics_source, PARAM_ALPHA) : 'alltop';
     if (!in_array($topics_source, ['alltop', 'all', 'specific'], true)) {
         $topics_source = 'alltop';
@@ -696,13 +772,20 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
     $fp_courses = [];
 
-    // If the admin specified course IDs, use those (in the order given).
+    // Source of the featured courses: latest created | most enrolled | specific IDs.
+    $courses_source = !empty($s->fp_courses_source) ? clean_param($s->fp_courses_source, PARAM_ALPHA) : 'latest';
+    if (!in_array($courses_source, ['latest', 'enrolled', 'ids'], true)) {
+        $courses_source = 'latest';
+    }
     $courses_ids_raw = !empty($s->fp_courses_ids) ? trim($s->fp_courses_ids) : '';
-    $use_ids         = !empty($courses_ids_raw);
 
-    if ($use_ids) {
+    // How many auto-picked courses to show (IDs mode is controlled by the admin list).
+    $courses_limit = 4;
+    $ordered_courses = [];
+
+    if ($courses_source === 'ids' && $courses_ids_raw !== '') {
+        // Explicit course IDs, in the order given.
         $ids = array_filter(array_map('intval', preg_split('/[\s,]+/', $courses_ids_raw)));
-        $ordered_courses = [];
         foreach ($ids as $cid) {
             try {
                 $course = get_course($cid);
@@ -714,8 +797,20 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
                 continue;
             }
         }
+    } else if ($courses_source === 'enrolled') {
+        // Most enrolled visible courses (by distinct enrolled users).
+        $sql = "SELECT c.*,
+                       (SELECT COUNT(DISTINCT ue.userid)
+                          FROM {user_enrolments} ue
+                          JOIN {enrol} e ON e.id = ue.enrolid
+                         WHERE e.courseid = c.id) AS enrolledcount
+                  FROM {course} c
+                 WHERE c.visible = 1 AND c.id <> :siteid
+              ORDER BY enrolledcount DESC, c.fullname ASC";
+        $ordered_courses = array_values($DB->get_records_sql($sql, ['siteid' => SITEID], 0, $courses_limit));
     } else {
-        // Fallback: 4 most recently created visible courses (excluding SITEID).
+        // Latest created visible courses (also the fallback when "IDs" is chosen
+        // but the list is empty). Excludes SITEID.
         $ordered_courses = array_values(
             $DB->get_records_select(
                 'course',
@@ -724,7 +819,7 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
                 'timecreated DESC',
                 '*',
                 0,
-                4
+                $courses_limit
             )
         );
     }
@@ -817,7 +912,13 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_emp_title'          => $emp_title,
         'fp_emp_dept'           => $emp_dept,
         'fp_emp_quote'          => $emp_quote,
+        'fp_emp_label'          => $emp_label,
+        'fp_emp_headline'       => $emp_headline,
+        'fp_emp_btnlabel'       => $emp_btnlabel,
+        'fp_emp_btnurl'         => $emp_btnurl,
+        'fp_emp_has_btn'        => $emp_has_btn,
         'fp_emp_stars'          => $stars_html,
+        'fp_emp_has_stars'      => $emp_has_stars,
         'fp_emp_initials'       => $initials,
         'fp_emp_photo'          => ($emp_photo_url !== '' ? $emp_photo_url
                                     : (new \moodle_url('/theme/edzcorp/pix/spotlight-avatar.svg'))->out(false)),
@@ -829,7 +930,7 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_spotlight_chips'    => $spotlight_chips,
         // Show the spotlight only when the admin has configured it (name, quote
         // or photo) — otherwise it stays hidden rather than showing placeholder data.
-        'fp_has_spotlight'      => ((!empty($s->fp_emp_name) || !empty($s->fp_emp_quote) || !empty($emp_photo_url)) && $en('fp_emp_enable')),
+        'fp_has_spotlight'      => ((!empty($s->fp_emp_name) || !empty($s->fp_emp_quote) || !empty($s->fp_emp_headline) || !empty($emp_photo_url)) && $en('fp_emp_enable')),
 
         // Hero.
         'fp_hero_eyebrow'    => $hero_eyebrow,
@@ -843,6 +944,9 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
         // Top hero (first section).
         'fp_top_has'          => $en('fp_top_enable'),
+        'fp_top_layout_split'   => ($top_layout === 'split'),
+        'fp_top_layout_classic' => ($top_layout === 'classic'),
+        'fp_top_photo_shape'    => $top_photo_shape,
         'fp_hero_show'        => $en('fp_hero_enable'),
         'fp_philosophy_show'  => $en('fp_philosophy_enable'),
         'fp_top_eyebrow'      => $top_eyebrow,
@@ -850,6 +954,13 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_top_subtext'      => $top_subtext,
         'fp_top_cta_url'      => $top_cta_url,
         'fp_top_cta_label'    => $top_cta_label,
+        'fp_top_explore_label' => $top_explore_label,
+        'fp_top_explore_url'   => $top_explore_url,
+        'fp_top_search_enable'      => $top_search_enable,
+        'fp_top_search_placeholder' => $top_search_placeholder,
+        'fp_top_search_action'      => $top_search_action,
+        'fp_top_has_bg'             => ($top_bg !== ''),
+        'fp_top_bg'                 => $top_bg,
         'fp_top_has_q'        => ($top_qlabel !== ''),
         'fp_top_qlabel'       => $top_qlabel,
         'fp_top_qurl'         => ($top_qurl !== '' ? $top_qurl : '#'),
@@ -876,6 +987,8 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
         // Topics.
         'fp_topics_heading'    => $topics_heading,
+        'fp_topics_has_bg'     => ($topics_bg !== ''),
+        'fp_topics_bg'         => $topics_bg,
         'fp_topics'            => $fp_topics,
         'fp_has_topics'        => (!empty($fp_topics) && $en('fp_topics_enable')),
         'fp_topics_is_cards'   => $topics_is_cards,

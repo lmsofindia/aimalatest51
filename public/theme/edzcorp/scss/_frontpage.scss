@@ -717,7 +717,7 @@
 // =============================================================================
 
 .edz-topics {
-    background: #1a1a2e;
+    background: var(--edz-topics-bg, #1a1a2e);
 
     // Full-bleed band (same breakout as spotlight/philosophy).
     width: 100vw;
@@ -1192,8 +1192,8 @@ body.edz-skills-lb-open { overflow: hidden; }
     max-width: 1180px;
     margin: 3.5rem auto;
     display: grid;
-    grid-template-columns: minmax(280px, 42%) 1fr;
-    min-height: 380px;
+    grid-template-columns: minmax(320px, 48%) 1fr;
+    min-height: 440px;
     border-radius: 22px;
     overflow: hidden;
 
@@ -1204,19 +1204,33 @@ body.edz-skills-lb-open { overflow: hidden; }
 
 .edz-spot__body {
     display: flex; flex-direction: column; justify-content: center;
-    padding: 2.5rem 2.75rem;
+    padding: 2.75rem 3rem;
 
     @media (max-width: 860px) { padding: 2rem 1.75rem; }
 }
 .edz-spot__label {
     display: inline-block; align-self: flex-start;
     font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.5rem;
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 0.75rem;
+}
+.edz-spot__title {
+    font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 800; line-height: 1.12;
+    letter-spacing: -0.01em; margin: 0.25rem 0 1rem;
 }
 .edz-spot__stars { color: #f5a623; font-size: 1.15rem; letter-spacing: 3px; margin: 0.4rem 0 0.75rem; }
-.edz-spot__quote { font-size: clamp(1.1rem, 1.6vw, 1.35rem); line-height: 1.5; font-weight: 500; margin: 0 0 1.25rem; }
+.edz-spot__quote { font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.6; font-weight: 500; margin: 0 0 1.25rem; }
 .edz-spot__name { display: block; font-weight: 700; font-size: 1.1rem; }
 .edz-spot__role { font-size: 0.92rem; }
+.edz-spot__btn {
+    display: inline-flex; align-items: center; gap: 10px; align-self: flex-start;
+    margin-top: 1.5rem; background: var(--bs-primary, #135ea5); color: #fff;
+    font-weight: 600; font-size: 1rem; padding: 0.85rem 1.9rem; border-radius: 10px;
+    text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.edz-spot__btn:hover {
+    color: #fff; text-decoration: none; transform: translateY(-2px);
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--bs-primary, #135ea5) 38%, transparent);
+}
 
 /* Mobile stack: give the photo a real height */
 @media (max-width: 860px) {
@@ -1229,8 +1243,9 @@ body.edz-skills-lb-open { overflow: hidden; }
     border: 1px solid var(--edz-border-color, #e5e7eb);
     box-shadow: 0 12px 34px rgba(17, 24, 39, 0.07);
 }
-.edz-spot--card .edz-spot__label { background: rgba(99, 102, 241, 0.10); color: var(--edz-accent, #6366f1); }
-.edz-spot--card .edz-spot__quote { color: var(--edz-heading-color, #111827); }
+.edz-spot--card .edz-spot__label { background: color-mix(in srgb, var(--bs-primary, #135ea5) 10%, #ffffff); color: var(--bs-primary, #135ea5); }
+.edz-spot--card .edz-spot__title { color: var(--edz-heading-color, #0f2350); }
+.edz-spot--card .edz-spot__quote { color: var(--edz-text-muted, #4b5563); }
 .edz-spot--card .edz-spot__name  { color: var(--edz-heading-color, #111827); }
 .edz-spot--card .edz-spot__role  { color: var(--edz-text-muted, #6b7280); }
 
@@ -1238,6 +1253,7 @@ body.edz-skills-lb-open { overflow: hidden; }
 .edz-spot--panel { background: #1e1b4b; }
 .edz-spot--panel .edz-spot__body { color: #fff; }
 .edz-spot--panel .edz-spot__label { background: rgba(255, 255, 255, 0.14); color: #ffffff; }
+.edz-spot--panel .edz-spot__title { color: #ffffff; }
 .edz-spot--panel .edz-spot__quote { color: #eef2ff; }
 .edz-spot--panel .edz-spot__name  { color: #ffffff; }
 .edz-spot--panel .edz-spot__role  { color: rgba(255, 255, 255, 0.65); }
@@ -1305,3 +1321,190 @@ body.edz-skills-lb-open { overflow: hidden; }
 .edz-top__avatar--3 { background: #f472b6; }
 .edz-top__people-text { font-size: 0.95rem; font-weight: 600; color: var(--edz-heading-color, #111827); display: flex; align-items: center; gap: 7px; max-width: 160px; line-height: 1.3; }
 .edz-top__spark { color: var(--edz-accent, #3b82f6); font-size: 1.05rem; }
+
+/* =========================================================================
+   Top hero — SPLIT (search) layout
+   Text + two buttons + search box LEFT · circular photo RIGHT ·
+   full-width stats card BELOW. Reuses .edz-top__ content classes.
+   ========================================================================= */
+.edz-top.edz-top--split {
+    display: block;               // Neutralise the classic 3-column grid.
+    grid-template-columns: none;
+    max-width: 1240px;
+    margin: 2.5rem auto 3.5rem;
+    padding: 0;                   // Align to the page content edge (no extra inset).
+}
+
+.edz-top__split {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 3rem;
+    align-items: center;
+    position: relative;   // Positioning context for the arch photo variant.
+    background: var(--edz-hero-bg, color-mix(in srgb, var(--bs-primary, #135ea5) 7%, #ffffff));
+    border-radius: 24px;
+    // Horizontal padding kept small so the content lines up with the page
+    // content column (logo, section headings, stats card), not inset further.
+    padding: 3.25rem 1.75rem;
+
+    @media (max-width: 900px) {
+        grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem;
+    }
+}
+
+/* Left column */
+.edz-top--split .edz-top__eyebrow {
+    display: block;
+    color: var(--bs-primary, #135ea5);
+    font-size: 0.8rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; margin: 0 0 0.85rem;
+}
+.edz-top--split .edz-top__heading { font-size: clamp(2.1rem, 4vw, 3.2rem); margin-bottom: 1rem; }
+.edz-top--split .edz-top__subtext { max-width: 34rem; margin-bottom: 0; }
+
+/* Two-button action row */
+.edz-top__actions { display: flex; flex-wrap: wrap; gap: 0.9rem; margin: 1.75rem 0 0; }
+.edz-top__btn-fill,
+.edz-top__btn-out {
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 600; font-size: 1rem; padding: 0.85rem 1.9rem;
+    border-radius: 10px; text-decoration: none;
+    border: 1.5px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.edz-top__btn-fill {
+    background: var(--bs-primary, #135ea5); color: #fff;
+    border-color: var(--bs-primary, #135ea5);
+}
+.edz-top__btn-fill:hover {
+    color: #fff; text-decoration: none; transform: translateY(-2px);
+    box-shadow: 0 12px 26px color-mix(in srgb, var(--bs-primary, #135ea5) 38%, transparent);
+}
+.edz-top__btn-out {
+    background: transparent; color: var(--bs-primary, #135ea5);
+    border-color: var(--bs-primary, #135ea5);
+}
+.edz-top__btn-out:hover {
+    text-decoration: none; color: var(--bs-primary, #135ea5);
+    border-color: var(--bs-primary, #135ea5);
+    background: color-mix(in srgb, var(--bs-primary, #135ea5) 6%, #ffffff);
+}
+
+.edz-top--split .edz-top__qlink {
+    display: inline-block; margin-top: 1rem;
+    color: var(--bs-primary, #135ea5); text-decoration: underline; font-size: 0.9rem;
+}
+
+/* Search box + typeahead */
+.edz-top__search {
+    position: relative; display: flex; align-items: center;
+    margin-top: 1.5rem; width: 100%; max-width: 33rem;
+}
+.edz-top__search-ico {
+    position: absolute; left: 1.1rem; top: 50%; transform: translateY(-50%); z-index: 2;
+    color: var(--edz-text-muted, #6b7280); pointer-events: none; font-size: 0.95rem;
+}
+/* High specificity + flex-grow so a core input width rule can't shrink it. */
+.edz-top--split .edz-top__search-input {
+    flex: 1 1 auto; min-width: 0; box-sizing: border-box; width: 100%;
+    padding: 0.95rem 1.1rem 0.95rem 2.9rem; font-size: 1rem; height: auto;
+    border: 1.5px solid var(--edz-border-color, #e5e7eb); border-radius: 12px;
+    background: #fff; color: var(--edz-heading-color, #111827);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.edz-top--split .edz-top__search-input::placeholder { color: var(--edz-text-muted, #9aa3b2); }
+.edz-top--split .edz-top__search-input:focus {
+    outline: none; border-color: var(--bs-primary, #135ea5);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--bs-primary, #135ea5) 14%, transparent);
+}
+
+.edz-top__suggest {
+    position: absolute; top: calc(100% + 8px); left: 0; right: 0; z-index: 40;
+    background: #fff; border: 1px solid var(--edz-border-color, #e5e7eb);
+    border-radius: 12px; box-shadow: 0 20px 44px rgba(17, 24, 39, 0.16);
+    padding: 6px; max-height: 340px; overflow-y: auto;
+}
+.edz-top__suggest[hidden] { display: none; }
+.edz-top__suggest-item {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.6rem 0.75rem; border-radius: 8px;
+    text-decoration: none; color: var(--edz-heading-color, #111827);
+}
+.edz-top__suggest-item:hover,
+.edz-top__suggest-item.is-active {
+    background: color-mix(in srgb, var(--bs-primary, #135ea5) 8%, #ffffff);
+    text-decoration: none; color: var(--edz-heading-color, #111827);
+}
+.edz-top__suggest-ico {
+    width: 32px; height: 32px; flex: 0 0 32px; border-radius: 8px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--bs-primary, #135ea5) 12%, #ffffff);
+    color: var(--bs-primary, #135ea5); font-size: 0.85rem;
+}
+.edz-top__suggest-text { display: flex; flex-direction: column; min-width: 0; }
+.edz-top__suggest-name {
+    font-weight: 600; font-size: 0.95rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.edz-top__suggest-meta { font-size: 0.8rem; color: var(--edz-text-muted, #6b7280); }
+
+/* Right column — photo (shape is switchable: circle | arch) */
+.edz-top__media { display: flex; justify-content: center; align-items: center; }
+.edz-top__photo-wrap {
+    overflow: hidden;
+    background: linear-gradient(180deg, #eaf1ff, #dbe7ff);
+}
+.edz-top__photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Shape: full circle (floats, centred in the right column) */
+.edz-top__photo-wrap--circle {
+    position: relative; width: 100%; max-width: 440px; aspect-ratio: 1 / 1;
+    margin: 0 auto; border-radius: 50%;
+    box-shadow: 0 30px 60px rgba(30, 27, 75, 0.22);
+}
+
+/* Shape: AIMA arch — fills the right of the panel; dome curve on the LEFT only,
+   flush top / right / bottom against the hero panel edges. */
+.edz-top__photo-wrap--arch {
+    position: absolute; top: 0; right: 0; bottom: 0; left: auto;
+    width: 46%; max-width: none;
+    border-radius: 30% 24px 24px 30% / 50% 24px 24px 50%;
+    box-shadow: none;
+}
+
+@media (max-width: 900px) {
+    // On narrow screens the arch can't fill an absolute right column, so it
+    // stacks like a normal dome-topped image below the text.
+    .edz-top__photo-wrap--arch {
+        position: relative; top: auto; right: auto; bottom: auto; left: auto;
+        width: 100%; max-width: 340px; margin: 0 auto; aspect-ratio: 1 / 1;
+        border-radius: 48% 48% 20px 20px / 60% 60% 20px 20px;
+    }
+    .edz-top__photo-wrap--circle { max-width: 300px; }
+}
+
+/* Full-width stats card below the hero */
+.edz-top__statscard {
+    display: grid; grid-template-columns: repeat(3, 1fr); align-items: center;
+    margin-top: 2.5rem; padding: 1.5rem 1rem;
+    background: #fff; border: 1px solid var(--edz-border-color, #e8ebf1);
+    border-radius: 16px; box-shadow: 0 12px 34px rgba(17, 24, 39, 0.06);
+}
+.edz-top__statcard { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 1.75rem; }
+.edz-top__statcard:not(:first-child) { border-left: 1px solid var(--edz-border-color, #e8ebf1); }
+.edz-top__statcard-ico {
+    width: 54px; height: 54px; flex: 0 0 54px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: color-mix(in srgb, var(--bs-primary, #135ea5) 12%, #ffffff);
+    color: var(--bs-primary, #135ea5); font-size: 1.25rem;
+}
+.edz-top__statcard-num { font-size: 1.9rem; font-weight: 800; color: var(--edz-heading-color, #0f2350); line-height: 1.05; }
+.edz-top__statcard-label { font-size: 0.95rem; color: var(--edz-text-muted, #6b7280); margin-top: 2px; }
+
+@media (max-width: 720px) {
+    .edz-top__statscard { grid-template-columns: 1fr; padding: 0.5rem 1rem; }
+    .edz-top__statcard { padding: 1rem 0.75rem; }
+    .edz-top__statcard:not(:first-child) {
+        border-left: none; border-top: 1px solid var(--edz-border-color, #e8ebf1);
+    }
+}

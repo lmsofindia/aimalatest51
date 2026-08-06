@@ -61,11 +61,73 @@
 
             {{! ================================================================
                 SECTION 0 — TOP HERO (configurable first section)
-                Left: eyebrow, heading, subtext, CTA (auto login/dashboard),
-                question link. Centre: arch illustration + rotating badge.
-                Right: three stats + avatar row. No double braces in this note.
+                Two switchable layouts, both driven by the SAME settings:
+                  • Split   — text + two buttons + search LEFT, photo RIGHT,
+                              stats card BELOW. (fp_top_layout = split)
+                  • Classic — text + CTA LEFT, illustration + badge CENTRE,
+                              stats + avatars RIGHT. (fp_top_layout = classic)
+                No double braces in this note.
             ================================================================ }}
             {{#fp_top_has}}
+
+            {{! ---------------- SPLIT (search) layout ---------------- }}
+            {{#fp_top_layout_split}}
+            <section class="edz-top edz-top--split" aria-label="{{fp_top_heading}}"{{#fp_top_has_bg}} style="--edz-hero-bg: {{fp_top_bg}};"{{/fp_top_has_bg}}>
+
+                <div class="edz-top__split">
+
+                    <div class="edz-top__left">
+                        <p class="edz-top__eyebrow">{{fp_top_eyebrow}}</p>
+                        <h1 class="edz-top__heading">{{fp_top_heading}}</h1>
+                        <p class="edz-top__subtext">{{fp_top_subtext}}</p>
+
+                        <div class="edz-top__actions">
+                            <a href="{{fp_top_explore_url}}" class="edz-top__btn-fill">{{fp_top_explore_label}}</a>
+                            <a href="{{fp_top_cta_url}}" class="edz-top__btn-out">{{fp_top_cta_label}}</a>
+                        </div>
+
+                        {{#fp_top_has_q}}
+                        <a href="{{fp_top_qurl}}" class="edz-top__qlink">{{fp_top_qlabel}}</a>
+                        {{/fp_top_has_q}}
+
+                        {{#fp_top_search_enable}}
+                        <form class="edz-top__search" role="search" method="get" action="{{fp_top_search_action}}"
+                              data-region="edz-hero-search" autocomplete="off">
+                            <span class="edz-top__search-ico" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" name="q" class="edz-top__search-input"
+                                   placeholder="{{fp_top_search_placeholder}}" aria-label="{{fp_top_search_placeholder}}"
+                                   role="combobox" aria-expanded="false" aria-autocomplete="list"
+                                   data-region="edz-hero-search-input">
+                            <div class="edz-top__suggest" data-region="edz-hero-suggest" role="listbox" hidden></div>
+                        </form>
+                        {{/fp_top_search_enable}}
+                    </div>
+
+                    <div class="edz-top__media">
+                        <div class="edz-top__photo-wrap edz-top__photo-wrap--{{fp_top_photo_shape}}">
+                            <img src="{{fp_top_image}}" alt="" class="edz-top__photo" loading="eager">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="edz-top__statscard" role="list">
+                    {{#fp_top_stats}}
+                    <div class="edz-top__statcard" role="listitem">
+                        <span class="edz-top__statcard-ico" aria-hidden="true"><i class="{{icon}}"></i></span>
+                        <div class="edz-top__statcard-body">
+                            <div class="edz-top__statcard-num">{{num}}</div>
+                            <div class="edz-top__statcard-label">{{label}}</div>
+                        </div>
+                    </div>
+                    {{/fp_top_stats}}
+                </div>
+
+            </section>
+            {{/fp_top_layout_split}}
+
+            {{! ---------------- CLASSIC (illustration) layout ---------------- }}
+            {{#fp_top_layout_classic}}
             <section class="edz-top" aria-label="{{fp_top_heading}}">
 
                 <div class="edz-top__left">
@@ -114,6 +176,8 @@
                 </div>
 
             </section>
+            {{/fp_top_layout_classic}}
+
             {{/fp_top_has}}
 
             {{! ================================================================
@@ -125,18 +189,26 @@
                 ================================================================ }}
             {{#fp_has_spotlight}}
             {{! ── Employee spotlight (switchable: card / panel) — full-bleed photo ── }}
-            <section class="edz-spot edz-spot--{{fp_emp_style}}" aria-label="Employee spotlight">
+            <section class="edz-spot edz-spot--{{fp_emp_style}}" aria-label="{{fp_emp_label}}">
                 <div class="edz-spot__photo">
                     <img src="{{fp_emp_photo}}" alt="{{fp_emp_name}}" class="edz-spot__img" loading="lazy">
                 </div>
                 <div class="edz-spot__body">
-                    <span class="edz-spot__label">{{#str}}employeespotlight, theme_edzcorp{{/str}}</span>
+                    <span class="edz-spot__label">{{fp_emp_label}}</span>
+                    {{#fp_emp_headline}}<h2 class="edz-spot__title">{{fp_emp_headline}}</h2>{{/fp_emp_headline}}
+                    {{#fp_emp_has_stars}}
                     <div class="edz-spot__stars" aria-label="Rating {{fp_emp_rating}} of 5">{{{fp_emp_stars}}}</div>
+                    {{/fp_emp_has_stars}}
                     <p class="edz-spot__quote">{{{fp_emp_quote}}}</p>
+                    {{#fp_emp_name}}
                     <div class="edz-spot__person">
                         <span class="edz-spot__name">{{fp_emp_name}}</span>
                         {{#fp_emp_title}}<span class="edz-spot__role">{{fp_emp_title}}{{#fp_emp_dept}} · {{fp_emp_dept}}{{/fp_emp_dept}}</span>{{/fp_emp_title}}
                     </div>
+                    {{/fp_emp_name}}
+                    {{#fp_emp_has_btn}}
+                    <a href="{{fp_emp_btnurl}}" class="edz-spot__btn">{{fp_emp_btnlabel}} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                    {{/fp_emp_has_btn}}
                 </div>
             </section>
             {{/fp_has_spotlight}}
@@ -148,7 +220,7 @@
                 Hidden entirely when no categories exist.
                 ================================================================ }}
             {{#fp_has_topics}}
-            <section class="edz-topics">
+            <section class="edz-topics"{{#fp_topics_has_bg}} style="--edz-topics-bg: {{fp_topics_bg}};"{{/fp_topics_has_bg}}>
                 <p class="edz-topics__heading">{{fp_topics_heading}}</p>
                 {{#fp_topics_is_cards}}
                 {{! Card style — small icon tiles, 6 or 8 per row on desktop. }}
@@ -486,3 +558,10 @@ require(['theme_boost/loader', 'theme_boost/drawer', 'theme_edzcorp/sidebar', 't
     }
 );
 {{/js}}
+{{#fp_top_has}}{{#fp_top_layout_split}}{{#fp_top_search_enable}}
+{{#js}}
+require(['theme_edzcorp/herosearch'], function(HeroSearch) {
+    HeroSearch.init({fallbackUrl: '{{fp_top_search_action}}'});
+});
+{{/js}}
+{{/fp_top_search_enable}}{{/fp_top_layout_split}}{{/fp_top_has}}
