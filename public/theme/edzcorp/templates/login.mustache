@@ -66,31 +66,11 @@
 
         {{^hasslideany}}
         {{! Designed hero fallback — no slider images uploaded }}
-        <div class="edz-login-hero" aria-hidden="true">
-
-            {{! Brand chip (top-left) }}
-            <div class="edz-hero-brand">
-                <span class="edz-hero-brand-mark">
-                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none"
-                         stroke="currentColor" stroke-width="2.2"
-                         stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"
-                                 fill="currentColor" stroke="none"/>
-                    </svg>
-                </span>
-                <span class="edz-hero-brand-name">{{sitename}}</span>
-            </div>
+        <div class="edz-login-hero{{#hasheroimage}} edz-login-hero--image{{/hasheroimage}}" aria-hidden="true"{{#hasheroimage}} style="background-image: linear-gradient(180deg, rgba(13,26,54,0.55), rgba(13,26,54,0.78)), url('{{heroimage}}');"{{/hasheroimage}}>
 
             {{! Centre content }}
             <div class="edz-hero-main">
-                <span class="edz-hero-icon">
-                    <svg viewBox="0 0 24 24" width="30" height="30" fill="none"
-                         stroke="currentColor" stroke-width="1.8"
-                         stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/>
-                        <path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/>
-                    </svg>
-                </span>
+                {{#heroeyebrow}}<p class="edz-hero-eyebrow">{{heroeyebrow}}</p>{{/heroeyebrow}}
                 <h1 class="edz-hero-title">{{herotitle}}</h1>
                 <span class="edz-hero-title-rule" aria-hidden="true"></span>
                 <div class="edz-hero-subtitle">{{{herosubtitle}}}</div>

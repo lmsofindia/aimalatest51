@@ -333,12 +333,34 @@ if ($ADMIN->fulltree) {
         get_string('loginhero_headingdesc', 'theme_edzcorp')
     ));
 
-    // Hero background colour.
+    // Hero background image (optional — overrides the colour when set).
+    $setting = new admin_setting_configstoredfile(
+        'theme_edzcorp/loginherobgimage',
+        get_string('loginhero_bgimage', 'theme_edzcorp'),
+        get_string('loginhero_bgimagedesc', 'theme_edzcorp'),
+        'loginherobgimage', 0,
+        ['maxfiles' => 1, 'accepted_types' => ['.png', '.jpg', '.jpeg', '.webp']]
+    );
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
+    // Hero background colour (used only when no image is set; blank = primary colour).
     $setting = new admin_setting_configcolourpicker(
         'theme_edzcorp/loginherobg',
         get_string('loginhero_bg', 'theme_edzcorp'),
         get_string('loginhero_bgdesc', 'theme_edzcorp'),
-        '#1d4ed8'
+        ''
+    );
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
+    // Eyebrow / kicker — small line above the big title.
+    $setting = new admin_setting_configtext(
+        'theme_edzcorp/loginheroeyebrow',
+        get_string('loginhero_eyebrow', 'theme_edzcorp'),
+        get_string('loginhero_eyebrowdesc', 'theme_edzcorp'),
+        '',
+        PARAM_TEXT
     );
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
@@ -361,7 +383,7 @@ if ($ADMIN->fulltree) {
         get_string('loginhero_subtitledesc', 'theme_edzcorp'),
         'Upload any content — PDFs, videos, links — and get instant summaries, '
             . 'flashcards, quizzes, and glossaries. Build Learning Spaces your students will love.',
-        PARAM_TEXT
+        PARAM_RAW
     );
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
