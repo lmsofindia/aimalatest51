@@ -421,12 +421,25 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         2 => ['+27K',  'Our monthly products',      'fa-regular fa-folder-open'],
         3 => ['+300K', 'Hours of learning recorded', 'fa-regular fa-clock'],
     ];
+    // Migrate the old bundled SOLID defaults (saved on early sites) to the new
+    // outline icons, so existing installs pick up the line-style look too.
+    $iconmigrate = [
+        'fa-user-group' => 'fa-regular fa-user',
+        'fa-users'      => 'fa-regular fa-user',
+        'fa-book-open'  => 'fa-regular fa-folder-open',
+        'fa-book'       => 'fa-regular fa-folder-open',
+        'fa-clock'      => 'fa-regular fa-clock',
+    ];
     $top_stats = [];
     for ($ti = 1; $ti <= 3; $ti++) {
         $nk = "fp_top_stat{$ti}_num";
         $lk = "fp_top_stat{$ti}_label";
         $ik = "fp_top_stat{$ti}_icon";
         $rawicon = !empty($s->$ik) ? clean_param($s->$ik, PARAM_TEXT) : $topstatdefaults[$ti][2];
+        $rawicon = trim($rawicon);
+        if (isset($iconmigrate[$rawicon])) {
+            $rawicon = $iconmigrate[$rawicon];
+        }
         // Accept a full class ("fa-regular fa-clock") or a bare name ("fa-clock").
         // Bare names default to the solid style so older custom values keep working.
         $iconclass = preg_match('/\b(fa-solid|fa-regular|fa-brands|fas|far|fab)\b/', $rawicon)
