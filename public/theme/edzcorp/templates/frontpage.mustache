@@ -72,7 +72,7 @@
 
             {{! ---------------- SPLIT (search) layout ---------------- }}
             {{#fp_top_layout_split}}
-            <section class="edz-top edz-top--split" aria-label="{{fp_top_heading}}">
+            <section class="edz-top edz-top--split" aria-label="{{fp_top_heading}}"{{#fp_top_has_bg}} style="--edz-hero-bg: {{fp_top_bg}};"{{/fp_top_has_bg}}>
 
                 <div class="edz-top__split">
 
@@ -189,18 +189,26 @@
                 ================================================================ }}
             {{#fp_has_spotlight}}
             {{! ── Employee spotlight (switchable: card / panel) — full-bleed photo ── }}
-            <section class="edz-spot edz-spot--{{fp_emp_style}}" aria-label="Employee spotlight">
+            <section class="edz-spot edz-spot--{{fp_emp_style}}" aria-label="{{fp_emp_label}}">
                 <div class="edz-spot__photo">
                     <img src="{{fp_emp_photo}}" alt="{{fp_emp_name}}" class="edz-spot__img" loading="lazy">
                 </div>
                 <div class="edz-spot__body">
-                    <span class="edz-spot__label">{{#str}}employeespotlight, theme_edzcorp{{/str}}</span>
+                    <span class="edz-spot__label">{{fp_emp_label}}</span>
+                    {{#fp_emp_headline}}<h2 class="edz-spot__title">{{fp_emp_headline}}</h2>{{/fp_emp_headline}}
+                    {{#fp_emp_has_stars}}
                     <div class="edz-spot__stars" aria-label="Rating {{fp_emp_rating}} of 5">{{{fp_emp_stars}}}</div>
+                    {{/fp_emp_has_stars}}
                     <p class="edz-spot__quote">{{{fp_emp_quote}}}</p>
+                    {{#fp_emp_name}}
                     <div class="edz-spot__person">
                         <span class="edz-spot__name">{{fp_emp_name}}</span>
                         {{#fp_emp_title}}<span class="edz-spot__role">{{fp_emp_title}}{{#fp_emp_dept}} · {{fp_emp_dept}}{{/fp_emp_dept}}</span>{{/fp_emp_title}}
                     </div>
+                    {{/fp_emp_name}}
+                    {{#fp_emp_has_btn}}
+                    <a href="{{fp_emp_btnurl}}" class="edz-spot__btn">{{fp_emp_btnlabel}} <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+                    {{/fp_emp_has_btn}}
                 </div>
             </section>
             {{/fp_has_spotlight}}
@@ -212,7 +220,7 @@
                 Hidden entirely when no categories exist.
                 ================================================================ }}
             {{#fp_has_topics}}
-            <section class="edz-topics">
+            <section class="edz-topics"{{#fp_topics_has_bg}} style="--edz-topics-bg: {{fp_topics_bg}};"{{/fp_topics_has_bg}}>
                 <p class="edz-topics__heading">{{fp_topics_heading}}</p>
                 {{#fp_topics_is_cards}}
                 {{! Card style — small icon tiles, 6 or 8 per row on desktop. }}

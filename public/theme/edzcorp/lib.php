@@ -392,6 +392,9 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     // Enter with no suggestion selected falls back to the catalogue, pre-filtered.
     $top_search_action = (new \moodle_url('/local/edzallcourse/index.php'))->out(false);
 
+    // Split-layout hero background colour (blank = a soft brand tint via SCSS fallback).
+    $top_bg = !empty($s->fp_top_bg) ? clean_param($s->fp_top_bg, PARAM_TEXT) : '';
+
     $top_qlabel = !empty($s->fp_top_qlabel) ? clean_param($s->fp_top_qlabel, PARAM_TEXT) : 'Have a question?';
     $top_qurl   = !empty($s->fp_top_qurl) ? clean_param($s->fp_top_qurl, PARAM_URL) : '';
 
@@ -434,7 +437,25 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $emp_quote = !empty($s->fp_emp_quote)
         ? format_text($s->fp_emp_quote, FORMAT_HTML, ['trusted' => false, 'noclean' => false])
         : 'This platform changed how our entire team thinks about upskilling. The breadth of content and the way courses are structured is simply unmatched at this scale.';
-    $emp_rating = !empty($s->fp_emp_rating) ? max(1, min(5, (int)$s->fp_emp_rating)) : 5;
+
+    // Eyebrow label — editable so the block can be reused (blank = default string).
+    $emp_label = !empty($s->fp_emp_label)
+        ? clean_param($s->fp_emp_label, PARAM_TEXT)
+        : get_string('employeespotlight', 'theme_edzcorp');
+
+    // Optional big headline (blank = hidden).
+    $emp_headline = !empty($s->fp_emp_headline) ? clean_param($s->fp_emp_headline, PARAM_TEXT) : '';
+
+    // Optional CTA button (needs both label and URL to render).
+    $emp_btnlabel = !empty($s->fp_emp_btnlabel) ? clean_param($s->fp_emp_btnlabel, PARAM_TEXT) : '';
+    $emp_btnurl   = !empty($s->fp_emp_btnurl) ? clean_param($s->fp_emp_btnurl, PARAM_URL) : '';
+    $emp_has_btn  = ($emp_btnlabel !== '' && $emp_btnurl !== '');
+
+    // Rating: 0 (or unset-to-0 via the "No rating" option) hides the stars.
+    // NOTE: string '0' is "empty" in PHP, so test with isset()/!== '' not empty().
+    $emp_rating = (isset($s->fp_emp_rating) && $s->fp_emp_rating !== '')
+        ? max(0, min(5, (int)$s->fp_emp_rating)) : 5;
+    $emp_has_stars = ($emp_rating >= 1);
 
     // Spotlight style.
     $emp_style = !empty($s->fp_emp_style) ? clean_param($s->fp_emp_style, PARAM_ALPHA) : 'card';
@@ -632,6 +653,9 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         ? clean_param($s->fp_topics_heading, PARAM_TEXT)
         : 'Popular topics to learn';
 
+    // Topics band background colour (blank = default dark band via SCSS fallback).
+    $topics_bg = !empty($s->fp_topics_bg) ? clean_param($s->fp_topics_bg, PARAM_TEXT) : '';
+
     $topics_source = !empty($s->fp_topics_source) ? clean_param($s->fp_topics_source, PARAM_ALPHA) : 'alltop';
     if (!in_array($topics_source, ['alltop', 'all', 'specific'], true)) {
         $topics_source = 'alltop';
@@ -720,13 +744,20 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
     $fp_courses = [];
 
-    // If the admin specified course IDs, use those (in the order given).
+    // Source of the featured courses: latest created | most enrolled | specific IDs.
+    $courses_source = !empty($s->fp_courses_source) ? clean_param($s->fp_courses_source, PARAM_ALPHA) : 'latest';
+    if (!in_array($courses_source, ['latest', 'enrolled', 'ids'], true)) {
+        $courses_source = 'latest';
+    }
     $courses_ids_raw = !empty($s->fp_courses_ids) ? trim($s->fp_courses_ids) : '';
-    $use_ids         = !empty($courses_ids_raw);
 
-    if ($use_ids) {
+    // How many auto-picked courses to show (IDs mode is controlled by the admin list).
+    $courses_limit = 4;
+    $ordered_courses = [];
+
+    if ($courses_source === 'ids' && $courses_ids_raw !== '') {
+        // Explicit course IDs, in the order given.
         $ids = array_filter(array_map('intval', preg_split('/[\s,]+/', $courses_ids_raw)));
-        $ordered_courses = [];
         foreach ($ids as $cid) {
             try {
                 $course = get_course($cid);
@@ -738,8 +769,20 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
                 continue;
             }
         }
+    } else if ($courses_source === 'enrolled') {
+        // Most enrolled visible courses (by distinct enrolled users).
+        $sql = "SELECT c.*,
+                       (SELECT COUNT(DISTINCT ue.userid)
+                          FROM {user_enrolments} ue
+                          JOIN {enrol} e ON e.id = ue.enrolid
+                         WHERE e.courseid = c.id) AS enrolledcount
+                  FROM {course} c
+                 WHERE c.visible = 1 AND c.id <> :siteid
+              ORDER BY enrolledcount DESC, c.fullname ASC";
+        $ordered_courses = array_values($DB->get_records_sql($sql, ['siteid' => SITEID], 0, $courses_limit));
     } else {
-        // Fallback: 4 most recently created visible courses (excluding SITEID).
+        // Latest created visible courses (also the fallback when "IDs" is chosen
+        // but the list is empty). Excludes SITEID.
         $ordered_courses = array_values(
             $DB->get_records_select(
                 'course',
@@ -748,7 +791,7 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
                 'timecreated DESC',
                 '*',
                 0,
-                4
+                $courses_limit
             )
         );
     }
@@ -841,7 +884,13 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_emp_title'          => $emp_title,
         'fp_emp_dept'           => $emp_dept,
         'fp_emp_quote'          => $emp_quote,
+        'fp_emp_label'          => $emp_label,
+        'fp_emp_headline'       => $emp_headline,
+        'fp_emp_btnlabel'       => $emp_btnlabel,
+        'fp_emp_btnurl'         => $emp_btnurl,
+        'fp_emp_has_btn'        => $emp_has_btn,
         'fp_emp_stars'          => $stars_html,
+        'fp_emp_has_stars'      => $emp_has_stars,
         'fp_emp_initials'       => $initials,
         'fp_emp_photo'          => ($emp_photo_url !== '' ? $emp_photo_url
                                     : (new \moodle_url('/theme/edzcorp/pix/spotlight-avatar.svg'))->out(false)),
@@ -853,7 +902,7 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_spotlight_chips'    => $spotlight_chips,
         // Show the spotlight only when the admin has configured it (name, quote
         // or photo) — otherwise it stays hidden rather than showing placeholder data.
-        'fp_has_spotlight'      => ((!empty($s->fp_emp_name) || !empty($s->fp_emp_quote) || !empty($emp_photo_url)) && $en('fp_emp_enable')),
+        'fp_has_spotlight'      => ((!empty($s->fp_emp_name) || !empty($s->fp_emp_quote) || !empty($s->fp_emp_headline) || !empty($emp_photo_url)) && $en('fp_emp_enable')),
 
         // Hero.
         'fp_hero_eyebrow'    => $hero_eyebrow,
@@ -881,6 +930,8 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_top_search_enable'      => $top_search_enable,
         'fp_top_search_placeholder' => $top_search_placeholder,
         'fp_top_search_action'      => $top_search_action,
+        'fp_top_has_bg'             => ($top_bg !== ''),
+        'fp_top_bg'                 => $top_bg,
         'fp_top_has_q'        => ($top_qlabel !== ''),
         'fp_top_qlabel'       => $top_qlabel,
         'fp_top_qurl'         => ($top_qurl !== '' ? $top_qurl : '#'),
@@ -907,6 +958,8 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
         // Topics.
         'fp_topics_heading'    => $topics_heading,
+        'fp_topics_has_bg'     => ($topics_bg !== ''),
+        'fp_topics_bg'         => $topics_bg,
         'fp_topics'            => $fp_topics,
         'fp_has_topics'        => (!empty($fp_topics) && $en('fp_topics_enable')),
         'fp_topics_is_cards'   => $topics_is_cards,
