@@ -692,6 +692,17 @@ body.pagelayout-login {
     @media (max-width: 1200px) { font-size: 2.125rem; }
 }
 
+// Accent underline directly under the hero title.
+.edz-hero-main .edz-hero-title { margin-bottom: 0.85rem; }
+.edz-hero-title-rule {
+    display: block;
+    width: 56px;
+    height: 4px;
+    border-radius: 3px;
+    background: var(--edz-login-accent, #38bdf8);
+    margin: 0.1rem 0 1.4rem;
+}
+
 .edz-hero-subtitle {
     font-size: 1.125rem;
     line-height: 1.6;
@@ -702,7 +713,15 @@ body.pagelayout-login {
     @media (max-width: 1200px) { font-size: 1rem; }
 }
 
-// Stat cards — bottom row.
+// Accent-coloured highlight line under the subtitle.
+.edz-hero-highlight {
+    margin: 1.1rem 0 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--edz-login-accent, #7dd3fc);
+}
+
+// Feature boxes — bottom row: icon + small caption + big title.
 .edz-hero-stats {
     position: relative;
     z-index: 1;
@@ -716,26 +735,41 @@ body.pagelayout-login {
     min-width: 0;
     padding: 1.125rem 1.25rem;
     border-radius: 14px;
-    background: rgba(255, 255, 255, 0.10);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.14);
+    text-align: left;
 
-    .edz-hero-stat-value {
-        font-size: 1.5rem;
-        font-weight: 800;
-        line-height: 1.1;
-        color: #fff;
-        margin-bottom: 0.35rem;
+    .edz-hero-stat-ico {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.12);
+        color: var(--edz-login-accent, #38bdf8);
+        font-size: 1.05rem;
+        margin-bottom: 0.85rem;
     }
 
-    .edz-hero-stat-label {
-        font-size: 0.75rem;
-        font-weight: 600;
+    .edz-hero-stat-cap {
+        font-size: 0.68rem;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        color: rgba(255, 255, 255, 0.62);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        color: var(--edz-login-accent, #7dd3fc);
+        margin-bottom: 0.3rem;
+    }
+
+    .edz-hero-stat-title {
+        font-size: 1.02rem;
+        font-weight: 700;
+        line-height: 1.3;
+        color: #fff;
+    }
+
+    @media (max-width: 1200px) {
+        .edz-hero-stat-title { font-size: 0.95rem; }
     }
 }
 
@@ -1024,6 +1058,33 @@ body.pagelayout-login {
     text-align: center;
     font-size: 0.8125rem;
     color: var(--edz-text-muted);
+}
+
+// ---- Right panel: support prompt + technology-partner line ----------------
+.edz-login-support {
+    margin-top: 1.35rem;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--edz-text-muted, #6b7280);
+    line-height: 1.5;
+}
+.edz-login-support-text { margin-right: 0.35rem; }
+.edz-login-support-link {
+    color: var(--bs-primary, #135ea5);
+    font-weight: 600;
+    text-decoration: none;
+}
+.edz-login-support-link:hover { text-decoration: underline; }
+.edz-login-support-link--plain {
+    color: var(--edz-text-muted, #6b7280);
+    font-weight: 600;
+}
+.edz-login-techpartner {
+    margin-top: 2.25rem;
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.02em;
+    color: var(--edz-text-muted, #9aa3b2);
 }
 
 
