@@ -198,11 +198,23 @@ $string['fp_emp_titledesc'] = 'The employee\'s current job title (e.g. "Product 
 $string['fp_emp_dept']     = 'Department';
 $string['fp_emp_deptdesc'] = 'The employee\'s department or team (e.g. "Innovation & Technology").';
 
-$string['fp_emp_rating']     = 'Star rating';
-$string['fp_emp_ratingdesc'] = 'How many stars this employee awards to the platform (shown as filled ★ glyphs).';
+$string['fp_emp_rating']      = 'Star rating';
+$string['fp_emp_ratingdesc']  = 'How many stars to show (filled ★ glyphs). Choose "No rating" to hide the stars entirely.';
+$string['fp_emp_rating_none'] = 'No rating (hide stars)';
 
-$string['fp_emp_quote']     = 'Feedback quote';
-$string['fp_emp_quotedesc'] = 'A short pull-quote from the featured employee about the learning platform. Keep it to 1–2 sentences for the best visual result. Basic HTML is allowed.';
+$string['fp_emp_label']     = 'Eyebrow label';
+$string['fp_emp_labeldesc'] = 'Small caps label shown above the content (the pill). Leave blank to use "Employee Spotlight". Example: "AIMA Excellence in Management".';
+
+$string['fp_emp_headline']     = 'Headline (optional)';
+$string['fp_emp_headlinedesc'] = 'A large heading shown under the eyebrow label. Leave blank to hide it. Example: "Recognising Leadership and Management Excellence".';
+
+$string['fp_emp_btnlabel']     = 'Button label (optional)';
+$string['fp_emp_btnlabeldesc'] = 'Text for a call-to-action button. The button only appears when both a label and a URL are set.';
+$string['fp_emp_btnurl']       = 'Button URL (optional)';
+$string['fp_emp_btnurldesc']   = 'Where the button links to (internal or external URL).';
+
+$string['fp_emp_quote']     = 'Feedback quote / description';
+$string['fp_emp_quotedesc'] = 'The body text — a pull-quote from a featured person, or a short description for the section. Basic HTML is allowed.';
 
 // Spotlight appearance
 $string['fp_spotlight_appearance_heading']     = 'Spotlight panel appearance';
@@ -254,6 +266,8 @@ $string['fp_content_headingdesc'] = 'The "Popular topics" pills are auto-populat
 
 $string['fp_topics_heading']     = 'Topics section heading';
 $string['fp_topics_headingdesc'] = 'Section label shown above the category pills (displayed in small caps).';
+$string['fp_topics_bg']          = 'Topics band background colour';
+$string['fp_topics_bgdesc']      = 'Background colour of the "Popular topics" band. Leave blank for the default dark band. Note: the pills and heading use light text, so pick a dark colour for good contrast.';
 
 $string['fp_topics_source']          = 'Topics source';
 $string['fp_topics_sourcedesc']      = 'Which categories feed the Popular topics section.';
@@ -273,8 +287,14 @@ $string['fp_topics_percarddesc']     = 'How many cards per row on wide screens (
 $string['fp_courses_heading']     = 'Recently launched section heading';
 $string['fp_courses_headingdesc'] = 'Section label shown above the course cards.';
 
+$string['fp_courses_source']          = 'Featured courses source';
+$string['fp_courses_sourcedesc']      = 'How to choose the courses shown in this section.';
+$string['fp_courses_source_latest']   = 'Latest created courses';
+$string['fp_courses_source_enrolled'] = 'Most enrolled courses';
+$string['fp_courses_source_ids']      = 'Specific course IDs (listed below)';
+
 $string['fp_courses_ids']     = 'Featured course IDs';
-$string['fp_courses_idsdesc'] = 'Enter course IDs (comma or newline separated) to show specific courses in the "Recently launched" grid. Leave blank to automatically show the 4 most recently created visible courses. Find a course ID in its URL: /course/view.php?id=<strong>42</strong>';
+$string['fp_courses_idsdesc'] = 'Used only when the source above is "Specific course IDs". Enter course IDs (comma or newline separated) in the order you want them shown. If left blank, the section falls back to the latest created courses. Find a course ID in its URL: /course/view.php?id=<strong>42</strong>';
 
 // Page background
 $string['pagebgcolor']     = 'Page background colour';
@@ -373,6 +393,8 @@ $string['fp_top_explore_urldesc']   = 'Where the primary button goes. Defaults t
 $string['fp_top_search_enable']      = 'Show hero search box';
 $string['fp_top_search_enabledesc']  = 'Show a search box in the Split-layout hero with live suggestions for courses and categories.';
 $string['fp_top_search_placeholder'] = 'Search box placeholder';
+$string['fp_top_bg']                 = 'Hero background colour';
+$string['fp_top_bgdesc']             = 'Background colour of the Split-layout hero panel. Leave blank for a soft tint of the theme’s brand colour.';
 
 // Frontpage — section enable toggles.
 $string['fp_section_enabledesc']  = 'Untick to hide this section from the homepage.';

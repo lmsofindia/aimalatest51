@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2026080600;
+$plugin->version   = 2026080604;
 $plugin->requires  = 2025041400; // Moodle 5.0+
 $plugin->component = 'theme_edzcorp';
 $plugin->maturity  = MATURITY_BETA;
-$plugin->release   = 'v1.7.0';
+$plugin->release   = 'v1.7.4';
 $plugin->dependencies = [];

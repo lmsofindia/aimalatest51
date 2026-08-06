@@ -687,6 +687,11 @@ if ($ADMIN->fulltree) {
         get_string('fp_top_search_placeholder', 'theme_edzcorp'), '',
         'Search programmes, subjects or skills', PARAM_TEXT));
 
+    // Split-layout hero background colour. Blank = a soft tint of the brand colour.
+    $page->add(new admin_setting_configcolourpicker('theme_edzcorp/fp_top_bg',
+        get_string('fp_top_bg', 'theme_edzcorp'),
+        get_string('fp_top_bgdesc', 'theme_edzcorp'), ''));
+
     // Centre illustration (upload — a bundled default is used if empty).
     $setting = new admin_setting_configstoredfile(
         'theme_edzcorp/fp_top_image',
@@ -749,6 +754,20 @@ if ($ADMIN->fulltree) {
         ]
     ));
 
+    // Eyebrow label (small caps pill). Blank = "Employee spotlight".
+    $page->add(new admin_setting_configtext(
+        'theme_edzcorp/fp_emp_label',
+        get_string('fp_emp_label', 'theme_edzcorp'),
+        get_string('fp_emp_labeldesc', 'theme_edzcorp'),
+        '', PARAM_TEXT));
+
+    // Optional big headline (blank = hidden).
+    $page->add(new admin_setting_configtextarea(
+        'theme_edzcorp/fp_emp_headline',
+        get_string('fp_emp_headline', 'theme_edzcorp'),
+        get_string('fp_emp_headlinedesc', 'theme_edzcorp'),
+        '', PARAM_TEXT));
+
     // Employee photo.
     $setting = new admin_setting_configstoredfile(
         'theme_edzcorp/fp_emp_photo',
@@ -790,18 +809,19 @@ if ($ADMIN->fulltree) {
     );
     $page->add($setting);
 
-    // Employee star rating.
+    // Employee star rating (0 = No rating, hides the stars).
     $setting = new admin_setting_configselect(
         'theme_edzcorp/fp_emp_rating',
         get_string('fp_emp_rating', 'theme_edzcorp'),
         get_string('fp_emp_ratingdesc', 'theme_edzcorp'),
         '5',
-        ['1' => '★☆☆☆☆ (1)', '2' => '★★☆☆☆ (2)', '3' => '★★★☆☆ (3)',
+        ['0' => get_string('fp_emp_rating_none', 'theme_edzcorp'),
+         '1' => '★☆☆☆☆ (1)', '2' => '★★☆☆☆ (2)', '3' => '★★★☆☆ (3)',
          '4' => '★★★★☆ (4)', '5' => '★★★★★ (5)']
     );
     $page->add($setting);
 
-    // Employee feedback quote.
+    // Employee feedback quote / description.
     $setting = new admin_setting_configtextarea(
         'theme_edzcorp/fp_emp_quote',
         get_string('fp_emp_quote', 'theme_edzcorp'),
@@ -810,6 +830,18 @@ if ($ADMIN->fulltree) {
         PARAM_RAW
     );
     $page->add($setting);
+
+    // Optional CTA button (needs both a label and a URL to appear).
+    $page->add(new admin_setting_configtext(
+        'theme_edzcorp/fp_emp_btnlabel',
+        get_string('fp_emp_btnlabel', 'theme_edzcorp'),
+        get_string('fp_emp_btnlabeldesc', 'theme_edzcorp'),
+        '', PARAM_TEXT));
+    $page->add(new admin_setting_configtext(
+        'theme_edzcorp/fp_emp_btnurl',
+        get_string('fp_emp_btnurl', 'theme_edzcorp'),
+        get_string('fp_emp_btnurldesc', 'theme_edzcorp'),
+        '', PARAM_URL));
 
     // ── Spotlight panel appearance ────────────────────────────────────────────
 
@@ -1085,6 +1117,11 @@ if ($ADMIN->fulltree) {
     );
     $page->add($setting);
 
+    // Topics band background colour. Blank = the default dark band (#1a1a2e).
+    $page->add(new admin_setting_configcolourpicker('theme_edzcorp/fp_topics_bg',
+        get_string('fp_topics_bg', 'theme_edzcorp'),
+        get_string('fp_topics_bgdesc', 'theme_edzcorp'), ''));
+
     // Topics source — which categories feed the section.
     $setting = new admin_setting_configselect(
         'theme_edzcorp/fp_topics_source',
@@ -1151,7 +1188,20 @@ if ($ADMIN->fulltree) {
     );
     $page->add($setting);
 
-    // Course IDs (comma-separated). Blank = auto (4 newest courses).
+    // Which courses to feature.
+    $page->add(new admin_setting_configselect(
+        'theme_edzcorp/fp_courses_source',
+        get_string('fp_courses_source', 'theme_edzcorp'),
+        get_string('fp_courses_sourcedesc', 'theme_edzcorp'),
+        'latest',
+        [
+            'latest'   => get_string('fp_courses_source_latest', 'theme_edzcorp'),
+            'enrolled' => get_string('fp_courses_source_enrolled', 'theme_edzcorp'),
+            'ids'      => get_string('fp_courses_source_ids', 'theme_edzcorp'),
+        ]
+    ));
+
+    // Course IDs (comma-separated). Used only when the source above is "Specific course IDs".
     $setting = new admin_setting_configtextarea(
         'theme_edzcorp/fp_courses_ids',
         get_string('fp_courses_ids', 'theme_edzcorp'),
