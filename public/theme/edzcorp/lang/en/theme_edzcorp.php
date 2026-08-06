@@ -352,10 +352,27 @@ $string['fp_top_badge']         = 'Circular badge text';
 $string['fp_top_badge_url']     = 'Circular badge link (optional)';
 $string['fp_top_stat_num']      = 'Stat {$a} — number';
 $string['fp_top_stat_label']    = 'Stat {$a} — label';
+$string['fp_top_stat_icon']     = 'Stat {$a} — icon';
+$string['fp_top_stat_icondesc'] = 'Font Awesome icon class shown beside the stat in the Split layout (e.g. fa-user-group, fa-book-open, fa-clock).';
 $string['fp_top_avatars_text']  = 'Avatar row tagline';
 $string['fp_top_login']         = 'Log in';
 $string['fp_top_dashboard']     = 'Dashboard';
 $string['fp_top_badge_aria']    = 'Learn more';
+
+// Top hero — layout switch.
+$string['fp_top_layout']         = 'Hero layout';
+$string['fp_top_layoutdesc']     = 'Choose the hero design. Both layouts reuse the same content settings below, so you can switch any time. "Split with search" adds the Explore Programmes button and the course search box.';
+$string['fp_top_layout_classic'] = 'Classic (illustration centre, stats right)';
+$string['fp_top_layout_split']   = 'Split with search (photo right, search box, stats below)';
+
+// Top hero — Split-layout extras.
+$string['fp_top_explore_label']     = 'Explore button label';
+$string['fp_top_explore_labeldesc'] = 'Text on the primary (filled) button in the Split layout.';
+$string['fp_top_explore_url']       = 'Explore button link';
+$string['fp_top_explore_urldesc']   = 'Where the primary button goes. Defaults to the course catalogue (/local/edzallcourse/index.php).';
+$string['fp_top_search_enable']      = 'Show hero search box';
+$string['fp_top_search_enabledesc']  = 'Show a search box in the Split-layout hero with live suggestions for courses and categories.';
+$string['fp_top_search_placeholder'] = 'Search box placeholder';
 
 // Frontpage — section enable toggles.
 $string['fp_section_enabledesc']  = 'Untick to hide this section from the homepage.';

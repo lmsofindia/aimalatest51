@@ -638,6 +638,16 @@ if ($ADMIN->fulltree) {
         get_string('fp_top_enable', 'theme_edzcorp'),
         get_string('fp_section_enabledesc', 'theme_edzcorp'), '1'));
 
+    // Layout switch — pick the hero design. Reuses the same content settings below.
+    $page->add(new admin_setting_configselect('theme_edzcorp/fp_top_layout',
+        get_string('fp_top_layout', 'theme_edzcorp'),
+        get_string('fp_top_layoutdesc', 'theme_edzcorp'),
+        'split',
+        [
+            'classic' => get_string('fp_top_layout_classic', 'theme_edzcorp'),
+            'split'   => get_string('fp_top_layout_split', 'theme_edzcorp'),
+        ]));
+
     $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_eyebrow',
         get_string('fp_top_eyebrow', 'theme_edzcorp'), '', 'Let\'s learn', PARAM_TEXT));
 
@@ -659,6 +669,24 @@ if ($ADMIN->fulltree) {
     $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_qurl',
         get_string('fp_top_qurl', 'theme_edzcorp'), '', '', PARAM_URL));
 
+    // ── Split-layout extras (Explore Programmes button + search box) ──────────
+    // These controls are only rendered by the "Split with search" layout.
+    $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_explore_label',
+        get_string('fp_top_explore_label', 'theme_edzcorp'),
+        get_string('fp_top_explore_labeldesc', 'theme_edzcorp'),
+        'Explore Programmes', PARAM_TEXT));
+    $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_explore_url',
+        get_string('fp_top_explore_url', 'theme_edzcorp'),
+        get_string('fp_top_explore_urldesc', 'theme_edzcorp'),
+        '/local/edzallcourse/index.php', PARAM_RAW_TRIMMED));
+
+    $page->add(new admin_setting_configcheckbox('theme_edzcorp/fp_top_search_enable',
+        get_string('fp_top_search_enable', 'theme_edzcorp'),
+        get_string('fp_top_search_enabledesc', 'theme_edzcorp'), '1'));
+    $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_search_placeholder',
+        get_string('fp_top_search_placeholder', 'theme_edzcorp'), '',
+        'Search programmes, subjects or skills', PARAM_TEXT));
+
     // Centre illustration (upload — a bundled default is used if empty).
     $setting = new admin_setting_configstoredfile(
         'theme_edzcorp/fp_top_image',
@@ -676,17 +704,21 @@ if ($ADMIN->fulltree) {
     $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_badge_url',
         get_string('fp_top_badge_url', 'theme_edzcorp'), '', '', PARAM_URL));
 
-    // Three stats (right column).
+    // Three stats. In Classic they stack on the right; in Split they sit in a
+    // full-width card below the hero, each with the icon set here.
     $topstat = [
-        1 => ['+120K', 'Our active monthly users'],
-        2 => ['+27K',  'Our monthly products'],
-        3 => ['+300K', 'Hours of learning recorded'],
+        1 => ['+120K', 'Our active monthly users', 'fa-user-group'],
+        2 => ['+27K',  'Our monthly products',      'fa-book-open'],
+        3 => ['+300K', 'Hours of learning recorded', 'fa-clock'],
     ];
     for ($i = 1; $i <= 3; $i++) {
         $page->add(new admin_setting_configtext("theme_edzcorp/fp_top_stat{$i}_num",
             get_string('fp_top_stat_num', 'theme_edzcorp', $i), '', $topstat[$i][0], PARAM_TEXT));
         $page->add(new admin_setting_configtext("theme_edzcorp/fp_top_stat{$i}_label",
             get_string('fp_top_stat_label', 'theme_edzcorp', $i), '', $topstat[$i][1], PARAM_TEXT));
+        $page->add(new admin_setting_configtext("theme_edzcorp/fp_top_stat{$i}_icon",
+            get_string('fp_top_stat_icon', 'theme_edzcorp', $i),
+            get_string('fp_top_stat_icondesc', 'theme_edzcorp'), $topstat[$i][2], PARAM_TEXT));
     }
 
     // Avatar-row tagline.

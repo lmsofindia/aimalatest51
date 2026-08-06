@@ -61,11 +61,73 @@
 
             {{! ================================================================
                 SECTION 0 — TOP HERO (configurable first section)
-                Left: eyebrow, heading, subtext, CTA (auto login/dashboard),
-                question link. Centre: arch illustration + rotating badge.
-                Right: three stats + avatar row. No double braces in this note.
+                Two switchable layouts, both driven by the SAME settings:
+                  • Split   — text + two buttons + search LEFT, photo RIGHT,
+                              stats card BELOW. (fp_top_layout = split)
+                  • Classic — text + CTA LEFT, illustration + badge CENTRE,
+                              stats + avatars RIGHT. (fp_top_layout = classic)
+                No double braces in this note.
             ================================================================ }}
             {{#fp_top_has}}
+
+            {{! ---------------- SPLIT (search) layout ---------------- }}
+            {{#fp_top_layout_split}}
+            <section class="edz-top edz-top--split" aria-label="{{fp_top_heading}}">
+
+                <div class="edz-top__split">
+
+                    <div class="edz-top__left">
+                        <p class="edz-top__eyebrow">{{fp_top_eyebrow}}</p>
+                        <h1 class="edz-top__heading">{{fp_top_heading}}</h1>
+                        <p class="edz-top__subtext">{{fp_top_subtext}}</p>
+
+                        <div class="edz-top__actions">
+                            <a href="{{fp_top_explore_url}}" class="edz-top__btn-fill">{{fp_top_explore_label}}</a>
+                            <a href="{{fp_top_cta_url}}" class="edz-top__btn-out">{{fp_top_cta_label}}</a>
+                        </div>
+
+                        {{#fp_top_has_q}}
+                        <a href="{{fp_top_qurl}}" class="edz-top__qlink">{{fp_top_qlabel}}</a>
+                        {{/fp_top_has_q}}
+
+                        {{#fp_top_search_enable}}
+                        <form class="edz-top__search" role="search" method="get" action="{{fp_top_search_action}}"
+                              data-region="edz-hero-search" autocomplete="off">
+                            <span class="edz-top__search-ico" aria-hidden="true"><i class="fa-solid fa-magnifying-glass"></i></span>
+                            <input type="text" name="q" class="edz-top__search-input"
+                                   placeholder="{{fp_top_search_placeholder}}" aria-label="{{fp_top_search_placeholder}}"
+                                   role="combobox" aria-expanded="false" aria-autocomplete="list"
+                                   data-region="edz-hero-search-input">
+                            <div class="edz-top__suggest" data-region="edz-hero-suggest" role="listbox" hidden></div>
+                        </form>
+                        {{/fp_top_search_enable}}
+                    </div>
+
+                    <div class="edz-top__media">
+                        <div class="edz-top__photo-wrap">
+                            <img src="{{fp_top_image}}" alt="" class="edz-top__photo" loading="eager">
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="edz-top__statscard" role="list">
+                    {{#fp_top_stats}}
+                    <div class="edz-top__statcard" role="listitem">
+                        <span class="edz-top__statcard-ico" aria-hidden="true"><i class="fa-solid {{icon}}"></i></span>
+                        <div class="edz-top__statcard-body">
+                            <div class="edz-top__statcard-num">{{num}}</div>
+                            <div class="edz-top__statcard-label">{{label}}</div>
+                        </div>
+                    </div>
+                    {{/fp_top_stats}}
+                </div>
+
+            </section>
+            {{/fp_top_layout_split}}
+
+            {{! ---------------- CLASSIC (illustration) layout ---------------- }}
+            {{#fp_top_layout_classic}}
             <section class="edz-top" aria-label="{{fp_top_heading}}">
 
                 <div class="edz-top__left">
@@ -114,6 +176,8 @@
                 </div>
 
             </section>
+            {{/fp_top_layout_classic}}
+
             {{/fp_top_has}}
 
             {{! ================================================================
@@ -486,3 +550,10 @@ require(['theme_boost/loader', 'theme_boost/drawer', 'theme_edzcorp/sidebar', 't
     }
 );
 {{/js}}
+{{#fp_top_has}}{{#fp_top_layout_split}}{{#fp_top_search_enable}}
+{{#js}}
+require(['theme_edzcorp/herosearch'], function(HeroSearch) {
+    HeroSearch.init({fallbackUrl: '{{fp_top_search_action}}'});
+});
+{{/js}}
+{{/fp_top_search_enable}}{{/fp_top_layout_split}}{{/fp_top_has}}
