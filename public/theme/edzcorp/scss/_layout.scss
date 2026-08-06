@@ -607,8 +607,8 @@ body.pagelayout-login {
     padding: 2.75rem 3rem;
     color: #fff;
     overflow: hidden;
-    // Driven by admin setting (--edz-login-hero-bg) with a vivid blue default.
-    background: var(--edz-login-hero-bg, #1d4ed8);
+    // Background colour: admin setting, else the theme primary colour.
+    background: var(--edz-login-hero-bg, var(--bs-primary, #1d4ed8));
 
     // Soft radial glows for depth.
     &::before,
@@ -632,7 +632,27 @@ body.pagelayout-login {
     @media (max-width: 900px) { display: none; }
 }
 
-// Brand chip — top-left.
+// When a background image is set, the inline style provides the gradient+image.
+.edz-login-hero--image {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+// Eyebrow / kicker — small glowing accent line above the big title.
+.edz-hero-eyebrow {
+    position: relative;
+    z-index: 1;
+    margin: 0 0 0.85rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--edz-login-accent, #38bdf8);
+    text-shadow: 0 0 18px color-mix(in srgb, var(--edz-login-accent, #38bdf8) 55%, transparent);
+}
+
+// Brand chip — top-left (legacy; retained for the slider layout).
 .edz-hero-brand {
     position: relative;
     z-index: 1;
@@ -733,23 +753,24 @@ body.pagelayout-login {
 .edz-hero-stat {
     flex: 1 1 0;
     min-width: 0;
-    padding: 1.125rem 1.25rem;
+    padding: 1.25rem 1rem;
     border-radius: 14px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.14);
-    text-align: left;
+    text-align: center;              // icon + caption + title all centred
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     .edz-hero-stat-ico {
+        // Bigger, borderless icon — just the glyph, no box.
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: rgba(255, 255, 255, 0.12);
         color: var(--edz-login-accent, #38bdf8);
-        font-size: 1.05rem;
-        margin-bottom: 0.85rem;
+        font-size: 1.9rem;
+        line-height: 1;
+        margin-bottom: 0.7rem;
     }
 
     .edz-hero-stat-cap {
@@ -762,14 +783,15 @@ body.pagelayout-login {
     }
 
     .edz-hero-stat-title {
-        font-size: 1.02rem;
+        font-size: 1rem;
         font-weight: 700;
         line-height: 1.3;
         color: #fff;
     }
 
     @media (max-width: 1200px) {
-        .edz-hero-stat-title { font-size: 0.95rem; }
+        .edz-hero-stat-ico   { font-size: 1.6rem; }
+        .edz-hero-stat-title { font-size: 0.92rem; }
     }
 }
 
