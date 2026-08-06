@@ -1335,6 +1335,35 @@ body.pagelayout-frontpage {
         font-weight: 600 !important;
         opacity: 1;
     }
+
+    // ── Mobile: tighten the contained bar so the logo + Login never clip ──────
+    // The 48px desktop gutters + centred brand squeeze the right cluster on a
+    // narrow screen. Shrink the gutters, pin the brand left, keep the right
+    // cluster from shrinking, and cap the logo height.
+    @media (max-width: 640px) {
+        .navbar,
+        .navbar.fixed-top {
+            margin: 0 10px 10px 10px !important;
+            padding: 0.35rem 0.6rem !important;
+            gap: 0.4rem;
+        }
+        .navbar .navbar-brand {
+            margin-right: auto !important;   // brand hugs left (after the hamburger)
+            max-width: 46vw;
+            overflow: hidden;
+        }
+        .navbar .navbar-brand img,
+        .navbar .navbar-brand .logo {
+            max-height: 30px !important;
+        }
+        // The right-hand controls must never shrink or clip off the edge.
+        .navbar .navbar-nav.ms-auto {
+            flex-shrink: 0 !important;
+            margin-left: 0.25rem !important;
+        }
+        // Edit-mode toggle is not needed on a phone and costs width.
+        .navbar .navbar-nav.ms-auto .editmode-switch-form { display: none !important; }
+    }
 }
 
 
