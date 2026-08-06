@@ -55,6 +55,17 @@ $herosubtitle = !empty($s->loginherosubtitle)
 // Accent-coloured highlight line under the subtitle (optional).
 $herohighlight = !empty($s->loginherohighlight) ? format_string($s->loginherohighlight) : '';
 
+// Small eyebrow/kicker above the big title (falls back to the site name).
+$heroeyebrow = !empty($s->loginheroeyebrow)
+    ? format_string($s->loginheroeyebrow)
+    : format_string($SITE->fullname, true, ['context' => context_system::instance()]);
+
+// Optional single background image for the hero panel (else a solid colour).
+$heroimage = !empty($s->loginherobgimage)
+    ? $theme->setting_file_url('loginherobgimage', 'loginherobgimage')
+    : '';
+$hasheroimage = !empty($heroimage);
+
 $herostatsenabled = !isset($s->loginherostatsenabled) || !empty($s->loginherostatsenabled);
 $herostats = [];
 if ($herostatsenabled) {
@@ -127,6 +138,9 @@ $templatecontext = [
     'hasslide2'          => $hasslide2,
     'hasslideany'        => $hasslideany,
     'herotitle'          => $herotitle,
+    'heroeyebrow'        => $heroeyebrow,
+    'heroimage'          => $heroimage,
+    'hasheroimage'       => $hasheroimage,
     'herosubtitle'       => $herosubtitle,
     'herohighlight'      => $herohighlight,
     'hasherostats'       => $hasherostats,

@@ -322,7 +322,7 @@ function theme_edzcorp_pluginfile(
 ): bool {
     if ($context->contextlevel == CONTEXT_SYSTEM) {
         $theme = theme_config::load('edzcorp');
-        if (in_array($filearea, ['logo', 'sidebarlogo', 'mobilelogo', 'loginsliderimage1', 'loginsliderimage2', 'fp_emp_photo', 'fp_skills_image', 'fp_top_image'], true)) {
+        if (in_array($filearea, ['logo', 'sidebarlogo', 'mobilelogo', 'loginsliderimage1', 'loginsliderimage2', 'loginherobgimage', 'fp_emp_photo', 'fp_skills_image', 'fp_top_image'], true)) {
             return $theme->setting_file_serve($filearea, $args, $forcedownload, $options);
         }
     }
