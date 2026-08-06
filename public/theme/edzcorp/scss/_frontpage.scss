@@ -1508,3 +1508,22 @@ body.edz-skills-lb-open { overflow: hidden; }
         border-left: none; border-top: 1px solid var(--edz-border-color, #e8ebf1);
     }
 }
+
+/* ── Mobile: gentle font size step-down (≤640px) ──────────────────────────── */
+@media (max-width: 640px) {
+    .edz-top--split .edz-top__heading { font-size: 1.8rem; }
+    .edz-top .edz-top__heading        { font-size: 1.8rem; }
+    .edz-top__subtext                 { font-size: 0.95rem; }
+    .edz-top__eyebrow                 { font-size: 0.72rem; }
+    .edz-top__statcard-num            { font-size: 1.5rem; }
+    .edz-top__statcard-label          { font-size: 0.85rem; }
+    .edz-top__btn-fill,
+    .edz-top__btn-out                 { font-size: 0.95rem; padding: 0.75rem 1.4rem; }
+
+    .edz-spot__title                  { font-size: 1.5rem; }
+    .edz-spot__quote                  { font-size: 1rem; }
+
+    .edz-topics__heading,
+    .edz-fp-courses__heading          { font-size: 1.25rem; }
+    .edz-fp-course-card__name         { font-size: 1rem; }
+}

@@ -500,3 +500,87 @@
     font-size: .85rem;
     padding: 6px;
 }
+
+/* ── Mobile: collapsible PROGRAMMES rail + overflow safety ─────────────────── */
+/* The rail toggle is desktop-hidden; it only appears on narrow screens. */
+.edzcat-rail-toggle { display: none; }
+
+@media (max-width: 840px) {
+    /* Never let the catalogue force the page wider than the screen. */
+    #edzcat.edzcat,
+    .edzcat-layout,
+    .edzcat-main { min-width: 0; max-width: 100%; }
+    .edzcat-layout { grid-template-columns: 1fr; }
+
+    /* Rail becomes a compact dropdown: a toggle button + a hidden body. */
+    .edzcat-rail {
+        position: static;
+        top: auto;
+        padding: 0;
+        border: none;
+        box-shadow: none;
+        background: transparent;
+        margin-bottom: 14px;
+    }
+    .edzcat-rail-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        width: 100%;
+        padding: 12px 14px;
+        background: var(--edzcat-surface);
+        border: 1px solid var(--edzcat-line);
+        border-radius: 12px;
+        box-shadow: var(--edzcat-shadow);
+        cursor: pointer;
+        text-align: left;
+        color: var(--edzcat-ink);
+    }
+    .edzcat-rail-toggle-text { display: flex; flex-direction: column; min-width: 0; }
+    .edzcat-rail-toggle-cap {
+        font-size: .62rem;
+        text-transform: uppercase;
+        letter-spacing: .6px;
+        font-weight: 700;
+        color: var(--edzcat-muted);
+    }
+    .edzcat-rail-toggle-current {
+        font-size: .95rem;
+        font-weight: 700;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .edzcat-rail-toggle-ico {
+        flex-shrink: 0;
+        color: var(--edzcat-muted);
+        transition: transform .2s ease;
+    }
+    .edzcat-rail.is-open .edzcat-rail-toggle-ico { transform: rotate(180deg); }
+
+    .edzcat-rail-body {
+        display: none;
+        margin-top: 8px;
+        padding: 8px;
+        background: var(--edzcat-surface);
+        border: 1px solid var(--edzcat-line);
+        border-radius: 12px;
+        box-shadow: var(--edzcat-shadow);
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .edzcat-rail.is-open .edzcat-rail-body { display: block; }
+    .edzcat-rail-title { display: none; }
+
+    /* Long programme / course names must wrap, never clip off the right edge. */
+    .edzcat-root { white-space: normal; }
+    .edzcat-root-name,
+    .edzcat-card-title,
+    .edzcat-rowcap { overflow-wrap: anywhere; }
+
+    /* Tighter hero on phones. */
+    .edzcat-hero { padding: 24px 20px; }
+    .edzcat-hero-title { font-size: 1.5rem; }
+    .edzcat-hero-text { font-size: .9rem; }
+}

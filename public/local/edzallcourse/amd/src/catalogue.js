@@ -44,6 +44,21 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
     var state = {categoryid: 0, q: '', sort: '', page: 1};
     var seq = 0;          // Request sequence to ignore stale responses.
     var searchTimer = null;
+    var railEl = null;        // Mobile collapsible rail container.
+    var railCurrentEl = null; // Label showing the selected programme on mobile.
+
+    /**
+     * Sync the mobile rail toggle label to the active programme.
+     */
+    var updateRailLabel = function() {
+        if (!railCurrentEl || !root) {
+            return;
+        }
+        var active = root.querySelector('[data-region="roots"] .edzcat-root.is-active .edzcat-root-name');
+        if (active) {
+            railCurrentEl.textContent = active.textContent.trim();
+        }
+    };
 
     /**
      * Build the query string reflecting the current state.
@@ -103,6 +118,7 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
             root.querySelector(SELECTORS.PAGER).innerHTML = resp.pagerhtml;
 
             highlightRoot(resp.rootid);
+            updateRailLabel();
 
             if (pushHistory !== false) {
                 window.history.pushState({edzcat: Object.assign({}, state)}, '', buildUrl());
@@ -146,6 +162,15 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
      * Wire delegated event handlers on the root container.
      */
     var bindEvents = function() {
+        // Mobile: toggle the collapsible programmes dropdown.
+        var railToggle = root.querySelector('[data-region="rail-toggle"]');
+        if (railToggle && railEl) {
+            railToggle.addEventListener('click', function() {
+                var open = railEl.classList.toggle('is-open');
+                railToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+            });
+        }
+
         // Root + chip clicks (delegated — regions get replaced).
         root.addEventListener('click', function(e) {
             var catEl = e.target.closest('[data-catid]');
@@ -154,6 +179,12 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
                 var cid = parseInt(catEl.getAttribute('data-catid'), 10);
                 if (!isNaN(cid)) {
                     selectCategory(cid);
+                    // On mobile, collapse the programmes dropdown after choosing.
+                    if (railEl) {
+                        railEl.classList.remove('is-open');
+                        var rt = root.querySelector('[data-region="rail-toggle"]');
+                        if (rt) { rt.setAttribute('aria-expanded', 'false'); }
+                    }
                 }
                 return;
             }
@@ -225,6 +256,8 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
             if (!root) {
                 return;
             }
+            railEl = root.querySelector('[data-region="rail"]');
+            railCurrentEl = root.querySelector('[data-region="rail-current"]');
             config = config || {};
             state.categoryid = parseInt(config.categoryid, 10) || 0;
             state.q = config.q || '';
@@ -235,6 +268,7 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
             window.history.replaceState({edzcat: Object.assign({}, state)}, '', buildUrl());
 
             bindEvents();
+            updateRailLabel();
         }
     };
 });
