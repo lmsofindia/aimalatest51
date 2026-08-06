@@ -325,12 +325,26 @@ $string['loginhero_title'] = 'Hero title';
 $string['loginhero_titledesc'] = 'Large headline shown in the centre of the hero panel.';
 $string['loginhero_title_default'] = 'Intelligent Learning, Powered by AI';
 $string['loginhero_subtitle'] = 'Hero subtitle';
-$string['loginhero_subtitledesc'] = 'Supporting text shown under the hero title.';
+$string['loginhero_subtitledesc'] = 'Supporting text under the hero title. Press Enter for a new line — leave a blank line between paragraphs. Basic HTML (e.g. &lt;br&gt;) is allowed.';
 $string['loginhero_subtitle_default'] = 'Upload any content — PDFs, videos, links — and get instant summaries, flashcards, quizzes, and glossaries. Build Learning Spaces your students will love.';
-$string['loginhero_statsenabled'] = 'Show stat cards';
-$string['loginhero_statsenableddesc'] = 'Show the three statistic cards at the bottom of the hero panel.';
-$string['loginhero_statvalue'] = 'Stat {$a} value';
-$string['loginhero_statlabel'] = 'Stat {$a} label';
+$string['loginhero_highlight'] = 'Highlight line';
+$string['loginhero_highlightdesc'] = 'A short accent-coloured line shown under the subtitle (e.g. "Your learning journey. Anytime. Anywhere."). Leave blank to hide.';
+$string['loginhero_statsenabled'] = 'Show feature boxes';
+$string['loginhero_statsenableddesc'] = 'Show the three feature boxes at the bottom of the hero panel.';
+$string['loginhero_staticon'] = 'Box {$a} — icon';
+$string['loginhero_staticondesc'] = 'Font Awesome icon shown at the top of the box (e.g. fa-regular fa-clock, fa-solid fa-chart-line).';
+$string['loginhero_statvalue'] = 'Box {$a} — big title';
+$string['loginhero_statlabel'] = 'Box {$a} — small caption';
+
+// Login — right panel support + technology partner.
+$string['loginsupport_text'] = 'Support prompt text';
+$string['loginsupport_textdesc'] = 'Small line shown under the Log in button (e.g. "Need help accessing your account?"). Leave blank to hide.';
+$string['loginsupport_label'] = 'Support link label';
+$string['loginsupport_labeldesc'] = 'Clickable label for the support link (e.g. "Contact Learner Support").';
+$string['loginsupport_url'] = 'Support link URL';
+$string['loginsupport_urldesc'] = 'Where the support link goes (a page, or a mailto: address). Leave blank to show the label as plain text.';
+$string['logintechpartner'] = 'Technology-partner line';
+$string['logintechpartnerdesc'] = 'Small line pinned at the bottom of the login form (e.g. "Technology Partner: EDZLearn"). Leave blank to hide.';
 
 // Frontpage — Skills section.
 $string['fp_skills_admin']        = 'Skills section';

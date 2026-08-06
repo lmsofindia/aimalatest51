@@ -92,16 +92,19 @@
                     </svg>
                 </span>
                 <h1 class="edz-hero-title">{{herotitle}}</h1>
-                <p class="edz-hero-subtitle">{{herosubtitle}}</p>
+                <span class="edz-hero-title-rule" aria-hidden="true"></span>
+                <div class="edz-hero-subtitle">{{{herosubtitle}}}</div>
+                {{#herohighlight}}<p class="edz-hero-highlight">{{herohighlight}}</p>{{/herohighlight}}
             </div>
 
-            {{! Stat cards (bottom) }}
+            {{! Feature boxes (bottom): icon + small caption + big title }}
             {{#hasherostats}}
             <div class="edz-hero-stats">
                 {{#herostats}}
                 <div class="edz-hero-stat">
-                    <div class="edz-hero-stat-value">{{value}}</div>
-                    <div class="edz-hero-stat-label">{{label}}</div>
+                    {{#hasicon}}<span class="edz-hero-stat-ico" aria-hidden="true"><i class="{{icon}}"></i></span>{{/hasicon}}
+                    <div class="edz-hero-stat-cap">{{label}}</div>
+                    <div class="edz-hero-stat-title">{{value}}</div>
                 </div>
                 {{/herostats}}
             </div>
@@ -144,12 +147,26 @@
                     </div>
                 </div>
 
+                {{! Support prompt — below the login button }}
+                {{#hassupport}}
+                <div class="edz-login-support">
+                    {{#supporttext}}<span class="edz-login-support-text">{{supporttext}}</span>{{/supporttext}}
+                    {{#supporturl}}<a href="{{supporturl}}" class="edz-login-support-link">{{supportlabel}}</a>{{/supporturl}}
+                    {{^supporturl}}{{#supportlabel}}<span class="edz-login-support-link edz-login-support-link--plain">{{supportlabel}}</span>{{/supportlabel}}{{/supporturl}}
+                </div>
+                {{/hassupport}}
+
                 {{! Language switcher — only rendered when >1 language pack installed }}
                 {{#langmenu}}
                 <div class="edz-login-langmenu">
                     {{> core/moremenu}}
                 </div>
                 {{/langmenu}}
+
+                {{! Technology-partner line — pinned at the bottom }}
+                {{#techpartner}}
+                <div class="edz-login-techpartner">{{techpartner}}</div>
+                {{/techpartner}}
 
             </div>{{! .edz-login-panel-inner }}
         </div>{{! .edz-login-panel }}

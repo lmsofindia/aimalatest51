@@ -48,9 +48,12 @@ $hasslideany = !empty($s->loginsliderimage1) || !empty($s->loginsliderimage2);
 $herotitle    = !empty($s->loginherotitle)
     ? format_string($s->loginherotitle)
     : get_string('loginhero_title_default', 'theme_edzcorp');
+// Subtitle keeps the admin's line breaks (Enter or <br>) so it can be multi-paragraph.
 $herosubtitle = !empty($s->loginherosubtitle)
-    ? format_string($s->loginherosubtitle)
+    ? format_text($s->loginherosubtitle, FORMAT_MOODLE, ['para' => false, 'newlines' => true])
     : get_string('loginhero_subtitle_default', 'theme_edzcorp');
+// Accent-coloured highlight line under the subtitle (optional).
+$herohighlight = !empty($s->loginherohighlight) ? format_string($s->loginherohighlight) : '';
 
 $herostatsenabled = !isset($s->loginherostatsenabled) || !empty($s->loginherostatsenabled);
 $herostats = [];
@@ -58,14 +61,27 @@ if ($herostatsenabled) {
     for ($i = 1; $i <= 3; $i++) {
         $valkey = "loginherostat{$i}value";
         $lblkey = "loginherostat{$i}label";
+        $icokey = "loginherostat{$i}icon";
         $val = !empty($s->$valkey) ? format_string($s->$valkey) : '';
         $lbl = !empty($s->$lblkey) ? format_string($s->$lblkey) : '';
+        $ico = !empty($s->$icokey) ? clean_param($s->$icokey, PARAM_TEXT) : '';
+        // Bare icon names default to the solid style.
+        if ($ico !== '' && !preg_match('/\b(fa-solid|fa-regular|fa-brands|fas|far|fab)\b/', $ico)) {
+            $ico = 'fa-solid ' . $ico;
+        }
         if ($val !== '' || $lbl !== '') {
-            $herostats[] = ['value' => $val, 'label' => $lbl];
+            $herostats[] = ['value' => $val, 'label' => $lbl, 'icon' => $ico, 'hasicon' => ($ico !== '')];
         }
     }
 }
 $hasherostats = !empty($herostats);
+
+// ---- Right panel: support prompt + technology-partner line -----------------
+$supporttext  = !empty($s->loginsupporttext)  ? format_string($s->loginsupporttext)  : '';
+$supportlabel = !empty($s->loginsupportlabel) ? format_string($s->loginsupportlabel) : '';
+$supporturl   = !empty($s->loginsupporturl)   ? clean_param($s->loginsupporturl, PARAM_URL) : '';
+$techpartner  = !empty($s->logintechpartner)  ? format_string($s->logintechpartner)  : '';
+$hassupport   = ($supporttext !== '' || $supportlabel !== '');
 
 // JSON array of captions for the slider JS (auto-advance changes the caption).
 // json_encode with flags to safely embed in a Mustache {{{triple}}} context.
@@ -112,8 +128,14 @@ $templatecontext = [
     'hasslideany'        => $hasslideany,
     'herotitle'          => $herotitle,
     'herosubtitle'       => $herosubtitle,
+    'herohighlight'      => $herohighlight,
     'hasherostats'       => $hasherostats,
     'herostats'          => $herostats,
+    'supporttext'        => $supporttext,
+    'supportlabel'       => $supportlabel,
+    'supporturl'         => $supporturl,
+    'hassupport'         => $hassupport,
+    'techpartner'        => $techpartner,
     'langmenu'           => $primarymenu['lang'] ?? false,
 ];
 

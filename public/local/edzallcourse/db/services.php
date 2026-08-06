@@ -35,4 +35,14 @@ $functions = [
         'loginrequired' => false,
         'capabilities'  => 'local/edzallcourse:view',
     ],
+
+    'local_edzallcourse_search_suggest' => [
+        'classname'     => 'local_edzallcourse\external\search_suggest',
+        'methodname'    => 'execute',
+        'description'   => 'Lightweight typeahead: return matching courses and categories for a search term.',
+        'type'          => 'read',
+        'ajax'          => true,
+        'loginrequired' => false,
+        'capabilities'  => 'local/edzallcourse:view',
+    ],
 ];

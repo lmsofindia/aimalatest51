@@ -27,19 +27,29 @@
     </section>
 
     <div class="edzcat-layout">
-        <aside class="edzcat-rail" aria-label="{{browseheading}}">
-            <h2 class="edzcat-rail-title">{{browseheading}}</h2>
-            <div class="edzcat-roots" data-region="roots">
-                {{#roots}}
-                <button type="button" class="edzcat-root {{#active}}is-active{{/active}}" data-catid="{{id}}"
-                    aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
-                    <span class="edzcat-root-name">{{{name}}}</span>
-                    <span class="edzcat-count">({{count}})</span>
-                </button>
-                {{/roots}}
-                {{^hasroots}}
-                <p class="edzcat-muted">{{#str}}noresults, local_edzallcourse{{/str}}</p>
-                {{/hasroots}}
+        <aside class="edzcat-rail" aria-label="{{browseheading}}" data-region="rail">
+            {{! Mobile-only collapsible toggle — shows the current programme, taps to open the list. }}
+            <button type="button" class="edzcat-rail-toggle" data-region="rail-toggle" aria-expanded="false">
+                <span class="edzcat-rail-toggle-text">
+                    <span class="edzcat-rail-toggle-cap">{{browseheading}}</span>
+                    <span class="edzcat-rail-toggle-current" data-region="rail-current">{{browseheading}}</span>
+                </span>
+                <span class="edzcat-rail-toggle-ico" aria-hidden="true">&#9662;</span>
+            </button>
+            <div class="edzcat-rail-body" data-region="rail-body">
+                <h2 class="edzcat-rail-title">{{browseheading}}</h2>
+                <div class="edzcat-roots" data-region="roots">
+                    {{#roots}}
+                    <button type="button" class="edzcat-root {{#active}}is-active{{/active}}" data-catid="{{id}}"
+                        aria-pressed="{{#active}}true{{/active}}{{^active}}false{{/active}}">
+                        <span class="edzcat-root-name">{{{name}}}</span>
+                        <span class="edzcat-count">({{count}})</span>
+                    </button>
+                    {{/roots}}
+                    {{^hasroots}}
+                    <p class="edzcat-muted">{{#str}}noresults, local_edzallcourse{{/str}}</p>
+                    {{/hasroots}}
+                </div>
             </div>
         </aside>
 
