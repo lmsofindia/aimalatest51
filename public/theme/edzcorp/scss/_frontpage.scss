@@ -1332,7 +1332,7 @@ body.edz-skills-lb-open { overflow: hidden; }
     grid-template-columns: none;
     max-width: 1240px;
     margin: 2.5rem auto 3.5rem;
-    padding: 0 1.5rem;
+    padding: 0;                   // Align to the page content edge (no extra inset).
 }
 
 .edz-top__split {
@@ -1340,12 +1340,15 @@ body.edz-skills-lb-open { overflow: hidden; }
     grid-template-columns: 1.05fr 0.95fr;
     gap: 3rem;
     align-items: center;
+    position: relative;   // Positioning context for the arch photo variant.
     background: var(--edz-hero-bg, color-mix(in srgb, var(--bs-primary, #135ea5) 7%, #ffffff));
     border-radius: 24px;
-    padding: 3.25rem 3.5rem;
+    // Horizontal padding kept small so the content lines up with the page
+    // content column (logo, section headings, stats card), not inset further.
+    padding: 3.25rem 1.75rem;
 
     @media (max-width: 900px) {
-        grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.5rem;
+        grid-template-columns: 1fr; gap: 2rem; padding: 2rem 1.25rem;
     }
 }
 
@@ -1445,17 +1448,40 @@ body.edz-skills-lb-open { overflow: hidden; }
 }
 .edz-top__suggest-meta { font-size: 0.8rem; color: var(--edz-text-muted, #6b7280); }
 
-/* Right column — circular photo */
+/* Right column — photo (shape is switchable: circle | arch) */
 .edz-top__media { display: flex; justify-content: center; align-items: center; }
 .edz-top__photo-wrap {
-    position: relative; width: 100%; max-width: 400px; aspect-ratio: 1 / 1;
-    margin: 0 auto; border-radius: 50%; overflow: hidden;
-    box-shadow: 0 30px 60px rgba(30, 27, 75, 0.22);
+    overflow: hidden;
     background: linear-gradient(180deg, #eaf1ff, #dbe7ff);
-
-    @media (max-width: 900px) { max-width: 320px; }
 }
 .edz-top__photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Shape: full circle (floats, centred in the right column) */
+.edz-top__photo-wrap--circle {
+    position: relative; width: 100%; max-width: 440px; aspect-ratio: 1 / 1;
+    margin: 0 auto; border-radius: 50%;
+    box-shadow: 0 30px 60px rgba(30, 27, 75, 0.22);
+}
+
+/* Shape: AIMA arch — fills the right of the panel; dome curve on the LEFT only,
+   flush top / right / bottom against the hero panel edges. */
+.edz-top__photo-wrap--arch {
+    position: absolute; top: 0; right: 0; bottom: 0; left: auto;
+    width: 46%; max-width: none;
+    border-radius: 60% 24px 24px 60% / 50% 24px 24px 50%;
+    box-shadow: none;
+}
+
+@media (max-width: 900px) {
+    // On narrow screens the arch can't fill an absolute right column, so it
+    // stacks like a normal dome-topped image below the text.
+    .edz-top__photo-wrap--arch {
+        position: relative; top: auto; right: auto; bottom: auto; left: auto;
+        width: 100%; max-width: 340px; margin: 0 auto; aspect-ratio: 1 / 1;
+        border-radius: 48% 48% 20px 20px / 60% 60% 20px 20px;
+    }
+    .edz-top__photo-wrap--circle { max-width: 300px; }
+}
 
 /* Full-width stats card below the hero */
 .edz-top__statscard {

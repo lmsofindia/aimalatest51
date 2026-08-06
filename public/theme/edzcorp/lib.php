@@ -366,6 +366,12 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         $top_layout = 'split';
     }
 
+    // Split-layout photo shape: 'arch' (AIMA dome-left) or 'circle' (full circle).
+    $top_photo_shape = !empty($s->fp_top_photo_shape) ? clean_param($s->fp_top_photo_shape, PARAM_ALPHA) : 'arch';
+    if (!in_array($top_photo_shape, ['arch', 'circle'], true)) {
+        $top_photo_shape = 'arch';
+    }
+
     // CTA: auto Login (logged out) / Dashboard (logged in). Label can be overridden.
     if (isloggedin() && !isguestuser()) {
         $top_cta_url     = (new \moodle_url('/my/'))->out(false);
@@ -409,20 +415,26 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $top_badge     = !empty($s->fp_top_badge) ? clean_param($s->fp_top_badge, PARAM_TEXT) : 'Learn more about service';
     $top_badge_url = !empty($s->fp_top_badge_url) ? clean_param($s->fp_top_badge_url, PARAM_URL) : '';
 
+    // Defaults use fa-regular (outline/line style) to match the AIMA design.
     $topstatdefaults = [
-        1 => ['+120K', 'Our active monthly users', 'fa-user-group'],
-        2 => ['+27K',  'Our monthly products',      'fa-book-open'],
-        3 => ['+300K', 'Hours of learning recorded', 'fa-clock'],
+        1 => ['+120K', 'Our active monthly users', 'fa-regular fa-user'],
+        2 => ['+27K',  'Our monthly products',      'fa-regular fa-folder-open'],
+        3 => ['+300K', 'Hours of learning recorded', 'fa-regular fa-clock'],
     ];
     $top_stats = [];
     for ($ti = 1; $ti <= 3; $ti++) {
         $nk = "fp_top_stat{$ti}_num";
         $lk = "fp_top_stat{$ti}_label";
         $ik = "fp_top_stat{$ti}_icon";
+        $rawicon = !empty($s->$ik) ? clean_param($s->$ik, PARAM_TEXT) : $topstatdefaults[$ti][2];
+        // Accept a full class ("fa-regular fa-clock") or a bare name ("fa-clock").
+        // Bare names default to the solid style so older custom values keep working.
+        $iconclass = preg_match('/\b(fa-solid|fa-regular|fa-brands|fas|far|fab)\b/', $rawicon)
+            ? $rawicon : ('fa-solid ' . $rawicon);
         $top_stats[] = [
             'num'   => !empty($s->$nk) ? clean_param($s->$nk, PARAM_TEXT) : $topstatdefaults[$ti][0],
             'label' => !empty($s->$lk) ? clean_param($s->$lk, PARAM_TEXT) : $topstatdefaults[$ti][1],
-            'icon'  => !empty($s->$ik) ? clean_param($s->$ik, PARAM_TEXT) : $topstatdefaults[$ti][2],
+            'icon'  => $iconclass,
         ];
     }
     $top_avatars_text = !empty($s->fp_top_avatars_text) ? clean_param($s->fp_top_avatars_text, PARAM_TEXT) : 'Find, explore & learn with us.';
@@ -431,9 +443,12 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     // 1. EMPLOYEE SPOTLIGHT
     // =========================================================================
 
-    $emp_name  = !empty($s->fp_emp_name)  ? clean_param($s->fp_emp_name,  PARAM_TEXT) : 'Sara Chen';
-    $emp_title = !empty($s->fp_emp_title) ? clean_param($s->fp_emp_title, PARAM_TEXT) : 'Product Lead';
-    $emp_dept  = !empty($s->fp_emp_dept)  ? clean_param($s->fp_emp_dept,  PARAM_TEXT) : 'Innovation & Technology';
+    // Use isset() (not !empty) so a deliberately-cleared field stays blank and
+    // the name/role row hides — only an UNSET (never-configured) field uses the
+    // sample default. Otherwise clearing "Sara Chen" would silently re-show it.
+    $emp_name  = isset($s->fp_emp_name)  ? clean_param($s->fp_emp_name,  PARAM_TEXT) : 'Sara Chen';
+    $emp_title = isset($s->fp_emp_title) ? clean_param($s->fp_emp_title, PARAM_TEXT) : 'Product Lead';
+    $emp_dept  = isset($s->fp_emp_dept)  ? clean_param($s->fp_emp_dept,  PARAM_TEXT) : 'Innovation & Technology';
     $emp_quote = !empty($s->fp_emp_quote)
         ? format_text($s->fp_emp_quote, FORMAT_HTML, ['trusted' => false, 'noclean' => false])
         : 'This platform changed how our entire team thinks about upskilling. The breadth of content and the way courses are structured is simply unmatched at this scale.';
@@ -918,6 +933,7 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_top_has'          => $en('fp_top_enable'),
         'fp_top_layout_split'   => ($top_layout === 'split'),
         'fp_top_layout_classic' => ($top_layout === 'classic'),
+        'fp_top_photo_shape'    => $top_photo_shape,
         'fp_hero_show'        => $en('fp_hero_enable'),
         'fp_philosophy_show'  => $en('fp_philosophy_enable'),
         'fp_top_eyebrow'      => $top_eyebrow,
