@@ -648,6 +648,16 @@ if ($ADMIN->fulltree) {
             'split'   => get_string('fp_top_layout_split', 'theme_edzcorp'),
         ]));
 
+    // Split-layout photo shape.
+    $page->add(new admin_setting_configselect('theme_edzcorp/fp_top_photo_shape',
+        get_string('fp_top_photo_shape', 'theme_edzcorp'),
+        get_string('fp_top_photo_shapedesc', 'theme_edzcorp'),
+        'arch',
+        [
+            'arch'   => get_string('fp_top_photo_shape_arch', 'theme_edzcorp'),
+            'circle' => get_string('fp_top_photo_shape_circle', 'theme_edzcorp'),
+        ]));
+
     $page->add(new admin_setting_configtext('theme_edzcorp/fp_top_eyebrow',
         get_string('fp_top_eyebrow', 'theme_edzcorp'), '', 'Let\'s learn', PARAM_TEXT));
 
@@ -712,9 +722,9 @@ if ($ADMIN->fulltree) {
     // Three stats. In Classic they stack on the right; in Split they sit in a
     // full-width card below the hero, each with the icon set here.
     $topstat = [
-        1 => ['+120K', 'Our active monthly users', 'fa-user-group'],
-        2 => ['+27K',  'Our monthly products',      'fa-book-open'],
-        3 => ['+300K', 'Hours of learning recorded', 'fa-clock'],
+        1 => ['+120K', 'Our active monthly users', 'fa-regular fa-user'],
+        2 => ['+27K',  'Our monthly products',      'fa-regular fa-folder-open'],
+        3 => ['+300K', 'Hours of learning recorded', 'fa-regular fa-clock'],
     ];
     for ($i = 1; $i <= 3; $i++) {
         $page->add(new admin_setting_configtext("theme_edzcorp/fp_top_stat{$i}_num",

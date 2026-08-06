@@ -373,7 +373,7 @@ $string['fp_top_badge_url']     = 'Circular badge link (optional)';
 $string['fp_top_stat_num']      = 'Stat {$a} — number';
 $string['fp_top_stat_label']    = 'Stat {$a} — label';
 $string['fp_top_stat_icon']     = 'Stat {$a} — icon';
-$string['fp_top_stat_icondesc'] = 'Font Awesome icon class shown beside the stat in the Split layout (e.g. fa-user-group, fa-book-open, fa-clock).';
+$string['fp_top_stat_icondesc'] = 'Font Awesome icon for this stat (Split layout). Use "fa-regular …" for outline/line icons (e.g. fa-regular fa-user, fa-regular fa-clock) or "fa-solid …" for filled. A bare name (e.g. fa-clock) defaults to filled.';
 $string['fp_top_avatars_text']  = 'Avatar row tagline';
 $string['fp_top_login']         = 'Log in';
 $string['fp_top_dashboard']     = 'Dashboard';
@@ -384,6 +384,11 @@ $string['fp_top_layout']         = 'Hero layout';
 $string['fp_top_layoutdesc']     = 'Choose the hero design. Both layouts reuse the same content settings below, so you can switch any time. "Split with search" adds the Explore Programmes button and the course search box.';
 $string['fp_top_layout_classic'] = 'Classic (illustration centre, stats right)';
 $string['fp_top_layout_split']   = 'Split with search (photo right, search box, stats below)';
+
+$string['fp_top_photo_shape']         = 'Hero image shape (Split layout)';
+$string['fp_top_photo_shapedesc']     = 'Shape of the right-side image in the Split layout.';
+$string['fp_top_photo_shape_arch']    = 'AIMA arch (dome on the left; flush top, right & bottom)';
+$string['fp_top_photo_shape_circle']  = 'Full circle';
 
 // Top hero — Split-layout extras.
 $string['fp_top_explore_label']     = 'Explore button label';
