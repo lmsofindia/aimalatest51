@@ -360,6 +360,12 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $top_subtext = !empty($s->fp_top_subtext) ? clean_param($s->fp_top_subtext, PARAM_TEXT)
         : 'Find, explore and learn in an awesome place, find, explore and learn in great service.';
 
+    // Layout switch: 'classic' (3-col illustration) or 'split' (2-col + search).
+    $top_layout = !empty($s->fp_top_layout) ? clean_param($s->fp_top_layout, PARAM_ALPHA) : 'split';
+    if (!in_array($top_layout, ['classic', 'split'], true)) {
+        $top_layout = 'split';
+    }
+
     // CTA: auto Login (logged out) / Dashboard (logged in). Label can be overridden.
     if (isloggedin() && !isguestuser()) {
         $top_cta_url     = (new \moodle_url('/my/'))->out(false);
@@ -369,6 +375,22 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         $top_cta_default = get_string('fp_top_login', 'theme_edzcorp');
     }
     $top_cta_label = !empty($s->fp_top_btnlabel) ? clean_param($s->fp_top_btnlabel, PARAM_TEXT) : $top_cta_default;
+
+    // Split-layout: "Explore Programmes" primary button (defaults to the catalogue).
+    $top_explore_label = !empty($s->fp_top_explore_label)
+        ? clean_param($s->fp_top_explore_label, PARAM_TEXT) : 'Explore Programmes';
+    $top_explore_url = !empty($s->fp_top_explore_url)
+        ? clean_param($s->fp_top_explore_url, PARAM_LOCALURL) : '';
+    if ($top_explore_url === '') {
+        $top_explore_url = (new \moodle_url('/local/edzallcourse/index.php'))->out(false);
+    }
+
+    // Split-layout: hero search box (typeahead over courses + categories).
+    $top_search_enable = (!isset($s->fp_top_search_enable) || (string)$s->fp_top_search_enable !== '0');
+    $top_search_placeholder = !empty($s->fp_top_search_placeholder)
+        ? clean_param($s->fp_top_search_placeholder, PARAM_TEXT) : 'Search programmes, subjects or skills';
+    // Enter with no suggestion selected falls back to the catalogue, pre-filtered.
+    $top_search_action = (new \moodle_url('/local/edzallcourse/index.php'))->out(false);
 
     $top_qlabel = !empty($s->fp_top_qlabel) ? clean_param($s->fp_top_qlabel, PARAM_TEXT) : 'Have a question?';
     $top_qurl   = !empty($s->fp_top_qurl) ? clean_param($s->fp_top_qurl, PARAM_URL) : '';
@@ -385,17 +407,19 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
     $top_badge_url = !empty($s->fp_top_badge_url) ? clean_param($s->fp_top_badge_url, PARAM_URL) : '';
 
     $topstatdefaults = [
-        1 => ['+120K', 'Our active monthly users'],
-        2 => ['+27K',  'Our monthly products'],
-        3 => ['+300K', 'Hours of learning recorded'],
+        1 => ['+120K', 'Our active monthly users', 'fa-user-group'],
+        2 => ['+27K',  'Our monthly products',      'fa-book-open'],
+        3 => ['+300K', 'Hours of learning recorded', 'fa-clock'],
     ];
     $top_stats = [];
     for ($ti = 1; $ti <= 3; $ti++) {
         $nk = "fp_top_stat{$ti}_num";
         $lk = "fp_top_stat{$ti}_label";
+        $ik = "fp_top_stat{$ti}_icon";
         $top_stats[] = [
             'num'   => !empty($s->$nk) ? clean_param($s->$nk, PARAM_TEXT) : $topstatdefaults[$ti][0],
             'label' => !empty($s->$lk) ? clean_param($s->$lk, PARAM_TEXT) : $topstatdefaults[$ti][1],
+            'icon'  => !empty($s->$ik) ? clean_param($s->$ik, PARAM_TEXT) : $topstatdefaults[$ti][2],
         ];
     }
     $top_avatars_text = !empty($s->fp_top_avatars_text) ? clean_param($s->fp_top_avatars_text, PARAM_TEXT) : 'Find, explore & learn with us.';
@@ -843,6 +867,8 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
 
         // Top hero (first section).
         'fp_top_has'          => $en('fp_top_enable'),
+        'fp_top_layout_split'   => ($top_layout === 'split'),
+        'fp_top_layout_classic' => ($top_layout === 'classic'),
         'fp_hero_show'        => $en('fp_hero_enable'),
         'fp_philosophy_show'  => $en('fp_philosophy_enable'),
         'fp_top_eyebrow'      => $top_eyebrow,
@@ -850,6 +876,11 @@ function theme_edzcorp_get_frontpage_context(theme_config $theme): array {
         'fp_top_subtext'      => $top_subtext,
         'fp_top_cta_url'      => $top_cta_url,
         'fp_top_cta_label'    => $top_cta_label,
+        'fp_top_explore_label' => $top_explore_label,
+        'fp_top_explore_url'   => $top_explore_url,
+        'fp_top_search_enable'      => $top_search_enable,
+        'fp_top_search_placeholder' => $top_search_placeholder,
+        'fp_top_search_action'      => $top_search_action,
         'fp_top_has_q'        => ($top_qlabel !== ''),
         'fp_top_qlabel'       => $top_qlabel,
         'fp_top_qurl'         => ($top_qurl !== '' ? $top_qurl : '#'),
