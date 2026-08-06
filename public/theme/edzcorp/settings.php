@@ -366,6 +366,17 @@ if ($ADMIN->fulltree) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
 
+    // Highlight line (accent-coloured line under the subtitle).
+    $setting = new admin_setting_configtext(
+        'theme_edzcorp/loginherohighlight',
+        get_string('loginhero_highlight', 'theme_edzcorp'),
+        get_string('loginhero_highlightdesc', 'theme_edzcorp'),
+        '',
+        PARAM_TEXT
+    );
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $page->add($setting);
+
     // Show the stat cards at the bottom.
     $setting = new admin_setting_configcheckbox(
         'theme_edzcorp/loginherostatsenabled',
@@ -376,33 +387,71 @@ if ($ADMIN->fulltree) {
     $setting->set_updatedcallback('theme_reset_all_caches');
     $page->add($setting);
 
-    // Three stat value/label pairs.
+    // Three feature boxes: icon + small caption (label) + big title (value).
     $herostatdefaults = [
-        1 => ['10K+', 'Content items'],
-        2 => ['50K+', 'AI outputs'],
-        3 => ['5K+',  'Learners'],
+        1 => ['Learn at Your Own Pace',        'Flexible Learning',  'fa-regular fa-clock'],
+        2 => ['Transcripts, Flashcards & Quizzes', 'AI-Enabled Tools', 'fa-regular fa-lightbulb'],
+        3 => ['Monitor Your Learning Journey', 'Progress Tracking',  'fa-solid fa-chart-line'],
     ];
-    foreach ($herostatdefaults as $i => $pair) {
+    foreach ($herostatdefaults as $i => $trip) {
+        // Icon (top of the box).
         $setting = new admin_setting_configtext(
-            "theme_edzcorp/loginherostat{$i}value",
-            get_string('loginhero_statvalue', 'theme_edzcorp', $i),
-            '',
-            $pair[0],
+            "theme_edzcorp/loginherostat{$i}icon",
+            get_string('loginhero_staticon', 'theme_edzcorp', $i),
+            get_string('loginhero_staticondesc', 'theme_edzcorp'),
+            $trip[2],
             PARAM_TEXT
         );
         $setting->set_updatedcallback('theme_reset_all_caches');
         $page->add($setting);
 
+        // Big title.
+        $setting = new admin_setting_configtext(
+            "theme_edzcorp/loginherostat{$i}value",
+            get_string('loginhero_statvalue', 'theme_edzcorp', $i),
+            '',
+            $trip[0],
+            PARAM_TEXT
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $page->add($setting);
+
+        // Small caption.
         $setting = new admin_setting_configtext(
             "theme_edzcorp/loginherostat{$i}label",
             get_string('loginhero_statlabel', 'theme_edzcorp', $i),
             '',
-            $pair[1],
+            $trip[1],
             PARAM_TEXT
         );
         $setting->set_updatedcallback('theme_reset_all_caches');
         $page->add($setting);
     }
+
+    // ── Right panel: support prompt + technology-partner line ──────────────────
+    $setting = new admin_setting_configtext('theme_edzcorp/loginsupporttext',
+        get_string('loginsupport_text', 'theme_edzcorp'),
+        get_string('loginsupport_textdesc', 'theme_edzcorp'),
+        'Need help accessing your account?', PARAM_TEXT);
+    $page->add($setting);
+
+    $setting = new admin_setting_configtext('theme_edzcorp/loginsupportlabel',
+        get_string('loginsupport_label', 'theme_edzcorp'),
+        get_string('loginsupport_labeldesc', 'theme_edzcorp'),
+        'Contact Learner Support', PARAM_TEXT);
+    $page->add($setting);
+
+    $setting = new admin_setting_configtext('theme_edzcorp/loginsupporturl',
+        get_string('loginsupport_url', 'theme_edzcorp'),
+        get_string('loginsupport_urldesc', 'theme_edzcorp'),
+        '', PARAM_RAW_TRIMMED);
+    $page->add($setting);
+
+    $setting = new admin_setting_configtext('theme_edzcorp/logintechpartner',
+        get_string('logintechpartner', 'theme_edzcorp'),
+        get_string('logintechpartnerdesc', 'theme_edzcorp'),
+        'Technology Partner: EDZLearn', PARAM_TEXT);
+    $page->add($setting);
 
     if ($use_tabs) {
         $settings->add($page);
