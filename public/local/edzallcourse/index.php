@@ -33,7 +33,9 @@ $sort       = optional_param('sort', '', PARAM_ALPHA);
 $page       = optional_param('page', 1, PARAM_INT);
 
 $context = context_system::instance();
-require_capability('local/edzallcourse:view', $context);
+// Public catalogue: anyone (including not-logged-in visitors) may browse. The
+// listing queries only ever return visible courses, so hidden content stays
+// hidden. No require_login / require_capability so guests aren't bounced to login.
 
 $PAGE->set_context($context);
 $PAGE->set_url(new moodle_url('/local/edzallcourse/index.php'));
