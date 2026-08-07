@@ -70,7 +70,10 @@ class get_view extends external_api {
         ]);
 
         $context = context_system::instance();
-        self::validate_context($context);
+        // Public no-login WS: set the page context directly. We must NOT call
+        // self::validate_context() here -- in Moodle 5.x it unconditionally calls
+        // require_login(), which throws requireloginerror on the no-cookie endpoint.
+        $PAGE->set_context($context);
         // Public catalogue — no capability gate; only visible courses are returned.
 
         if (!get_config('local_edzallcourse', 'enable')) {
