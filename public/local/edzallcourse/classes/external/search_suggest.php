@@ -66,15 +66,17 @@ class search_suggest extends external_api {
      * @return array
      */
     public static function execute(string $q = '', int $limit = 8): array {
-        global $DB, $CFG;
+        global $DB, $CFG, $PAGE;
 
         $params = self::validate_parameters(self::execute_parameters(), [
             'q' => $q, 'limit' => $limit,
         ]);
 
         $context = context_system::instance();
-        self::validate_context($context);
-        // Public catalogue — no capability gate; only visible courses are returned.
+        // Public no-login WS: set the page context directly. Do NOT call
+        // self::validate_context() -- it calls require_login() in Moodle 5.x and
+        // throws requireloginerror on the no-cookie endpoint.
+        $PAGE->set_context($context);
 
         if (!get_config('local_edzallcourse', 'enable')) {
             return ['items' => []];
