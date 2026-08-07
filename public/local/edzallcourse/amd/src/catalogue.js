@@ -18,7 +18,7 @@
  *
  * Handles the hybrid drilldown: root/chip selection, search, sort and
  * numbered pagination. Each interaction asks the server to rebuild the
- * drilldown, grid and pager (via local_edzallcourse_get_view) and swaps the
+ * drilldown, grid and pager (via local_edzallcourse_get_view_v2) and swaps the
  * three regions in place. State is mirrored to the URL for deep links.
  *
  * @module     local_edzallcourse/catalogue
@@ -96,7 +96,7 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
         }
 
         Ajax.call([{
-            methodname: 'local_edzallcourse_get_view',
+            methodname: 'local_edzallcourse_get_view_v2',
             args: {
                 categoryid: state.categoryid,
                 q: state.q,
