@@ -16,7 +16,7 @@
 /**
  * Frontpage hero search — live typeahead over courses + categories.
  *
- * Debounces input, calls local_edzallcourse_search_suggest, and shows a
+ * Debounces input, calls local_edzallcourse_search_suggest_v2, and shows a
  * keyboard-navigable dropdown of results. Selecting a result opens it;
  * pressing Enter with nothing selected submits the form to the catalogue
  * (pre-filtered by the typed query).
@@ -187,7 +187,7 @@ define(['core/ajax'], function(Ajax) {
         var fetch = function(q) {
             var mine = ++seq;
             Ajax.call([{
-                methodname: 'local_edzallcourse_search_suggest',
+                methodname: 'local_edzallcourse_search_suggest_v2',
                 args: {q: q, limit: 8}
             }], true, false)[0].then(function(resp) {   // loginrequired=false → public no-login endpoint
                 if (mine !== seq) {
