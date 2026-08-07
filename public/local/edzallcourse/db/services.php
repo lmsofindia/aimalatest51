@@ -24,25 +24,27 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+// NOTE: functions are named *_v2 deliberately. Moodle's upgrade does NOT update
+// the stored `loginrequired` flag on an EXISTING external function, so the public
+// (loginrequired=false) change never took effect on the original names. Fresh
+// names force a clean re-registration that correctly picks up loginrequired=false.
 $functions = [
 
-    'local_edzallcourse_get_view' => [
+    'local_edzallcourse_get_view_v2' => [
         'classname'     => 'local_edzallcourse\external\get_view',
         'methodname'    => 'execute',
-        'description'   => 'Rebuild and render the catalogue drilldown, grid and pager for a category selection.',
+        'description'   => 'Rebuild and render the catalogue drilldown, grid and pager for a category selection (public).',
         'type'          => 'read',
         'ajax'          => true,
         'loginrequired' => false,
-        'capabilities'  => 'local/edzallcourse:view',
     ],
 
-    'local_edzallcourse_search_suggest' => [
+    'local_edzallcourse_search_suggest_v2' => [
         'classname'     => 'local_edzallcourse\external\search_suggest',
         'methodname'    => 'execute',
-        'description'   => 'Lightweight typeahead: return matching courses and categories for a search term.',
+        'description'   => 'Lightweight typeahead: matching courses and categories for a search term (public).',
         'type'          => 'read',
         'ajax'          => true,
         'loginrequired' => false,
-        'capabilities'  => 'local/edzallcourse:view',
     ],
 ];
