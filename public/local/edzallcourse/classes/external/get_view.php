@@ -71,7 +71,7 @@ class get_view extends external_api {
 
         $context = context_system::instance();
         self::validate_context($context);
-        require_capability('local/edzallcourse:view', $context);
+        // Public catalogue — no capability gate; only visible courses are returned.
 
         if (!get_config('local_edzallcourse', 'enable')) {
             throw new \moodle_exception('disabledpage', 'local_edzallcourse');

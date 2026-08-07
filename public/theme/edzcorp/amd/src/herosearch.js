@@ -189,7 +189,7 @@ define(['core/ajax'], function(Ajax) {
             Ajax.call([{
                 methodname: 'local_edzallcourse_search_suggest',
                 args: {q: q, limit: 8}
-            }])[0].then(function(resp) {
+            }], true, false)[0].then(function(resp) {   // loginrequired=false → public no-login endpoint
                 if (mine !== seq) {
                     return; // Superseded.
                 }

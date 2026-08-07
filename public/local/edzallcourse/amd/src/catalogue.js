@@ -103,7 +103,7 @@ define(['core/ajax', 'core/notification'], function(Ajax, Notification) {
                 sort: state.sort,
                 page: state.page
             }
-        }])[0].then(function(resp) {
+        }], true, false)[0].then(function(resp) {   // loginrequired=false → public no-login endpoint
             if (mine !== seq) {
                 return; // A newer request superseded this one.
             }

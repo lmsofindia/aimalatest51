@@ -1218,12 +1218,18 @@ body.pagelayout-frontpage .main-inner {
 span.login > a {
     display: inline-flex !important;
     align-items: center;
-    padding: 0.45rem 1.15rem !important;
+    padding: 0.6rem 1.6rem !important;
     background: var(--bs-primary, #6366f1) !important;
     color: #ffffff !important;
     font-weight: var(--edz-fw-semibold, 600);
-    font-size: var(--edz-fs-small);
+    font-size: 0.95rem;
     line-height: 1.2;
+
+    // Slightly larger still on desktop.
+    @media (min-width: 992px) {
+        padding: 0.65rem 1.9rem !important;
+        font-size: 1rem;
+    }
     border-radius: var(--edz-border-radius-btn, 0.625rem) !important;
     text-decoration: none !important;
     white-space: nowrap;
@@ -1328,7 +1334,7 @@ body.pagelayout-frontpage {
     // Active — B3: thick straight underline, no radius.
     .navbar .nav-link.active,
     .navbar .nav-link[aria-current="page"] {
-        border-bottom: 3px solid var(--edz-accent, #6366f1) !important;
+        border-bottom: 3px solid var(--bs-primary, #6366f1) !important;
         border-radius: 0 !important;
         background: transparent !important;
         color: var(--edz-fp-navbar-text, #1f2937) !important;
