@@ -13,6 +13,13 @@
  *  - Persists theme preference in localStorage.
  *  - Respects prefers-color-scheme on first visit.
  *
+ * NOTE: The dark theme is NOT production-ready (many text colours are not yet
+ * overridden for dark panels, which left dark text on dark backgrounds). Until
+ * it is finished the site is intentionally LIGHT-ONLY: loadTheme() always
+ * returns light and the OS prefers-color-scheme watcher never applies dark.
+ * To re-enable dark later, restore the original loadTheme()/watcher logic
+ * (kept below in comments) and un-hide the .edz-darkmode-toggle button.
+ *
  * @module     theme_edzcorp/theme
  * @copyright  2024 EdzCorp
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -67,27 +74,23 @@ define(['core/log'], function(Log) {
     };
 
     /**
-     * Loads the user's persisted theme, or falls back to system preference.
+     * Resolve which theme to apply on load.
      *
-     * @returns {string} 'dark' | 'light'
+     * Dark mode is not ready, so this is forced to light regardless of any
+     * saved preference or the OS prefers-color-scheme setting. This is what
+     * stops a dark-mode browser from flipping on the half-built dark styling
+     * (dark text on dark panels).
+     *
+     * Original logic (restore to re-enable dark):
+     *   if (stored === DARK_VALUE || stored === LIGHT_VALUE) { return stored; }
+     *   if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+     *       return DARK_VALUE;
+     *   }
+     *   return LIGHT_VALUE;
+     *
+     * @returns {string} always 'light'
      */
     const loadTheme = () => {
-        let stored = null;
-        try {
-            stored = localStorage.getItem(STORAGE_KEY);
-        } catch (e) {
-            stored = null;
-        }
-
-        if (stored === DARK_VALUE || stored === LIGHT_VALUE) {
-            return stored;
-        }
-
-        // No preference saved — honour OS setting.
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            return DARK_VALUE;
-        }
-
         return LIGHT_VALUE;
     };
 
@@ -161,26 +164,19 @@ define(['core/log'], function(Log) {
      * Entry point called from each layout PHP via $PAGE->requires->js_call_amd().
      */
     const init = () => {
-        // Apply saved / system theme immediately.
+        // Apply resolved theme immediately (currently always light).
         applyTheme(loadTheme());
 
-        // Wire up dark mode toggle button.
+        // Wire up dark mode toggle button (hidden while dark mode is disabled).
         const toggle = document.getElementById('edz-darkmode-toggle');
         if (toggle) {
             toggle.addEventListener('click', toggleDarkMode);
         }
 
-        // Watch for OS theme changes while the page is open.
-        if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-                // Only follow OS changes if the user hasn't set an explicit preference.
-                let stored = null;
-                try { stored = localStorage.getItem(STORAGE_KEY); } catch (_) { /* noop */ }
-                if (!stored) {
-                    applyTheme(e.matches ? DARK_VALUE : LIGHT_VALUE);
-                }
-            });
-        }
+        // Dark mode is disabled, so we intentionally do NOT watch
+        // prefers-color-scheme changes — the site stays light regardless of
+        // the OS/browser theme. (Re-add the matchMedia 'change' listener here
+        // when the dark theme is completed.)
 
         // Enhancement features.
         initSmoothScroll();

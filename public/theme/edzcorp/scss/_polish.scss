@@ -1032,3 +1032,11 @@ body[id^="page-course-view"] .activity-item .activity-grid {
     th.completion-header a[title] { cursor: help; }
 }
 // ── end EdzCorp admin/report fixes (2026-07-27) ──────────────────────────────
+
+/* --- EdzCorp: force light UA color-scheme -------------------------------- *
+ * Dark mode is disabled until the dark theme is complete. Declaring a light
+ * color-scheme stops a dark-mode browser from rendering native controls
+ * (selects, inputs, scrollbars, date pickers on quiz pages) in dark, and
+ * guarantees readable default text everywhere. Remove when dark is ready.   */
+:root { color-scheme: light; }
+html   { color-scheme: light; }
