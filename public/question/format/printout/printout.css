@@ -1,0 +1,60 @@
+@media print {
+    div{
+        page-break-inside: avoid;
+    }
+}
+
+body {
+    font-family: verdana, helvetica, sans-serif;
+    background-color: #fff;
+    color: #000;
+    font-size: 12px;
+}
+
+div {
+  display: block;
+}
+
+.mcanswer {
+  line-height: 2em;
+}
+
+.question {
+    border: 1px solid #ddd;
+    margin: 5px;
+    padding: 3px;
+}
+
+.multichoice {
+    list-style-type: lower-alpha;
+}
+
+.questionlist {
+    list-style-type: decimal;
+}
+
+.category {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.questiontext {
+    font-weight: bold;
+}
+
+.questiontype {
+    font-size: 0.75em;
+}
+
+.points {
+    font-size: 0.75em;
+    font-weight: bold;
+}
+
+.wrong {
+    color: crimson;
+}
+
+.correct {
+    color: green;
+}
