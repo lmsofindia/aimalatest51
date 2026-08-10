@@ -17,8 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'mod_edzsession';
-$plugin->version   = 2026072414;        // YYYYMMDDXX.
+$plugin->version   = 2026080401;        // YYYYMMDDXX.
 $plugin->requires  = 2024100700;        // Moodle 4.5+ (works on 5.0+).
 $plugin->maturity  = MATURITY_ALPHA;
-$plugin->release   = '0.1.0';
+$plugin->release   = '0.1.2';           // Calendar sync; backup disabled (no session backup).
 $plugin->cron      = 0;

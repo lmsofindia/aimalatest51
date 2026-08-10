@@ -66,10 +66,19 @@ $filebase = clean_filename(format_string($edzsession->name) . '_' . userdate($oc
 
 if ($format === 'csv') {
     require_once($CFG->libdir . '/csvlib.class.php');
+    // Neutralise spreadsheet formula injection: a cell beginning with = + - @
+    // (or tab/CR) is prefixed with an apostrophe so Excel/Sheets treats it as text.
+    $safe = function ($v) {
+        $s = (string) $v;
+        if ($s !== '' && preg_match('/^[=+\-@\t\r]/', $s)) {
+            return "'" . $s;
+        }
+        return $s;
+    };
     $csv = new \csv_export_writer();
     $csv->set_filename($filebase);
     foreach ($metapairs as $pair) {
-        $csv->add_data($pair);
+        $csv->add_data(array_map($safe, $pair));
     }
     $csv->add_data(['']);
     $csv->add_data($colheads);
@@ -78,12 +87,12 @@ if ($format === 'csv') {
         $n++;
         $csv->add_data([
             $n,
-            $r->participant,
-            $r->email,
-            $r->username !== '' ? $r->username : get_string('unmatched', 'mod_edzsession'),
+            $safe($r->participant),
+            $safe($r->email),
+            $safe($r->username !== '' ? $r->username : get_string('unmatched', 'mod_edzsession')),
             $r->minutes,
             format_float($r->percent, 1) . '%',
-            $r->matchstate,
+            $safe($r->matchstate),
         ]);
     }
     $csv->download_file();

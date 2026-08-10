@@ -47,11 +47,12 @@ $PAGE->set_heading(format_string($course->fullname));
 if ($action === 'repoll' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $occurrenceid = required_param('occurrenceid', PARAM_INT);
+    // Scope the occurrence to THIS activity (prevents cross-course IDOR).
     $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.remotemeetingid AS parentmeetingid
               FROM {edzsession_occurrence} o
               JOIN {edzsession} e ON e.id = o.edzsessionid
-             WHERE o.id = :oid";
-    $occ = $DB->get_record_sql($sql, ['oid' => $occurrenceid], MUST_EXIST);
+             WHERE o.id = :oid AND o.edzsessionid = :eid";
+    $occ = $DB->get_record_sql($sql, ['oid' => $occurrenceid, 'eid' => $edzsession->id], MUST_EXIST);
     try {
         attendance_engine::poll_occurrence($occ);
         redirect($baseurl, get_string('reconcile_repolled', 'mod_edzsession'));
@@ -74,12 +75,13 @@ if ($action === 'repoll' && confirm_sesskey()) {
 if ($action === 'syncrec' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $occurrenceid = required_param('occurrenceid', PARAM_INT);
+    // Scope the occurrence to THIS activity (prevents cross-course IDOR).
     $sql = "SELECT o.*, e.accountid, e.meetingprovider, e.remotemeetingid AS parentmeetingid,
                    e.storageprovider AS actstorage
               FROM {edzsession_occurrence} o
               JOIN {edzsession} e ON e.id = o.edzsessionid
-             WHERE o.id = :oid";
-    $occ = $DB->get_record_sql($sql, ['oid' => $occurrenceid], MUST_EXIST);
+             WHERE o.id = :oid AND o.edzsessionid = :eid";
+    $occ = $DB->get_record_sql($sql, ['oid' => $occurrenceid, 'eid' => $edzsession->id], MUST_EXIST);
 
     echo $OUTPUT->header();
     echo $OUTPUT->heading(get_string('rec_sync_title', 'mod_edzsession'));

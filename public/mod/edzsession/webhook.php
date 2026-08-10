@@ -93,6 +93,11 @@ if ($event === 'recording.completed') {
     $starttime = isset($object['start_time']) ? strtotime($object['start_time']) : 0;
 
     $edzsession = $DB->get_record('edzsession', ['remotemeetingid' => $meetingid]);
+    // Defence in depth: the activity must belong to the SAME account whose secret
+    // just verified this webhook (not merely reference a known meeting id).
+    if ($edzsession && (int) $edzsession->accountid !== (int) $account->id) {
+        $edzsession = false;
+    }
     if ($edzsession) {
         $occurrence = mod_edzsession_webhook_match_occurrence($edzsession->id, $uuid, $starttime);
         if ($occurrence) {

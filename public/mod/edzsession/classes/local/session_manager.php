@@ -170,6 +170,111 @@ class session_manager {
         }
 
         self::bump_cache($edzsessionid);
+        self::sync_calendar_events($edzsessionid);
+    }
+
+    /**
+     * Mirror the current occurrence rows into Moodle's calendar ({event} table) so
+     * scheduled live classes show in the site calendar, the Upcoming events block
+     * and the Dashboard Timeline block — for learners and teachers alike.
+     *
+     * Reconciles by start time (the natural key): create events for occurrences
+     * that have none, update name/duration when they drift, and delete calendar
+     * events whose occurrence has gone. One CALENDAR_EVENT_TYPE_ACTION event per
+     * occurrence, so lib.php's provide_event_action() can attach a "Join" action.
+     *
+     * Never throws to the caller: calendar problems must not block saving the
+     * activity or generating occurrences.
+     *
+     * @param int $edzsessionid
+     */
+    public static function sync_calendar_events(int $edzsessionid): void {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        try {
+            $edzsession = $DB->get_record('edzsession', ['id' => $edzsessionid],
+                'id, course, name, intro, introformat');
+            if (!$edzsession) {
+                return;
+            }
+
+            $occurrences = $DB->get_records('edzsession_occurrence',
+                ['edzsessionid' => $edzsessionid], 'starttime ASC', 'id, starttime, duration');
+
+            // Existing calendar events for this instance, keyed by start time.
+            $events = $DB->get_records('event',
+                ['modulename' => 'edzsession', 'instance' => $edzsessionid], 'timestart ASC');
+            $eventbytime = [];
+            foreach ($events as $ev) {
+                // If duplicates ever exist for one time, keep the first and drop the rest below.
+                if (isset($eventbytime[(int) $ev->timestart])) {
+                    self::delete_calendar_event((int) $ev->id);
+                    continue;
+                }
+                $eventbytime[(int) $ev->timestart] = $ev;
+            }
+
+            $name = $edzsession->name;
+            $desc = $edzsession->intro ?? '';
+            $descformat = isset($edzsession->introformat) ? (int) $edzsession->introformat : FORMAT_HTML;
+
+            $wanted = [];
+            foreach ($occurrences as $occ) {
+                $time = (int) $occ->starttime;
+                $wanted[$time] = true;
+                $duration = (int) $occ->duration * MINSECS;
+
+                if (isset($eventbytime[$time])) {
+                    $existing = $eventbytime[$time];
+                    if ($existing->name !== $name || (int) $existing->timeduration !== $duration) {
+                        $calevent = \calendar_event::load($existing->id);
+                        $calevent->update((object) [
+                            'name'         => $name,
+                            'timestart'    => $time,
+                            'timeduration' => $duration,
+                        ], false);
+                    }
+                    continue;
+                }
+
+                // Create a new action event for this occurrence.
+                $data = new \stdClass();
+                $data->name         = $name;
+                $data->description  = $desc;
+                $data->format       = $descformat;
+                $data->courseid     = (int) $edzsession->course;
+                $data->groupid      = 0;
+                $data->userid       = 0;
+                $data->modulename   = 'edzsession';
+                $data->instance     = $edzsessionid;
+                $data->eventtype    = 'edzsession';
+                $data->type         = CALENDAR_EVENT_TYPE_ACTION;
+                $data->timestart    = $time;
+                $data->timeduration = $duration;
+                $data->timesort     = $time;
+                $data->visible      = 1;
+                \calendar_event::create($data, false);
+            }
+
+            // Delete events whose occurrence no longer exists.
+            foreach ($eventbytime as $time => $ev) {
+                if (empty($wanted[$time])) {
+                    self::delete_calendar_event((int) $ev->id);
+                }
+            }
+        } catch (\Throwable $e) {
+            debugging('edzsession calendar sync failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        }
+    }
+
+    /** Delete one calendar event by id (best-effort). */
+    private static function delete_calendar_event(int $eventid): void {
+        try {
+            \calendar_event::load($eventid)->delete();
+        } catch (\Throwable $e) {
+            debugging('edzsession calendar event delete failed: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        }
     }
 
     /** Resolve the meeting account for an instance, or null if unusable. */
