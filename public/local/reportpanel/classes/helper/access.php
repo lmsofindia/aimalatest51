@@ -84,9 +84,11 @@ class access {
     protected static function special_card_visible(string $special): bool {
         switch ($special) {
             case 'edzfaculty':
-                // Faculty dashboard: only when the plugin is installed and the viewer
-                // actually teaches somewhere.
-                return self::edzfaculty_available() && self::is_teacher_anywhere();
+                // Faculty dashboard: shown when the plugin is installed AND the viewer
+                // is either a full-mode user (admin / manager, who get the all-faculty
+                // overview) or a teacher in at least one course.
+                return self::edzfaculty_available()
+                    && (self::is_full_mode() || self::is_teacher_anywhere());
         }
         return false;
     }
