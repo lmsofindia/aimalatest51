@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>amd/build/app.min.js</location>
+        <name>Vue.js</name>
+        <description>Progressive JavaScript framework for building user interfaces. Bundled (compiled/minified) into the plugin's AMD build output.</description>
+        <version>3.5.22</version>
+        <license>MIT</license>
+        <repository>https://github.com/vuejs/core</repository>
+        <copyrights>
+            <copyright>Evan You</copyright>
+        </copyrights>
+    </library>
+    <library>
+        <location>amd/build/app.min.js</location>
+        <name>Pinia</name>
+        <description>Store library for Vue. Bundled (compiled/minified) into the plugin's AMD build output.</description>
+        <version>3.0.3</version>
+        <license>MIT</license>
+        <repository>https://github.com/vuejs/pinia</repository>
+        <copyrights>
+            <copyright>Eduardo San Martin Morote</copyright>
+        </copyrights>
+    </library>
+    <library>
+        <location>amd/build/app.min.js</location>
+        <name>Vue Router</name>
+        <description>Official router for Vue.js. Bundled (compiled/minified) into the plugin's AMD build output.</description>
+        <version>4.5.1</version>
+        <license>MIT</license>
+        <repository>https://github.com/vuejs/router</repository>
+        <copyrights>
+            <copyright>Eduardo San Martin Morote</copyright>
+        </copyrights>
+    </library>
+</libraries>

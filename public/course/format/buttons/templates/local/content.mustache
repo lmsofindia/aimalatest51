@@ -1,0 +1,68 @@
+{{!
+  Include the core content template.
+  This is the top template for a course.
+}}
+{{< core_courseformat/local/content }}
+{{!
+    Add any general structure blocks override here.
+}}
+
+{{! Mandatory the content/section block. }}
+    {{$ core_courseformat/local/content/section }}
+        {{^section}}
+            {{#all_sections}}
+                {{#body}}
+                    <b class="text-black">{{{text_section}}}</b>
+                    {{#selected}}
+                        <a href="{{{url}}}" class="btn btn-primary font-weight-bold {{disabled}} border-0"
+                           style="display: inline-flex; align-items: center; justify-content: center; min-width: 50px;
+                                   min-height: 50px; border-radius: {{{form_btn}}}; background-color: {{bgcolor_selected}}; margin: 5px;
+                                   font-size: 1.5em; text-decoration: none; color: {{fontcolor_selected}};">
+                            {{namesection}}
+                        </a>
+                    {{/selected}}
+                    {{^selected}}
+                        <a href="{{{url}}}" class="btn btn-primary font-weight-bold {{disabled}} border-0"
+                           style="display: inline-flex; align-items: center; justify-content: center; min-width: 50px;
+                                   min-height: 50px; border-radius: {{{form_btn}}}; background-color: {{bgcolor}}; margin: 5px;
+                                   font-size: 1.5em; text-decoration: none; color: {{colorfont}};">
+                            {{namesection}}
+                        </a>
+                    {{/selected}}
+                {{/body}}
+            {{/all_sections}}
+        {{/section}}
+        {{> format_buttons/local/content/section }}
+
+
+        <div class="section_addition">
+            {{{ addsectioncontrol }}}
+        </div>
+
+    {{/ core_courseformat/local/content/section }}
+{{/ core_courseformat/local/content }}
+
+{{#sectionselector}}
+    {{$ core_courseformat/local/content/sectionselector }}
+        {{> core_courseformat/local/content/sectionselector }}
+    {{/ core_courseformat/local/content/sectionselector }}
+{{/sectionselector}}
+
+{{#bulkedittools}}
+    {{$ core_courseformat/local/content/bulkedittools}}
+    {{/ core_courseformat/local/content/bulkedittools}}
+
+    <div class="d-flex align-items-center gap-3 mt-4">
+        <a href="{{{url_add_section}}}" class="btn btn-primary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            {{#str}} addsections, format_buttons {{/str}}
+        </a>
+        {{#editgroupsurl}}
+        <div class="vr"></div>
+        <a href="{{{editgroupsurl}}}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
+            <i class="fa-solid fa-layer-group" aria-hidden="true"></i>
+            {{#str}} manage_groups, format_buttons {{/str}}
+        </a>
+        {{/editgroupsurl}}
+    </div>
+{{/bulkedittools}}
