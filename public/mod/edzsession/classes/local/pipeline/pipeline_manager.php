@@ -185,12 +185,8 @@ class pipeline_manager {
         require_once($CFG->libdir . '/filelib.php');
 
         $tmp = make_request_directory() . '/rec.mp4';
-        $fp = fopen($tmp, 'w');
         $curl = new \curl();
         $curl->download_one($req->sourceurl, null, ['filepath' => $tmp, 'timeout' => 0]);
-        if (is_resource($fp)) {
-            fclose($fp);
-        }
         if (!file_exists($tmp) || filesize($tmp) === 0) {
             throw new \moodle_exception('sourcedownloadfailed', 'mod_edzsession');
         }
@@ -244,6 +240,10 @@ class pipeline_manager {
             }
         }
 
+        // Persist the asset id (a folder move may have changed it, e.g. S3).
+        if ($asset->assetid !== $rec->assetid) {
+            $DB->set_field('edzsession_recording', 'assetid', $asset->assetid, ['id' => $rec->id]);
+        }
         $embed = $storage->get_embed($asset);
         $DB->set_field('edzsession_recording', 'embedjson', json_encode([
             'kind' => $embed->kind, 'url' => $embed->url, 'attrs' => $embed->attrs,
@@ -395,6 +395,7 @@ class pipeline_manager {
      * @return bool true if it was moved
      */
     public static function refile(\stdClass $rec): bool {
+        global $DB;
         if (empty($rec->assetid)) {
             return false;
         }
@@ -409,7 +410,17 @@ class pipeline_manager {
         if (empty($folderid)) {
             return false;
         }
-        $storage->move_to_folder(new stored_asset($rec->storageprovider, (string) $rec->assetid), $folderid);
+        // Some providers (S3) implement "move" as copy+delete, changing the asset
+        // id — so persist the (possibly new) id and refresh the stored embed.
+        $asset = new stored_asset($rec->storageprovider, (string) $rec->assetid);
+        $storage->move_to_folder($asset, $folderid);
+        if ($asset->assetid !== $rec->assetid) {
+            $DB->set_field('edzsession_recording', 'assetid', $asset->assetid, ['id' => $rec->id]);
+            $embed = $storage->get_embed($asset);
+            $DB->set_field('edzsession_recording', 'embedjson', json_encode([
+                'kind' => $embed->kind, 'url' => $embed->url, 'attrs' => $embed->attrs,
+            ]), ['id' => $rec->id]);
+        }
         return true;
     }
 }
