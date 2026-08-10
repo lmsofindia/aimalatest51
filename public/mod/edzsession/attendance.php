@@ -49,7 +49,10 @@ if ($action === 'assign' && confirm_sesskey()) {
     require_capability('mod/edzsession:reconcile', $context);
     $attendanceid = required_param('attendanceid', PARAM_INT);
     $userid = required_param('userid', PARAM_INT);
-    if ($userid && is_enrolled($context, $userid)) {
+    // Scope the attendance row to THIS occurrence (prevents cross-course IDOR).
+    $ownsrow = $DB->record_exists('edzsession_attendance',
+        ['id' => $attendanceid, 'occurrenceid' => $occid]);
+    if ($ownsrow && $userid && is_enrolled($context, $userid)) {
         attendance_engine::assign_user($attendanceid, $userid);
         redirect(new moodle_url($pageurl, ['page' => $page]),
             get_string('reconcile_assigned', 'mod_edzsession'));

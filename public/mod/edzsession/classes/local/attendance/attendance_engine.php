@@ -153,16 +153,23 @@ class attendance_engine {
             }
         }
 
-        // Group raw segments by participant identity + sum seconds.
+        // Group raw segments by participant identity, then sum the union of their
+        // time intervals (merging overlaps) so a rejoin / two devices / breakout
+        // transition can't double-count toward attended time.
         $raw = $DB->get_records('edzsession_attendance_raw', ['occurrenceid' => $occ->id]);
         $groups = [];
+        $intervals = [];
         foreach ($raw as $r) {
             $key = self::group_key($r);
             if (!isset($groups[$key])) {
                 $groups[$key] = ['name' => $r->name, 'email' => $r->email,
                     'registrantid' => $r->registrantid, 'seconds' => 0];
+                $intervals[$key] = [];
             }
-            $groups[$key]['seconds'] += max(0, (int) $r->leavetime - (int) $r->jointime);
+            $intervals[$key][] = [(int) $r->jointime, (int) $r->leavetime];
+        }
+        foreach ($groups as $key => $unused) {
+            $groups[$key]['seconds'] = self::merge_seconds($intervals[$key]);
         }
 
         // Manual overrides to preserve: keep existing manual rows, keyed by email
@@ -243,6 +250,32 @@ class attendance_engine {
     }
 
     // ---- Matching helpers -------------------------------------------------
+
+    /**
+     * Total seconds covered by a set of [start,end] intervals, merging overlaps.
+     *
+     * @param array $intervals list of [start, end]
+     * @return int
+     */
+    private static function merge_seconds(array $intervals): int {
+        if (empty($intervals)) {
+            return 0;
+        }
+        usort($intervals, fn($a, $b) => $a[0] <=> $b[0]);
+        $total = 0;
+        [$curstart, $curend] = $intervals[0];
+        foreach (array_slice($intervals, 1) as [$s, $e]) {
+            if ($s <= $curend) {
+                $curend = max($curend, $e); // Overlap — extend the current span.
+            } else {
+                $total += max(0, $curend - $curstart);
+                $curstart = $s;
+                $curend = $e;
+            }
+        }
+        $total += max(0, $curend - $curstart);
+        return $total;
+    }
 
     private static function group_key(\stdClass $r): string {
         if (!empty($r->email)) {

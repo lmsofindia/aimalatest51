@@ -41,6 +41,15 @@ class provider implements
             'attendedpercent' => 'privacy:metadata:attendance:attendedpercent',
         ], 'privacy:metadata:attendance');
 
+        // Raw participant segments captured from the meeting report before
+        // reconciliation (name/email/registrant id). Not keyed by Moodle user,
+        // so purged at the activity-context level.
+        $collection->add_database_table('edzsession_attendance_raw', [
+            'name' => 'privacy:metadata:attendanceraw:name',
+            'email' => 'privacy:metadata:attendanceraw:email',
+            'registrantid' => 'privacy:metadata:attendanceraw:registrantid',
+        ], 'privacy:metadata:attendanceraw');
+
         // Data sent to the external meeting provider to obtain attendance.
         $collection->add_external_location_link('meetingprovider', [
             'email' => 'privacy:metadata:meetingprovider:email',
@@ -87,8 +96,41 @@ class provider implements
     }
 
     public static function export_user_data(approved_contextlist $contextlist): void {
-        // P3: write attendance rows per context via writer::with_context()->export_data().
-        // Discovery + deletion are implemented now so DPO delete requests work.
+        global $DB;
+        $userid = $contextlist->get_user()->id;
+        foreach ($contextlist->get_contexts() as $context) {
+            if (!$context instanceof \context_module) {
+                continue;
+            }
+            $cm = get_coursemodule_from_id('edzsession', $context->instanceid);
+            if (!$cm) {
+                continue;
+            }
+            $sql = "SELECT a.id, a.matchedname, a.matchedemail, a.joinseconds,
+                           a.attendedpercent, a.matchstate, o.starttime
+                      FROM {edzsession_attendance} a
+                      JOIN {edzsession_occurrence} o ON o.id = a.occurrenceid
+                     WHERE o.edzsessionid = :eid AND a.userid = :uid
+                  ORDER BY o.starttime ASC";
+            $rows = $DB->get_records_sql($sql, ['eid' => $cm->instance, 'uid' => $userid]);
+            if (!$rows) {
+                continue;
+            }
+            $data = [];
+            foreach ($rows as $r) {
+                $data[] = (object) [
+                    'session_time' => \core_privacy\local\request\transform::datetime($r->starttime),
+                    'reported_name' => $r->matchedname,
+                    'reported_email' => $r->matchedemail,
+                    'minutes_attended' => (int) floor($r->joinseconds / 60),
+                    'attended_percent' => $r->attendedpercent,
+                    'match_state' => $r->matchstate,
+                ];
+            }
+            \core_privacy\local\request\writer::with_context($context)->export_data(
+                [get_string('privacy:attendancepath', 'mod_edzsession')],
+                (object) ['attendance' => $data]);
+        }
     }
 
     public static function delete_data_for_all_users_in_context(\context $context): void {

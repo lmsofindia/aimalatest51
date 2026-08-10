@@ -35,7 +35,12 @@ function edzsession_supports($feature) {
         case FEATURE_COMPLETION_HAS_RULES:
             return true;
         case FEATURE_BACKUP_MOODLE2:
-            return true;
+            // Deliberately NOT backed up. Sessions are live, externally-bound Zoom
+            // meetings (per-account credentials, remote meeting ids, recording
+            // pipeline, attendance) — duplicating them into a restored/copied course
+            // produces meaningless stale rows, so the module opts out of backup
+            // entirely and is re-created fresh where needed.
+            return false;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_GRADE_HAS_GRADE:
@@ -142,6 +147,12 @@ function edzsession_delete_instance($id) {
         $DB->delete_records_select('edzsession_attendance_raw', "occurrenceid $insql", $params);
     }
     $DB->delete_records('edzsession_occurrence', ['edzsessionid' => $id]);
+
+    // Remove the calendar events we created for this instance's occurrences.
+    // (course_delete_module also does this when a whole activity is deleted, but
+    // clearing here keeps direct delete_instance callers — tests, restore — clean.)
+    $DB->delete_records('event', ['modulename' => 'edzsession', 'instance' => $id]);
+
     $DB->delete_records('edzsession', ['id' => $id]);
 
     // NOTE: recordings already stored on the provider are NOT deleted here.
@@ -195,4 +206,45 @@ function edzsession_get_coursemodule_info($cm) {
     }
 
     return $info;
+}
+
+/**
+ * Attach an action (a "Join" button) to each edzsession calendar event.
+ *
+ * Called by core for CALENDAR_EVENT_TYPE_ACTION events with modulename 'edzsession'.
+ * Returns null to suppress the action (hidden activity, or the sitting has ended).
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory
+ * @param int $userid the user the action is for (0 = current user)
+ * @return \core_calendar\local\event\entities\action_interface|null
+ */
+function edzsession_core_calendar_provide_event_action(calendar_event $event,
+        \core_calendar\action_factory $factory, int $userid = 0) {
+    global $USER;
+
+    if (empty($userid)) {
+        $userid = $USER->id;
+    }
+
+    $cm = get_fast_modinfo($event->courseid, $userid)->instances['edzsession'][$event->instance] ?? null;
+    if (!$cm || !$cm->uservisible) {
+        return null;
+    }
+
+    // No action once the sitting has finished — the calendar entry stays as history.
+    $now = time();
+    if (!empty($event->timeduration) && ($event->timestart + $event->timeduration) < $now) {
+        return null;
+    }
+
+    // Actionable from the day it happens (button becomes prominent in the Timeline block).
+    $actionable = ($event->timestart <= ($now + DAYSECS));
+
+    return $factory->create_instance(
+        get_string('join', 'edzsession'),
+        new \moodle_url('/mod/edzsession/view.php', ['id' => $cm->id]),
+        1,
+        $actionable
+    );
 }
